@@ -1,0 +1,672 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-05-01 00:09+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: blocks.py:6 models/raster.py:151 models/raster.py:380 models/raster.py:390
+#: models/raster.py:397 models/tile_gl.py:14 models/tile_gl.py:41
+msgid "name"
+msgstr ""
+
+#: blocks.py:8 models/core.py:333
+msgid "label"
+msgstr ""
+
+#: blocks.py:9
+msgid "value"
+msgstr ""
+
+#: blocks.py:10
+msgid "Options"
+msgstr ""
+
+#: forms.py:8 forms.py:35 models/raster.py:117
+msgid "layer"
+msgstr ""
+
+#: forms.py:11 forms.py:39 models/raster.py:119
+msgid "time"
+msgstr ""
+
+#: forms.py:12
+msgid ""
+"Time for the raster file. This can be the time the data was acquired, or the "
+"date and time for which the data applies"
+msgstr ""
+
+#: forms.py:14
+msgid "NetCDF Dates"
+msgstr ""
+
+#: forms.py:15
+msgid "Timestamps in the dataset"
+msgstr ""
+
+#: forms.py:40
+msgid ""
+"Time is required for every uploaded vector file. This can be the time the "
+"dataset was collected, or applies to."
+msgstr ""
+
+#: forms.py:42
+msgid "database table name"
+msgstr ""
+
+#: forms.py:43
+msgid "dataset description"
+msgstr ""
+
+#: forms.py:44
+msgid "optional dataset description"
+msgstr ""
+
+#: forms.py:54
+msgid "country"
+msgstr ""
+
+#: forms.py:55
+msgid "The boundary data will be filtered to this country"
+msgstr ""
+
+#: forms.py:57
+msgid "Zipped Shapefile"
+msgstr ""
+
+#: forms.py:58
+msgid "The uploaded file should be a zipped shapefile"
+msgstr ""
+
+#: helpers.py:16 helpers.py:18 wagtail_hooks.py:89 wagtail_hooks.py:93
+msgid "Create Dataset"
+msgstr ""
+
+#: helpers.py:37
+msgid "Create Layer"
+msgstr ""
+
+#: helpers.py:39
+msgid "Create Layer "
+msgstr ""
+
+#: models/core.py:28 models/core.py:65 models/core.py:87 models/core.py:291
+#: models/core.py:371
+msgid "title"
+msgstr ""
+
+#: models/core.py:28
+msgid "Title of the category"
+msgstr ""
+
+#: models/core.py:29
+msgid "icon"
+msgstr ""
+
+#: models/core.py:30 models/core.py:66
+msgid "active"
+msgstr ""
+
+#: models/core.py:30
+msgid "Is the category active ?"
+msgstr ""
+
+#: models/core.py:31 models/core.py:67 models/core.py:103
+msgid "public"
+msgstr ""
+
+#: models/core.py:31
+msgid "Is the category public ?"
+msgstr ""
+
+#: models/core.py:32
+msgid "order"
+msgstr ""
+
+#: models/core.py:36
+msgid "Categories"
+msgstr ""
+
+#: models/core.py:47
+msgid "Sub Categories"
+msgstr ""
+
+#: models/core.py:47
+msgid "Sub Category"
+msgstr ""
+
+#: models/core.py:89
+msgid "category"
+msgstr ""
+
+#: models/core.py:90
+msgid "sub_category"
+msgstr ""
+
+#: models/core.py:93
+msgid "summary"
+msgstr ""
+
+#: models/core.py:94
+msgid "Short summary of less than 100 characters"
+msgstr ""
+
+#: models/core.py:95
+msgid "metadata"
+msgstr ""
+
+#: models/core.py:98
+msgid "layer_type"
+msgstr ""
+
+#: models/core.py:99
+msgid "published"
+msgstr ""
+
+#: models/core.py:100
+msgid ""
+"Should the dataset be available for visualization ? If unchecked, the "
+"dataset is assumed to be in draft mode and thus not ready"
+msgstr ""
+
+#: models/core.py:104
+msgid ""
+"Should the dataset be visible to everyone ? If unchecked, only authorized "
+"users can view"
+msgstr ""
+
+#: models/core.py:294
+msgid "Metadata"
+msgstr ""
+
+#: models/core.py:312
+msgid "Maximum upload size in MegaBytes"
+msgstr ""
+
+#: models/core.py:314
+msgid ""
+"Maximum raster file size that can be uploaded in MegaBytes. Default is 10Mbs."
+msgstr ""
+
+#: models/core.py:318
+msgid "vector database schema"
+msgstr ""
+
+#: models/core.py:319
+msgid "Postgis vector database schema"
+msgstr ""
+
+#: models/core.py:321
+msgid "vector database user"
+msgstr ""
+
+#: models/core.py:321
+msgid "Postgis vector data user"
+msgstr ""
+
+#: models/core.py:323
+msgid "vector database user password"
+msgstr ""
+
+#: models/core.py:324
+msgid "Postgis vector data user password"
+msgstr ""
+
+#: models/core.py:327 models/core.py:328
+msgid "GL Styles Font Url"
+msgstr ""
+
+#: models/core.py:334
+msgid "background color"
+msgstr ""
+
+#: models/core.py:335
+msgid "image"
+msgstr ""
+
+#: models/core.py:336
+msgid "basemap group"
+msgstr ""
+
+#: models/core.py:337
+msgid "labels group"
+msgstr ""
+
+#: models/core.py:338
+msgid "map style"
+msgstr ""
+
+#: models/core.py:339
+msgid "url"
+msgstr ""
+
+#: models/core.py:340 models/core.py:374 models/tile_gl.py:17
+msgid "default"
+msgstr ""
+
+#: models/core.py:340
+msgid "Is default style ?"
+msgstr ""
+
+#: models/core.py:347
+msgid "Upload Settings"
+msgstr ""
+
+#: models/core.py:352
+msgid "Vector DB Settings"
+msgstr ""
+
+#: models/core.py:356
+msgid "Basemap TileServer Settings"
+msgstr ""
+
+#: models/core.py:371
+msgid "layer title"
+msgstr ""
+
+#: models/core.py:372
+msgid "multi-temporal"
+msgstr ""
+
+#: models/core.py:373
+msgid "Is multi-temporal"
+msgstr ""
+
+#: models/core.py:374
+msgid "Is Default Layer"
+msgstr ""
+
+#: models/raster.py:23 models/raster.py:137 models/raster.py:221
+msgid "dataset"
+msgstr ""
+
+#: models/raster.py:24
+msgid "style"
+msgstr ""
+
+#: models/raster.py:118 models/raster.py:138 models/tile_gl.py:16
+msgid "file"
+msgstr ""
+
+#: models/raster.py:152
+msgid "Style name for easy identification"
+msgstr ""
+
+#: models/raster.py:153
+msgid "data unit"
+msgstr ""
+
+#: models/raster.py:154
+msgid "Data unit"
+msgstr ""
+
+#: models/raster.py:155
+msgid "minimum value"
+msgstr ""
+
+#: models/raster.py:156
+msgid "maximum value"
+msgstr ""
+
+#: models/raster.py:159
+msgid "steps"
+msgstr ""
+
+#: models/raster.py:159
+msgid "Number of steps"
+msgstr ""
+
+#: models/raster.py:160
+msgid "Color Palette"
+msgstr ""
+
+#: models/raster.py:161
+msgid "interpolate"
+msgstr ""
+
+#: models/raster.py:182
+msgid "Maximum value should be greater than minimum value"
+msgstr ""
+
+#: models/raster.py:217
+msgid "Latest From Source"
+msgstr ""
+
+#: models/raster.py:218
+msgid "Previous to now"
+msgstr ""
+
+#: models/raster.py:219
+msgid "Next to Now"
+msgstr ""
+
+#: models/raster.py:225
+msgid "current time method"
+msgstr ""
+
+#: models/raster.py:227
+msgid "How to pick default time and for updates, for Multi-Temporal data"
+msgstr ""
+
+#: models/raster.py:229
+msgid "base url for WMS"
+msgstr ""
+
+#: models/raster.py:231
+msgid "WMS Version"
+msgstr ""
+
+#: models/raster.py:232
+msgid "Pixel Width"
+msgstr ""
+
+#: models/raster.py:233
+msgid "The size of the map image in pixels along the i axis"
+msgstr ""
+
+#: models/raster.py:234
+msgid "Pixel Height"
+msgstr ""
+
+#: models/raster.py:235
+msgid "The size of the map image in pixels along the j axis"
+msgstr ""
+
+#: models/raster.py:236
+msgid "Transparency"
+msgstr ""
+
+#: models/raster.py:237
+msgid "Ability of underlying maps to be visible or not"
+msgstr ""
+
+#: models/raster.py:238
+msgid "Spatial Reference System"
+msgstr ""
+
+#: models/raster.py:239
+msgid "WMS Spatial Reference e.g EPSG:3857"
+msgstr ""
+
+#: models/raster.py:241
+msgid "Output Format"
+msgstr ""
+
+#: models/raster.py:243
+msgid ""
+"Allowed map formats are either “picture” formats or “graphic element” "
+"formats."
+msgstr ""
+
+#: models/raster.py:245
+msgid "Query Parameter"
+msgstr ""
+
+#: models/raster.py:246
+msgid "WMS Query Params With selectable Options"
+msgstr ""
+
+#: models/raster.py:248
+msgid ""
+"This should provide a list of options that users can choose to change the "
+"query parameter of the url"
+msgstr ""
+
+#: models/raster.py:265 models/raster.py:378
+msgid "WMS Request Layers"
+msgstr ""
+
+#: models/raster.py:266
+msgid "WMS Request Layer"
+msgstr ""
+
+#: models/raster.py:267 models/raster.py:388
+msgid "WMS Request Styles"
+msgstr ""
+
+#: models/raster.py:268
+msgid "WMS Request Style"
+msgstr ""
+
+#: models/raster.py:269
+msgid "WMS Request Additional Parameters"
+msgstr ""
+
+#: models/raster.py:270
+msgid "WMS Request Param"
+msgstr ""
+
+#: models/raster.py:381
+msgid ""
+"WMS Layer is requested by using this name in the LAYERS parameter of a "
+"GetMap request."
+msgstr ""
+
+#: models/raster.py:391
+msgid "The style's Name is used in the Map request STYLES parameter"
+msgstr ""
+
+#: models/raster.py:396
+msgid "WMS Requests Additional Parameters"
+msgstr ""
+
+#: models/raster.py:398
+msgid "Name of the parameter"
+msgstr ""
+
+#: models/raster.py:399
+msgid "Value of the parameter"
+msgstr ""
+
+#: models/tile_gl.py:14 models/tile_gl.py:41
+msgid "Style Name"
+msgstr ""
+
+#: models/tile_gl.py:17
+msgid "Is Default data source"
+msgstr ""
+
+#: models/tile_gl.py:23
+msgid "Gl Style"
+msgstr ""
+
+#: models/tile_gl.py:32
+msgid "Basemap Source"
+msgstr ""
+
+#: models/tile_gl.py:40
+msgid "data source"
+msgstr ""
+
+#: models/tile_gl.py:43
+msgid "JSON style"
+msgstr ""
+
+#: models/tile_gl.py:46
+msgid "Basemap Style"
+msgstr ""
+
+#: models/vector.py:32
+msgid "Country Boundaries"
+msgstr ""
+
+#: templates/boundary_loader.html:5
+#, python-format
+msgid "Boundary Loader %(title)s\n"
+msgstr ""
+
+#: templates/boundary_loader.html:15 wagtail_hooks.py:498
+msgid "Boundary Loader"
+msgstr ""
+
+#: templates/boundary_loader.html:63
+msgid "Upload"
+msgstr ""
+
+#: templates/raster_edit_form.html:21 templates/vector_edit_form.html:17
+msgid "Publish"
+msgstr ""
+
+#: templates/raster_edit_form.html:22 templates/vector_edit_form.html:18
+msgid "Delete"
+msgstr ""
+
+#: templates/raster_preview.html:5 templates/vector_preview.html:5
+#: templates/wms_preview.html:5
+#, python-format
+msgid "Preview Layers%(title)s\n"
+msgstr ""
+
+#: templates/raster_preview.html:19 templates/vector_preview.html:17
+#: templates/wms_preview.html:19
+msgid "Preview"
+msgstr ""
+
+#: templates/raster_upload.html:5
+#, python-format
+msgid "Upload Raster%(title)s\n"
+msgstr ""
+
+#: templates/raster_upload.html:17 wagtail_hooks.py:233
+msgid "Upload Raster Files"
+msgstr ""
+
+#: templates/raster_upload.html:49
+msgid "Drag and drop a raster file into this area to upload immediately."
+msgstr ""
+
+#: templates/raster_upload.html:61 templates/vector_upload.html:61
+msgid "Or choose from your computer"
+msgstr ""
+
+#: templates/raster_upload.html:86 templates/vector_upload.html:86
+msgid ""
+"Upload successful. Please update this file with required details and "
+"publish. You may also delete the file completely if the upload wasn't "
+"required."
+msgstr ""
+
+#: templates/raster_upload.html:87 templates/vector_upload.html:87
+msgid "Sorry, upload failed."
+msgstr ""
+
+#: templates/raster_upload.html:89 templates/vector_upload.html:89
+msgid "Server Error"
+msgstr ""
+
+#: templates/raster_upload.html:90 templates/vector_upload.html:90
+msgid ""
+"Report this error to your website administrator with the following "
+"information:"
+msgstr ""
+
+#: templates/raster_upload.html:93 templates/vector_upload.html:93
+msgid "File updated."
+msgstr ""
+
+#: templates/vector_upload.html:5
+#, python-format
+msgid "Upload Vector%(title)s\n"
+msgstr ""
+
+#: templates/vector_upload.html:17 wagtail_hooks.py:442
+msgid "Upload Vector Files"
+msgstr ""
+
+#: templates/vector_upload.html:49
+msgid "Drag and drop a vector file into this area to upload immediately."
+msgstr ""
+
+#: views/raster.py:44
+#, python-format
+msgid ""
+"Not a supported raster format. Supported formats: %(supported_formats)s."
+msgstr ""
+
+#: views/raster.py:47 views/vector.py:87
+#, python-format
+msgid ""
+"This file is too big (%(file_size)s). Maximum filesize %(max_filesize)s."
+msgstr ""
+
+#: views/raster.py:50 views/vector.py:90
+#, python-format
+msgid "This file is too big. Maximum filesize %(max_filesize)s."
+msgstr ""
+
+#: views/vector.py:84
+#, python-format
+msgid ""
+"Not a supported vector format. Supported formats: %(supported_formats)s."
+msgstr ""
+
+#: wagtail_hooks.py:82
+msgid "Data Categories"
+msgstr ""
+
+#: wagtail_hooks.py:90 wagtail_hooks.py:107
+msgid "View Datasets"
+msgstr ""
+
+#: wagtail_hooks.py:145
+msgid "View Layers"
+msgstr ""
+
+#: wagtail_hooks.py:146 wagtail_hooks.py:184 wagtail_hooks.py:245
+#: wagtail_hooks.py:454
+msgid "Upload Files"
+msgstr ""
+
+#: wagtail_hooks.py:147 wagtail_hooks.py:234 wagtail_hooks.py:383
+#: wagtail_hooks.py:443
+msgid "Preview on Map"
+msgstr ""
+
+#: wagtail_hooks.py:150
+msgid "Layers"
+msgstr ""
+
+#: wagtail_hooks.py:167
+msgid "Preview Dataset"
+msgstr ""
+
+#: wagtail_hooks.py:222
+msgid "File Layers"
+msgstr ""
+
+#: wagtail_hooks.py:232 wagtail_hooks.py:382 wagtail_hooks.py:441
+msgid "Dataset"
+msgstr ""
+
+#: wagtail_hooks.py:259 wagtail_hooks.py:394 wagtail_hooks.py:468
+msgid "Preview Layer"
+msgstr ""
+
+#: wagtail_hooks.py:347
+msgid "Color Preview"
+msgstr ""
+
+#: wagtail_hooks.py:432
+msgid "Vector Layers"
+msgstr ""
+
+#: wagtail_hooks.py:484
+msgid "Basemap Styles"
+msgstr ""
+
+#: wagtail_hooks.py:488
+msgid "Layer Manager"
+msgstr ""

@@ -1,0 +1,98 @@
+{% load wagtailadmin_tags %}
+<style>
+
+
+    .color-selector-container {
+        margin-bottom: 30px;
+    }
+
+
+    .color-selector {
+    }
+
+    .colorscale {
+        display: flex;
+        width: 100%;
+        height: 36px;
+        cursor: pointer;
+        box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.12);
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    #color-options .colorscale {
+        margin: 10px 0;
+    }
+
+
+    .colorscale-item {
+        height: 100%
+    }
+
+
+    .legend-preview {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+
+    }
+
+    .legend-preview-title {
+        padding: 12px 0;
+        font-size: 16px;
+        font-weight: 500;
+    }
+
+    #legend-content table tr {
+        height: 26px;
+        width: 26px;
+    }
+
+    #legend-content table tr th {
+        padding: 0;
+        height: 26px;
+        width: 26px;
+    }
+
+
+    #legend-content table tr th span {
+        padding: 0;
+        display: inline-block;
+        height: 100%;
+        width: 100%
+    }
+
+    #legend-content table tr td {
+        padding-left: 8px;
+        line-height: 24px;
+        font-size: 14px;
+    }
+
+</style>
+
+<script>
+    const instanceColorPalette = "{% if widget.value != None %}{{ widget.value|stringformat:'s' }}{% endif %}"
+</script>
+
+
+<div class="color-selector-container">
+    <div class="color-selector">
+        <input type="{{ widget.type }}" name="{{ widget.name }}"{% if widget.value != None %}
+               value="{{ widget.value|stringformat:'s' }}"{% endif %}{% include "django/forms/widgets/attrs.html" %}>
+
+        <button id="style-button" type="button" data-a11y-dialog-show="dialog-raster-style" style="padding: 0">
+        </button>
+
+        {% dialog icon_name="doc-full-inverse" id="dialog-raster-style" title="Select Color" %}
+            <div id="color-options"></div>
+        {% enddialog %}
+    </div>
+    <div class="legend-preview">
+        <div class="legend-preview-title">Legend Preview</div>
+        <div id="legend-content" class="legend-content"></div>
+    </div>
+</div>
+
+
+

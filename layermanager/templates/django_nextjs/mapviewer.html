@@ -1,0 +1,26 @@
+{% extends "django_nextjs/document_base.html" %}
+{% load wagtailadmin_tags %}
+
+
+{% block head %}
+    {{ block.super }}
+
+{% endblock %}
+
+{% icon %}
+
+{% block body %}
+    {{ svg_sprite|safe }}
+    <div style="height: 50px;position: absolute;top:0;z-index: 9999;background: #fff;width: 100%;">
+        <nav class="navbar" role="navigation" aria-label="main navigation"
+             style="height: 100%;width: 100%">
+            <div class="navbar-brand" style="height: 100%;width: 100%">
+                <a class="navbar-item" href="/" style="height: 100%;width: 100%">
+                    <img src="http://20.56.94.119/cms/media/images/MINISTRY_OF_ENVIRONMENT_AND_FORESTRY_2.width-1000.png"
+                         style="padding:4px;height: 100%;max-width: 200px" alt="Brand Logo">
+                </a>
+            </div>
+        </nav>
+    </div>
+    {{ block.super }}
+{% endblock %}

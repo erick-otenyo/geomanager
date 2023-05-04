@@ -1,0 +1,85 @@
+{% extends "wagtailadmin/base.html" %}
+{% load i18n %}
+{% load l10n %}
+{% load wagtailadmin_tags wagtailimages_tags static %}
+{% block titletag %}{% blocktrans with title=page.get_admin_display_title %}Boundary Loader {{ title }}
+{% endblocktrans %}{% endblock %}
+
+{% block extra_css %}
+    {{ block.super }}
+
+    {{ form_media.css }}
+{% endblock %}
+
+{% block content %}
+    {% trans "Boundary Loader" as header_str %}
+
+    {% include "wagtailadmin/shared/header.html" with title=header_str icon="upload" %}
+
+    <div class="nice-padding">
+
+        {% if existing_countries %}
+            <div class="help-block help-warning">
+                <svg class="icon icon-warning icon" aria-hidden="true">
+                    <use href="#icon-warning"></use>
+                </svg>
+                <div>We found existing boundary data..</div>
+            </div>
+            <div>
+                <h3>The following country boundary data exists in the database:</h3>
+                <ul>
+                    {% for country in existing_countries %}
+                        <li>{{ country.name_0 }}</li>
+                    {% endfor %}
+                </ul>
+                <h3>Do you want to remove the existing boundary data and upload new ?</h3>
+
+                <div>
+                    <button class="button serious" id="overwrite_confirm">Yes, upload new</button>
+                    <a href="{% url 'wagtailadmin_home' %}" class="button button-secondary">No, looks good</a>
+                </div>
+            </div>
+        {% endif %}
+
+        <div style="margin-top: 40px;{% if existing_countries and not has_error and existing_countries %}display:none;{% endif %}"
+             id="upload_form_wrapper">
+            <form action="{% url 'layermanager_load_boundary' %}" method="POST" enctype="multipart/form-data">
+                {% if existing_countries %} <h2>New boundary data</h2> {% endif %}
+                {% if form.non_field_errors %}
+                    <div class="non-field_errors" style="margin-bottom: 20px">
+                        {% include "wagtailadmin/shared/non_field_errors.html" with form=form %}
+                    </div>
+                {% endif %}
+                <ul class="fields">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        {% if field.is_hidden %}
+                            {{ field }}
+                        {% else %}
+                            {% include "wagtailadmin/shared/field_as_li.html" %}
+                        {% endif %}
+                    {% endfor %}
+                    <li>
+                        <button type="submit" class="button"> {% trans 'Upload' %}</button>
+                    </li>
+                </ul>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    {{ block.super }}
+    {{ form_media.js }}
+    <script>
+        $(document).ready(function () {
+            $("#overwrite_confirm").click(function () {
+                $("#upload_form_wrapper").show()
+                $("input[name='remove_existing']").attr('checked', true).attr("type", "checkbox").hide()
+            })
+        })
+
+    </script>
+{% endblock %}
+
+

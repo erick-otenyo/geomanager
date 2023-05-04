@@ -1,0 +1,13 @@
+.action-buttons {
+    display: flex;
+    margin-bottom: 40px;
+}
+
+.go-to-datasets {
+    margin-right: 20px;
+
+}
+
+.preview {
+    margin-right: 20px;
+}
