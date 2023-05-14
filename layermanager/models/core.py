@@ -14,10 +14,10 @@ from wagtail.fields import StreamField
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.models import Orderable
 from wagtail_adminsortable.models import AdminSortable
+from wagtailhumanitarianicons.widgets import IconChooserWidget
 
 from layermanager.helpers import get_layer_action_url, get_preview_url, get_upload_url
 from layermanager.utils.vector_utils import ensure_pg_service_schema_exists
-from layermanager.widgets import IconChooserWidget
 
 DEFAULT_RASTER_MAX_UPLOAD_SIZE_MB = 10
 

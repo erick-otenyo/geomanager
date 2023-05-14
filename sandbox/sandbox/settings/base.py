@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "django_filters",
     "wagtail_color_panel",
     "wagtail_adminsortable",
+    "wagtailhumanitarianicons",
 
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",

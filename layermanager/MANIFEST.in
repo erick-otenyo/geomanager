@@ -1,0 +1,7 @@
+include README.md
+recursive-include layermanager *.py
+recursive-include layermanager *.html
+recursive-include layermanager/samples *
+recursive-include layermanager/static *
+recursive-include layermanager/templates *
+recursive-include layermanager/locale *.po *.mo

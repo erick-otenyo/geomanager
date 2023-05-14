@@ -1,19 +1,15 @@
-import os
-
 from django import forms
 from django.core.exceptions import ObjectDoesNotExist
-from django.template.loaders.app_directories import get_app_template_dirs
 from django.urls import path, reverse
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
 from wagtail import hooks
 from wagtail.admin.menu import MenuItem
 from wagtail.contrib.modeladmin.options import ModelAdminGroup, ModelAdmin, modeladmin_register
 from wagtail.contrib.modeladmin.views import CreateView, EditView
-from django.utils.translation import gettext_lazy as _
 from wagtail_adminsortable.admin import SortableAdminMixin
 
 from layermanager.helpers import (DatasetButtonHelper, CategoryButtonHelper, FileLayerButtonHelper)
-from .icons import OCHA_ICONS
 from .models import (
     Category,
     Dataset,
@@ -505,10 +501,3 @@ class LayerManagerAdminGroup(ModelAdminGroupWithHiddenItems):
 
 
 modeladmin_register(LayerManagerAdminGroup)
-
-
-@hooks.register("register_icons")
-def register_icons(icons):
-    for icon in OCHA_ICONS:
-        icons.append("layermanager/ocha_icons/{}".format(icon))
-    return icons
