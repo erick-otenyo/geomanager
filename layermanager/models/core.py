@@ -23,7 +23,7 @@ DEFAULT_RASTER_MAX_UPLOAD_SIZE_MB = 10
 
 
 class Category(TimeStampedModel, AdminSortable, ClusterableModel):
-    title = models.CharField(max_length=255, verbose_name=_("title"), help_text=_("Title of the category"))
+    title = models.CharField(max_length=16, verbose_name=_("title"), help_text=_("Title of the category"))
     icon = models.CharField(max_length=255, verbose_name=_("icon"), blank=True, null=True)
     active = models.BooleanField(default=True, verbose_name=_("active"), help_text=_("Is the category active ?"))
     public = models.BooleanField(default=False, verbose_name=_("public"), help_text=_("Is the category public ?"))
