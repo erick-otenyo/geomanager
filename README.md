@@ -51,6 +51,15 @@ To install GDAL using KitWare GDAL wheel, use:
   pip install --find-links https://girder.github.io/large_image_wheels GDAL
 ```
 
+Other required packages that you will need to install, if not installed already in your Wagtail Project
+
+- psycopg2 - for postgres/postgis database connection 
+- wagtail_adminsortable -  is also required, but the latest pip version is not compatible with the latest Wagtail versions.
+You can install the updated version that is compatible from Github using:
+
+```shell
+pip install https://github.com/Lh4cKg/wagtail-admin-sortable/archive/baa0d1f13a6bca4cc60e0d7dcd0522ecafcf5d67.zip
+```
 
 ### Installation
 
@@ -59,6 +68,7 @@ You can install the package using pip:
 ```shell
 pip install wagtail-layermanager
 ```
+
 The following packages will be automatically installed when installing `wagtail-layermanager`, if not already installed.
 
 - wagtail>=4.2.2
@@ -83,7 +93,6 @@ The following packages will be automatically installed when installing `wagtail-
 - djangorestframework-simplejwt>=5.2.2
 - wagtail-humanitarian-icons>=1.0.3
 - matplotlib>=3.7.1
-
 
 # Usage
 
