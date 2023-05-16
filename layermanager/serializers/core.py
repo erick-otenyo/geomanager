@@ -61,7 +61,11 @@ class SubCategorySerializer(serializers.ModelSerializer):
 
 class CategorySerializer(serializers.ModelSerializer):
     sub_categories = SubCategorySerializer(many=True, read_only=True)
+    icon = serializers.SerializerMethodField()
 
     class Meta:
         model = Category
         fields = ['id', 'title', 'icon', 'active', 'public', 'sub_categories']
+
+    def get_icon(self, obj):
+        return f"icon-{obj.icon}"
