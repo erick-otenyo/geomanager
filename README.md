@@ -138,10 +138,7 @@ Add the following to your project's `urls.py`
 ```python
 urlpatterns = [
     ...
-
-    path("", include("django_nextjs.urls")),
     path("", include("layermanager.urls")),
-  
     ...
 ]
 ```

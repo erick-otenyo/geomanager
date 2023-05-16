@@ -35,6 +35,8 @@ if os.path.isfile(os.path.join(os.path.dirname(BASE_DIR), '.env')):
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
+    "channels",
     "home",
     "search",
 
@@ -108,6 +110,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "sandbox.wsgi.application"
+ASGI_APPLICATION = 'sandbox.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
