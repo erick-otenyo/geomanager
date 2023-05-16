@@ -10,7 +10,7 @@ from wagtail.admin.panels import FieldPanel, TabbedInterface, ObjectList, Inline
 from wagtail.contrib.modeladmin.helpers import AdminURLHelper
 from wagtail.contrib.settings.models import BaseSiteSetting
 from wagtail.contrib.settings.registry import register_setting
-from wagtail.fields import StreamField
+from wagtail.fields import StreamField, RichTextField
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.models import Orderable
 from wagtail_adminsortable.models import AdminSortable
@@ -266,17 +266,42 @@ class Dataset(TimeStampedModel):
 
 class Metadata(TimeStampedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    title = models.CharField(max_length=255, verbose_name=_("title"))
+    title = models.CharField(max_length=255, verbose_name=_("title"), help_text=_("Title of the dataset"))
+    subtitle = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("subtitle"),
+                                help_text=_("Subtitle if any"))
+    function = models.TextField(max_length=255, blank=True, null=True, verbose_name=_("Dataset summary"),
+                                help_text=_("Short summary of what the dataset shows. Keep it short."))
+    resolution = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("resolution"),
+                                  help_text=_("The Spatial resolution of the dataset, for example 10km by 10 km"))
+    geographic_coverage = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("Geographic coverage"),
+                                           help_text=_("The geographic coverage of the dataset. For example East Africa"
+                                                       " or specific country name like Ethiopia, or Africa"))
+    source = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("source"),
+                              help_text=_("The source of the data where was it generated or produced"))
+    license = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("license"),
+                               help_text=_("Any licensing information for the dataset"))
+    frequency_of_update = models.CharField(max_length=255, blank=True, null=True,
+                                           verbose_name=_("Frequency of updates"),
+                                           help_text=_("How frequent is the dataset updated. "
+                                                       "For example daily, weekly, monthly etc"))
+    overview = RichTextField(blank=True, null=True, verbose_name=_("detail"),
+                             help_text=_("Detail description of the dataset, including the methodology, "
+                                         "references or any other relevant information"))
+    cautions = RichTextField(blank=True, null=True, verbose_name=_("cautions"),
+                             help_text=_("What things should users be aware as they use and interpret this dataset"))
+    citation = RichTextField(blank=True, null=True, verbose_name=_("citation"),
+                             help_text=_("Scientific citation for this dataset if any. "
+                                         "For example the citation for a scientific paper for the dataset"))
+    download_data = models.URLField(blank=True, null=True, verbose_name=_("Data download link"),
+                                    help_text=_("External link to where the source data can be found and downloaded"))
+    learn_more = models.URLField(blank=True, null=True, verbose_name=_("Learn more link"),
+                                 help_text=_("External link to where more detail about the dataset can be found"))
 
     class Meta:
         verbose_name_plural = _("Metadata")
 
-    panels = [
-        FieldPanel("title")
-    ]
-
     def __str__(self):
-        return {self.title}
+        return self.title
 
 
 def get_styles():

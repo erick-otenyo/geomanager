@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     "layermanager",
     "django_large_image",
     'django_json_widget',
-    "django_nextjs",
+    'django_nextjs',
     "django_filters",
     "wagtail_color_panel",
     "wagtail_adminsortable",
