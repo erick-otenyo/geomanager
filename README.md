@@ -27,11 +27,12 @@ Data management and visualization
 - Uploading and visualization of vector data
   - Shapefiles
   - Geojson
-- Raster Tile serving of gridded data using (django-large-image)[https://github.com/girder/django-large-image]
+- Raster Tile serving of raster data using [django-large-image](https://github.com/girder/django-large-image). 
+ All `django-large-image`features  are available
 - Vector tile serving using PostGIS MVT Tiles
 
 MapViewer Management
-- Management of layers visualized on the (nmhs-mapviewer)[https://github.com/wmo-raf/nmhs-mapviewer]
+- Management of layers visualized on the [nmhs-mapviewer](https://github.com/wmo-raf/nmhs-mapviewer)
   - Control on visibility (public or private) of layers on the MapViewer
 
 
