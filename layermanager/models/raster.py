@@ -1,8 +1,6 @@
-from django.contrib.admin.utils import quote
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django_extensions.db.models import TimeStampedModel
 from modelcluster.fields import ParentalKey
@@ -13,13 +11,12 @@ from wagtail.fields import StreamField
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.images.models import Image
 from wagtail.models import Orderable
-from wagtail.snippets.models import register_snippet
 from wagtail_color_panel.edit_handlers import NativeColorPanel
 from wagtail_color_panel.fields import ColorField
 
 from layermanager.blocks import WmsRequestParamSelectableBlock, InlineLegendBlock
 from layermanager.forms import RasterStyleModelForm
-from layermanager.helpers import get_upload_url
+from layermanager.helpers import get_raster_layer_files_url
 from layermanager.models.core import Dataset, BaseLayer
 from layermanager.widgets import RasterStyleWidget
 
@@ -36,6 +33,13 @@ class FileImageLayer(TimeStampedModel, BaseLayer):
         FieldPanel("style")
     ]
 
+    def __str__(self):
+        return f"{self.dataset.title} - {self.title}"
+
+    def get_uploads_list_url(self):
+        url = get_raster_layer_files_url(self.pk)
+        return url
+
     def get_style_url(self):
         url = {"action": "Create Style"}
         style_admin_helper = AdminURLHelper(RasterStyle)
@@ -49,9 +53,6 @@ class FileImageLayer(TimeStampedModel, BaseLayer):
                 "url": style_admin_helper.get_action_url("create") + f"?layer_id={self.pk}"
             })
         return url
-
-    def __str__(self):
-        return f"{self.dataset.title} - {self.title}"
 
     def layer_config(self, request=None):
         base_tiles_url = "/api/raster-tiles/{z}/{x}/{y}"
@@ -106,7 +107,6 @@ class FileImageLayer(TimeStampedModel, BaseLayer):
                     "To add multiple layers to a dataset, please mark the dataset as Multi Layer and try again")
 
 
-@register_snippet
 class LayerRasterFile(TimeStampedModel):
     layer = models.ForeignKey(FileImageLayer, on_delete=models.CASCADE, related_name="raster_files",
                               verbose_name=_("layer"))
@@ -120,12 +120,11 @@ class LayerRasterFile(TimeStampedModel):
         unique_together = ('layer', 'time')
 
     panels = [
-        FieldPanel("layer"),
         FieldPanel("time"),
     ]
 
     def __str__(self):
-        return f"{self.layer} - {self.time}"
+        return f"{self.time}"
 
 
 class RasterUpload(TimeStampedModel):

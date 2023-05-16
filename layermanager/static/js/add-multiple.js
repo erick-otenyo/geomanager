@@ -125,7 +125,13 @@ $((function () {
         }).done((function (e) {
             if (e.success) {
                 const t = $(".status-msg.update-success").text();
-                addMessage("success", t);
+                document.dispatchEvent(new CustomEvent("w-messages:add", {
+                    detail: {
+                        clear: !0,
+                        text: t,
+                        type: "success"
+                    }
+                }));
                 s.slideUp((function () {
                     $(this).remove()
                 }))

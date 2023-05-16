@@ -167,3 +167,14 @@ def get_upload_url(layer_type, dataset_id, layer_id=None):
         upload_url = None
 
     return upload_url
+
+
+def get_raster_layer_files_url(layer_id=None):
+    from layermanager.models import LayerRasterFile
+    admin_helper = AdminURLHelper(LayerRasterFile)
+    url = admin_helper.get_action_url("index")
+
+    if layer_id:
+        url = url + f"?layer__id={layer_id}"
+
+    return url

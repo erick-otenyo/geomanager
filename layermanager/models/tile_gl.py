@@ -1,13 +1,13 @@
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
+from django.utils.translation import gettext_lazy as _
 from django_extensions.db.models import TimeStampedModel
 from django_json_widget.widgets import JSONEditorWidget
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
 from wagtail.admin.panels import FieldPanel, InlinePanel
 from wagtail.models import Orderable
-from django.utils.translation import gettext_lazy as _
 
 
 class MBTSource(TimeStampedModel, ClusterableModel):

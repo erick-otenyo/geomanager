@@ -1,9 +1,7 @@
 import datetime
 import json
-import tempfile
 
 from django.core.exceptions import ValidationError
-from django.core.files import File
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.template.defaultfilters import filesizeformat
@@ -25,7 +23,7 @@ from layermanager.models.core import LayerManagerSettings
 from layermanager.models.raster import WmsLayer
 from layermanager.serializers.raster import WmsLayerSerializer
 from layermanager.utils import UUIDEncoder
-from layermanager.utils.raster_utils import get_tile_source, read_raster_info, convert_upload_to_geotiff
+from layermanager.utils.raster_utils import get_tile_source, read_raster_info, create_layer_raster_file
 
 ALLOWED_RASTER_EXTENSIONS = ["tif", "tiff", "geotiff", "nc"]
 
@@ -136,7 +134,7 @@ def upload_raster_file(request, dataset_id=None, layer_id=None):
             for form in layer_forms:
                 ctx.update({**form})
                 forms.append(render_to_string(
-                    "raster_edit_form.html",
+                    "layermanager/raster_edit_form.html",
                     ctx,
                     request=request,
                 ))
@@ -144,7 +142,7 @@ def upload_raster_file(request, dataset_id=None, layer_id=None):
         else:
             ctx.update({"form": layer_form})
             form = render_to_string(
-                "raster_edit_form.html",
+                "layermanager/raster_edit_form.html",
                 ctx,
                 request=request,
             )
@@ -152,7 +150,7 @@ def upload_raster_file(request, dataset_id=None, layer_id=None):
 
         return JsonResponse(response)
 
-    return render(request, 'raster_upload.html', context)
+    return render(request, 'layermanager/raster_upload.html', context)
 
 
 @user_passes_test(user_has_any_page_permission)
@@ -198,7 +196,7 @@ def publish_raster(request, upload_id):
         return {
             "success": False,
             "form": render_to_string(
-                "raster_edit_form.html",
+                "layermanager/raster_edit_form.html",
                 ctx,
                 request=request,
             ),
@@ -227,13 +225,8 @@ def publish_raster(request, upload_id):
                                              f"File with date {time_str} already exists for layer {db_layer}")
                         return JsonResponse(get_response())
 
-                    with tempfile.NamedTemporaryFile(suffix=".tif") as f:
-                        convert_upload_to_geotiff(upload, f, band_index=str(index), data_variable=nc_data_variable)
-                        with open(f.name, mode='rb') as file:
-                            file_content = File(file)
-                            raster = LayerRasterFile(layer=layer, time=d_time)
-                            raster.file.save(f"{time_str}.tif", file_content)
-                            raster.save()
+                    create_layer_raster_file(layer, upload, time=d_time, band_index=str(index),
+                                             data_variable=nc_data_variable)
                 except Exception as e:
                     layer_form.add_error(None, "Error occurred. Try again")
                     return JsonResponse(get_response())
@@ -247,13 +240,7 @@ def publish_raster(request, upload_id):
                 layer_form.add_error("time", f"File with date {time.isoformat()} already exists for layer {db_layer}")
                 return JsonResponse(get_response())
 
-            with tempfile.NamedTemporaryFile(suffix=".tif") as f:
-                convert_upload_to_geotiff(upload, f, data_variable=nc_data_variable)
-                with open(f.name, mode='rb') as file:
-                    file_content = File(file)
-                    raster = LayerRasterFile(layer=layer, time=time)
-                    raster.file.save(f"{nc_data_variable}_{time.isoformat()}.tif", file_content)
-                    raster.save()
+            create_layer_raster_file(layer, upload, time, data_variable=nc_data_variable)
             # cleanup upload
             upload.delete()
             return JsonResponse({"success": True, })
@@ -264,8 +251,7 @@ def publish_raster(request, upload_id):
                 layer_form.add_error("time", f"File with date {time} already exists for selected layer")
                 return JsonResponse(get_response())
 
-            LayerRasterFile.objects.create(layer=layer, time=time, file=File(upload.file))
-
+            create_layer_raster_file(layer, upload, time)
         # cleanup upload
         upload.delete()
         return JsonResponse(
@@ -379,7 +365,7 @@ def preview_raster_layers(request, dataset_id, layer_id=None):
         "layer_tiles_url": base_absolute_url + "/api/raster-tiles/{z}/{x}/{y}",
     }
 
-    return render(request, 'raster_preview.html', context)
+    return render(request, 'layermanager/raster_preview.html', context)
 
 
 @user_passes_test(user_has_any_page_permission)
@@ -406,4 +392,4 @@ def preview_wms_layers(request, dataset_id, layer_id=None):
         "dataset_layers": json.dumps(dataset_layers, cls=UUIDEncoder)
     }
 
-    return render(request, 'wms_preview.html', context)
+    return render(request, 'layermanager/wms_preview.html', context)

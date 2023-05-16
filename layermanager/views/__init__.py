@@ -2,6 +2,7 @@ from .auth import (
     RegisterView,
     ResetPasswordView
 )
+from .core import get_mapviewer_config
 from .nextjs import map_view
 from .raster import (
     upload_raster_file,
@@ -11,6 +12,7 @@ from .raster import (
     preview_raster_layers,
     preview_wms_layers
 )
+from .tile_gl import tile_gl, tile_json_gl, style_json_gl
 from .vector import (
     load_boundary,
     upload_vector_file,
@@ -21,6 +23,3 @@ from .vector import (
     BoundaryVectorTileView,
     GeoJSONPgTableView
 )
-from .core import get_mapviewer_config
-
-from .tile_gl import tile_gl, tile_json_gl, style_json_gl

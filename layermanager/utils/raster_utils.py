@@ -1,10 +1,11 @@
 import math
+import tempfile
 
 import numpy as np
 import pandas as pd
 import rasterio as rio
-import rioxarray as rxr
 import xarray as xr
+from django.core.files import File
 from django_large_image import tilesource
 from django_large_image.utilities import field_file_to_local_path
 from large_image.exceptions import TileSourceError
@@ -13,6 +14,7 @@ from rio_cogeo.cogeo import cog_translate
 from rio_cogeo.profiles import cog_profiles
 
 from layermanager.errors import UnsupportedRasterFormat
+from layermanager.models import LayerRasterFile
 
 
 def get_tile_source(path, options):
@@ -119,7 +121,7 @@ def convert_upload_to_geotiff(upload, out_file_path, band_index=None, data_varia
             if np.isnan(nodata_value):
                 rds = rds.rio.write_nodata(-9999, encoded=True)
 
-            rds.rio.to_raster(out_file_path, driver="COG")
+            rds.rio.to_raster(out_file_path, driver="COG", compress="DEFLATE")
         except Exception as e:
             raise e
         finally:
@@ -147,3 +149,16 @@ def convert_upload_to_geotiff(upload, out_file_path, band_index=None, data_varia
         return True
 
     raise UnsupportedRasterFormat
+
+
+def create_layer_raster_file(layer, upload, time, band_index=None, data_variable=None):
+    with tempfile.NamedTemporaryFile(suffix=".tif") as f:
+        convert_upload_to_geotiff(upload, f.name, band_index=band_index, data_variable=data_variable)
+        with open(f.name, mode='rb') as file:
+            file_content = File(file)
+            raster = LayerRasterFile(layer=layer, time=time)
+            file_name = f"{time.isoformat()}.tif"
+            if data_variable:
+                file_name = f"{data_variable}_{file_name}"
+            raster.file.save(file_name, file_content)
+            raster.save()

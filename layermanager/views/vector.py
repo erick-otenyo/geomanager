@@ -1,4 +1,3 @@
-import json
 import os
 import tempfile
 
@@ -12,6 +11,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.views import View
+from wagtail.admin import messages
 from wagtail.admin.auth import user_passes_test, user_has_any_page_permission, permission_denied
 from wagtail.contrib.modeladmin.helpers import AdminURLHelper
 from wagtail.models import Site
@@ -23,13 +23,13 @@ from layermanager.models.core import LayerManagerSettings
 from layermanager.models.vector import VectorLayer, VectorUpload, PgVectorTable, CountryBoundary
 from layermanager.utils.boundary_loader import load_country_boundary
 from layermanager.utils.vector_utils import ogr_db_import
-from wagtail.admin import messages
 
 ALLOWED_VECTOR_EXTENSIONS = ["zip", "geojson", "csv"]
 
 
 @user_passes_test(user_has_any_page_permission)
 def load_boundary(request):
+    template = "layermanager/boundary_loader.html"
     if request.POST:
         form = BoundaryUploadForm(request.POST, request.FILES)
 
@@ -52,11 +52,11 @@ def load_boundary(request):
                     if countries.exists():
                         context.update({"existing_countries": countries})
 
-                    return render(request, "boundary_loader.html", context=context)
+                    return render(request, template_name=template, context=context)
             messages.success(request, "Boundary data loaded successfully")
             return redirect(reverse("wagtailadmin_home"))
 
-        return render(request, "boundary_loader.html", context={"form": form})
+        return render(request, template_name=template, context={"form": form})
 
     else:
         context = {}
@@ -67,7 +67,7 @@ def load_boundary(request):
         form = BoundaryUploadForm()
         context["form"] = form
 
-        return render(request, "boundary_loader.html", context=context)
+        return render(request, template_name=template, context=context)
 
 
 @user_passes_test(user_has_any_page_permission)

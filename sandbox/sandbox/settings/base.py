@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     "taggit",
     "allauth",
     "allauth.account",
+    "rest_framework",
 
     "django.contrib.admin",
     "django.contrib.gis",

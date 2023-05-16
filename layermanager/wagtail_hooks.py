@@ -18,7 +18,7 @@ from .models import (
     MBTSource
 )
 from .models.core import SubCategory
-from .models.raster import RasterStyle, WmsLayer
+from .models.raster import (RasterStyle, WmsLayer, LayerRasterFile)
 from .models.vector import VectorLayer
 from .views import (
     upload_raster_file,
@@ -133,8 +133,9 @@ class DatasetModelAdmin(ModelAdminCanHide):
     exclude_from_explorer = True
     button_helper_class = DatasetButtonHelper
     list_display = ("__str__", "layer_type",)
-
     list_filter = ("category", "id",)
+    index_template_name = "modeladmin/index_without_create_button.html"
+
     create_view_class = DatasetCreateView
 
     def __init__(self, parent=None):
@@ -234,13 +235,16 @@ class FileImageLayerModelAdmin(ModelAdminCanHide):
     edit_view_class = FileImageLayerEditView
     list_display = ("title",)
     list_filter = ("dataset",)
+    index_template_name = "modeladmin/index_without_create_button.html"
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.list_display = (list(self.list_display) or []) + ['dataset_link', "upload_files", 'preview_layer']
-        self.dataset_link.__func__.short_description = _('Dataset')
-        self.upload_files.__func__.short_description = _('Upload Raster Files')
-        self.preview_layer.__func__.short_description = _('Preview on Map')
+        self.list_display = (list(self.list_display) or []) + ["dataset_link", "uploaded_files", "upload_files",
+                                                               "preview_layer"]
+        self.dataset_link.__func__.short_description = _("Dataset")
+        self.uploaded_files.__func__.short_description = _("View Uploaded Raster Files")
+        self.upload_files.__func__.short_description = _("Upload Raster Files")
+        self.preview_layer.__func__.short_description = _("Preview on Map")
 
     def dataset_link(self, obj):
         button_html = f"""
@@ -257,6 +261,20 @@ class FileImageLayerModelAdmin(ModelAdminCanHide):
                 <span class="icon-wrapper">
                     <svg class="icon icon-plus icon" aria-hidden="true">
                         <use href="#icon-upload"></use>
+                    </svg>
+                </span>
+                {label}
+            </a>
+        """
+        return mark_safe(button_html)
+
+    def uploaded_files(self, obj):
+        label = _("Uploaded Files")
+        button_html = f"""
+            <a href="{obj.get_uploads_list_url()}" class="button button-small button--icon bicolor button-secondary">
+                <span class="icon-wrapper">
+                    <svg class="icon icon-list-ol icon" aria-hidden="true">
+                        <use href="#icon-list-ol"></use>
                     </svg>
                 </span>
                 {label}
@@ -373,6 +391,7 @@ class WmsLayerModelAdmin(ModelAdminCanHide):
     exclude_from_explorer = True
     create_view_class = WmsLayerCreateView
     hidden = True
+    index_template_name = "modeladmin/index_without_create_button.html"
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -432,6 +451,7 @@ class VectorLayerModelAdmin(ModelAdminCanHide):
     edit_view_class = VectorLayerEditView
     list_display = ("title",)
     list_filter = ("dataset",)
+    index_template_name = "modeladmin/index_without_create_button.html"
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -482,13 +502,23 @@ class MBTSourceModelAdmin(ModelAdminCanHide):
     menu_label = _("Basemap Styles")
 
 
+class LayerRasterFileModelAdmin(ModelAdminCanHide):
+    model = LayerRasterFile
+    exclude_from_explorer = True
+    hidden = True
+    list_display = ("__str__", "layer", "time",)
+    list_filter = ("layer",)
+    index_template_name = "modeladmin/index_without_create_button.html"
+
+
 class LayerManagerAdminGroup(ModelAdminGroupWithHiddenItems):
     menu_label = _('Layer Manager')
     menu_icon = 'folder-inverse'
     menu_order = 700
     items = (
         CategoryModelAdmin, DatasetModelAdmin, MetadataModelAdmin, FileImageLayerModelAdmin,
-        RasterStyleModelAdmin, VectorLayerModelAdmin, WmsLayerModelAdmin, MBTSourceModelAdmin)
+        RasterStyleModelAdmin, VectorLayerModelAdmin, WmsLayerModelAdmin, MBTSourceModelAdmin,
+        LayerRasterFileModelAdmin)
 
     def get_submenu_items(self):
         menu_items = super().get_submenu_items()
