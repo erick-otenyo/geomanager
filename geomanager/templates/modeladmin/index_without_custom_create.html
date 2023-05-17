@@ -24,6 +24,17 @@
             {% block header_extra %}
                 {% if view.list_export or user_can_create %}
                     <div class="actionbutton">
+                        {% if user_can_create %}
+                            {% if custom_create_url %}
+                                <a href="{{ custom_create_url.url }}" class="button bicolor button--icon"
+                                   title="{{ custom_create_url.label }}">
+                                    <span class="icon-wrapper">
+                                        <svg class="icon icon-plus icon" aria-hidden="true">
+                                            <use href="#icon-plus"></use>
+                                        </svg>
+                                    </span>{{ custom_create_url.label }}</a>
+                            {% endif %}
+                        {% endif %}
                         {% if view.list_export %}
                             <div class="dropdown dropdown-button match-width col">
                                 <a href="?export=xlsx&{{ request.GET.urlencode }}" class="button bicolor button--icon">
@@ -79,9 +90,9 @@
                                         <p>{% blocktrans trimmed with view.verbose_name_plural as name %}No {{ name }}
                                             have been created yet.{% endblocktrans %}
                                             {% if user_can_create %}
-                                                {% blocktrans trimmed with view.create_url as url %}
-                                                    Why not <a href="{{ url }}">add one</a>?
-                                                {% endblocktrans %}
+                                                {% if custom_create_url %}
+                                                    <a href="{{ custom_create_url.url }}">{{ custom_create_url.label }}</a>
+                                                {% endif %}
                                             {% endif %}</p>
                                     {% endif %}
                                 </div>

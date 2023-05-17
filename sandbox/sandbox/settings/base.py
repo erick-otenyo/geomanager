@@ -50,11 +50,13 @@ INSTALLED_APPS = [
     "wagtailhumanitarianicons",
     "django_countries",
     "django_extensions",
+    "wagtailfontawesomesvg",
 
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
     "wagtail.contrib.modeladmin",
     "wagtail.contrib.settings",
+    "wagtail.contrib.styleguide",
     "wagtail.embeds",
     "wagtail.sites",
     "wagtail.users",
