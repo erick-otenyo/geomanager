@@ -1,9 +1,10 @@
+from django.urls import reverse
 from rest_framework import mixins, viewsets
 from rest_framework.response import Response
 
 from layermanager import serializers
 from layermanager.models import Dataset
-from layermanager.models.core import LayerManagerSettings
+from layermanager.models.core import LayerManagerSettings, Metadata
 
 
 class DatasetListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -19,17 +20,29 @@ class DatasetListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
 
-        settings = LayerManagerSettings.for_request(request)
+        lm_settings = LayerManagerSettings.for_request(request)
         datasets = serializer.data
         config = {}
-        if settings.cap_base_url and settings.cap_sub_category:
+
+        # set boundaries url. This will be used to create base boundary layer
+        boundary_tiles_url = request.build_absolute_uri(reverse("boundary_tiles", args=(0, 0, 0)))
+        boundary_tiles_url = boundary_tiles_url.replace("/0/0/0", r"/{z}/{x}/{y}")
+        config.update({"boundaryTilesUrl": boundary_tiles_url})
+
+        # set cap layer configuration. This will be used to create cap layer
+        if lm_settings.cap_base_url and lm_settings.cap_sub_category:
             config.update({
                 "capConfig": {
-                    "initialVisible": settings.cap_shown_by_default,
-                    "baseUrl": settings.cap_base_url,
-                    "category": settings.cap_sub_category.category.pk,
-                    "subCategory": settings.cap_sub_category.pk,
-                    "refreshInterval": settings.cap_auto_refresh_interval_milliseconds
+                    "initialVisible": lm_settings.cap_shown_by_default,
+                    "baseUrl": lm_settings.cap_base_url,
+                    "category": lm_settings.cap_sub_category.category.pk,
+                    "subCategory": lm_settings.cap_sub_category.pk,
+                    "refreshInterval": lm_settings.cap_auto_refresh_interval_milliseconds
                 }})
 
         return Response({"datasets": datasets, "config": config})
+
+
+class MetadataViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Metadata.objects.all()
+    serializer_class = serializers.MetadataSerialiazer

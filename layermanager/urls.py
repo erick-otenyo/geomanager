@@ -19,12 +19,14 @@ from layermanager.viewsets import (
     VectorTableFileDetailViewSet,
     DatasetListViewSet,
     GeostoreViewSet,
-    CountryBoundaryViewSet
+    CountryBoundaryViewSet,
+    MetadataViewSet
 )
 
 router = SimpleRouter(trailing_slash=False)
 
 router.register(r'api/datasets', DatasetListViewSet)
+router.register(r'api/metadata', MetadataViewSet)
 
 router.register(r'api/file-raster', FileImageLayerRasterFileDetailViewSet)
 router.register(r'api/vector-data', VectorTableFileDetailViewSet)

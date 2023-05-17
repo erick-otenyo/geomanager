@@ -52,7 +52,9 @@ def check_and_filter_shapefile(shp_path, filter_dict, output_path=None):
         gdf = gdf[gdf[field] == value]
 
     if gdf.empty:
-        raise NoMatchingBoundaryData("No matching boundary data. You can load empty data. Please check your filter")
+        raise NoMatchingBoundaryData(
+            "No matching boundary data. "
+            "Please check the selected country and make sure it exists in the provided shapefile")
 
     if output_path:
         # Save the filtered data to a new Shapefile

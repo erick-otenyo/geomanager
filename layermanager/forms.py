@@ -2,8 +2,6 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 from wagtail.admin.forms import WagtailAdminModelForm
 
-from layermanager.utils.countries import get_country_options
-
 
 class LayerRasterFileForm(forms.Form):
     layer = forms.ModelChoiceField(required=True, queryset=None, empty_label=None, label=_("layer"), )
@@ -51,9 +49,6 @@ class VectorLayerFileForm(forms.Form):
 
 
 class BoundaryUploadForm(forms.Form):
-    country = forms.ChoiceField(choices=get_country_options,
-                                label=_("country"),
-                                help_text=_("The boundary data will be filtered to this country"))
     remove_existing = forms.BooleanField(required=False, widget=forms.HiddenInput)
     shape_file = forms.FileField(required=True, label=_("Zipped Shapefile"),
                                  help_text=_("The uploaded file should be a zipped shapefile"),

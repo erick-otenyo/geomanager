@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from layermanager.models import Category
-from layermanager.models.core import SubCategory, Dataset
+from layermanager.models.core import SubCategory, Dataset, Metadata
 from layermanager.serializers.raster import FileLayerSerializer, WmsLayerSerializer
 from layermanager.serializers.vector import VectorLayerSerializer
 
@@ -69,3 +69,9 @@ class CategorySerializer(serializers.ModelSerializer):
 
     def get_icon(self, obj):
         return f"icon-{obj.icon}"
+
+
+class MetadataSerialiazer(serializers.ModelSerializer):
+    class Meta:
+        model = Metadata
+        fields = "__all__"

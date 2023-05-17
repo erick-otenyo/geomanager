@@ -30,36 +30,44 @@ ALLOWED_VECTOR_EXTENSIONS = ["zip", "geojson", "csv"]
 @user_passes_test(user_has_any_page_permission)
 def load_boundary(request):
     template = "layermanager/boundary_loader.html"
+
+    lm_settings = LayerManagerSettings.for_request(request)
+    country = lm_settings.country
+    context = {"country": country}
+
     if request.POST:
         form = BoundaryUploadForm(request.POST, request.FILES)
 
         if form.is_valid():
             shp_file = form.cleaned_data.get("shape_file")
             remove_existing = form.cleaned_data.get("remove_existing")
-            country_iso = form.cleaned_data.get("country")
+
+            if not country:
+                form.add_error(None, "Please select a country in layer manager settings and try again")
 
             with tempfile.NamedTemporaryFile(delete=False, suffix=f"_{shp_file.name}") as temp_file:
                 for chunk in shp_file.chunks():
                     temp_file.write(chunk)
 
                 try:
-                    load_country_boundary(shp_zip_path=temp_file.name, country_iso=country_iso,
+                    load_country_boundary(shp_zip_path=temp_file.name,
+                                          country_iso=country.alpha3,
                                           remove_existing=remove_existing)
                 except Exception as e:
                     form.add_error(None, str(e))
-                    context = {"form": form, "has_error": True}
+                    context.update({"form": form, "has_error": True})
                     countries = CountryBoundary.objects.filter(level=0)
                     if countries.exists():
                         context.update({"existing_countries": countries})
 
                     return render(request, template_name=template, context=context)
+
             messages.success(request, "Boundary data loaded successfully")
             return redirect(reverse("wagtailadmin_home"))
-
-        return render(request, template_name=template, context={"form": form})
-
+        else:
+            context.update({"form": form})
+            return render(request, template_name=template, context=context)
     else:
-        context = {}
         countries = CountryBoundary.objects.filter(level=0)
         if countries.exists():
             context["existing_countries"] = countries

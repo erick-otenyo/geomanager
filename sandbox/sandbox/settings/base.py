@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     "wagtail_color_panel",
     "wagtail_adminsortable",
     "wagtailhumanitarianicons",
+    "django_countries",
+    "django_extensions",
 
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",

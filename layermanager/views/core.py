@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from layermanager.models import Category, TileGlStyle
 from layermanager.models.core import LayerManagerSettings
 from layermanager.serializers import CategorySerializer
+from layermanager.utils.countries import get_country_info
 
 
 @api_view(['GET'])
@@ -17,8 +18,21 @@ def get_mapviewer_config(request):
 
     settings = LayerManagerSettings.for_request(request)
 
-    base_maps_data = []
+    if settings.country:
+        country_iso = settings.country.alpha3
+        country_data = {
+            "iso": country_iso
+        }
+        country_info = get_country_info(country_iso)
+        if country_info:
+            country_data.update(**country_info)
+        country_data.update({"name": settings.country.name})
 
+        response.update({
+            "country": country_data
+        })
+
+    base_maps_data = []
     # get base maps
     for base_map in settings.base_maps:
         data = base_map.block.get_api_representation(base_map.value)

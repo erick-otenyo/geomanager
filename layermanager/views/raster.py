@@ -338,6 +338,7 @@ class RasterTileView(View):
             tile_binary = source.getTile(int(x), int(y), int(z))
         except TileSourceXYZRangeError as e:
             raise ValidationError(e)
+
         mime_type = source.getTileMimeType()
 
         return HttpResponse(tile_binary, content_type=mime_type)

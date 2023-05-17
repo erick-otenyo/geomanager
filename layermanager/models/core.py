@@ -2,6 +2,8 @@ import uuid
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django_countries.fields import CountryField
+from django_countries.widgets import CountrySelectWidget
 from django_extensions.db.models import TimeStampedModel
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
@@ -339,6 +341,7 @@ class LayerManagerSettings(BaseSiteSetting):
                                                         "to disable auto refreshing"))
     cap_shown_by_default = models.BooleanField(default=True, verbose_name=_("CAP layer shown by default"),
                                                help_text=_("CAP Layer shown on map by default"))
+    country = CountryField(blank_label=_("Select Country"), verbose_name=_("country"))
 
     base_maps = StreamField([
         ('basemap', blocks.StructBlock([
@@ -372,6 +375,9 @@ class LayerManagerSettings(BaseSiteSetting):
             FieldPanel("cap_auto_refresh_interval"),
             FieldPanel("cap_shown_by_default"),
         ], heading=_("CAP Layer Settings")),
+        ObjectList([
+            FieldPanel("country", widget=CountrySelectWidget()),
+        ], heading=_("Country Settings")),
     ])
 
     @property
