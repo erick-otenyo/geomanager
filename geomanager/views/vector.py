@@ -341,7 +341,7 @@ class VectorTileView(View):
               SELECT ST_AsMVTGeom(ST_Transform(t.geom, 3857), bounds.geom) AS geom,
                 *
               FROM {vector_table.full_table_name} t, bounds
-              WHERE ST_Intersects(t.geom, ST_Transform(bounds.geom, 4326))
+              WHERE ST_Intersects(ST_Transform(t.geom, 4326), ST_Transform(bounds.geom, 4326))
             )
             SELECT ST_AsMVT(mvtgeom, 'default') FROM mvtgeom;
             """
@@ -370,7 +370,7 @@ class BoundaryVectorTileView(View):
               SELECT ST_AsMVTGeom(ST_Transform(t.geom, 3857), bounds.geom) AS geom,
                 *
               FROM geomanager_countryboundary t, bounds
-              WHERE ST_Intersects(t.geom, ST_Transform(bounds.geom, 4326)) {boundary_filter}
+              WHERE ST_Intersects(ST_Transform(t.geom, 4326), ST_Transform(bounds.geom, 4326)) {boundary_filter}
             )
             SELECT ST_AsMVT(mvtgeom, 'default') FROM mvtgeom;
             """

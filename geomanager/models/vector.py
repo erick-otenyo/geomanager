@@ -12,7 +12,8 @@ from wagtail.fields import StreamField
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.snippets.models import register_snippet
 
-from geomanager.blocks import InlineLegendBlock, FillVectorLayerBlock, LineVectorLayerBlock, CircleVectorLayerBlock
+from geomanager.blocks import InlineLegendBlock, FillVectorLayerBlock, LineVectorLayerBlock, CircleVectorLayerBlock, \
+    IconVectorLayerBlock, TextVectorLayerBlock
 from geomanager.fields import ListField
 from geomanager.models import Dataset
 from geomanager.models.core import BaseLayer
@@ -110,7 +111,9 @@ class VectorLayer(TimeStampedModel, BaseLayer):
     render_layers = StreamField([
         ("fill", FillVectorLayerBlock(label=_("Fill Layer"))),
         ("line", LineVectorLayerBlock(label=_("Line Layer"))),
-        ("circle", CircleVectorLayerBlock(label=_("Point/Circle Layer"))),
+        ("circle", CircleVectorLayerBlock(label=_("Circle Layer"))),
+        ("icon", IconVectorLayerBlock(label=_("Icon Layer"))),
+        ("text", TextVectorLayerBlock(label=_("Text Label Layer"))),
     ], use_json_field=True, null=True, blank=True, min_num=1, verbose_name=_("Render Layers"))
 
     @property
