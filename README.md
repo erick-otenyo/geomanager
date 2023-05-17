@@ -68,10 +68,10 @@ pip install https://github.com/Lh4cKg/wagtail-admin-sortable/archive/baa0d1f13a6
 You can install the package using pip:
 
 ```shell
-pip install wagtail-geomanager
+pip install geomapviewer-manager
 ```
 
-The following packages will be automatically installed when installing `wagtail-geomanager`, if not already installed.
+The following packages will be automatically installed when installing `geomapviewer-manager`, if not already installed.
 
 - wagtail>=4.2.2
 - django_extensions>=3.2.1
