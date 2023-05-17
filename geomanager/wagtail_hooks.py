@@ -5,8 +5,9 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from wagtail import hooks
 from wagtail.admin.menu import MenuItem
+from wagtail.contrib.modeladmin.helpers import AdminURLHelper
 from wagtail.contrib.modeladmin.options import ModelAdminGroup, ModelAdmin, modeladmin_register
-from wagtail.contrib.modeladmin.views import CreateView, EditView
+from wagtail.contrib.modeladmin.views import CreateView, EditView, IndexView
 from wagtail_adminsortable.admin import SortableAdminMixin
 
 from geomanager.helpers import (DatasetButtonHelper, CategoryButtonHelper, FileLayerButtonHelper)
@@ -17,7 +18,7 @@ from .models import (
     FileImageLayer,
     MBTSource
 )
-from .models.core import SubCategory
+from .models.core import SubCategory, GeomanagerSettings
 from .models.raster import (RasterStyle, WmsLayer, LayerRasterFile)
 from .models.vector import VectorLayer
 from .views import (
@@ -80,6 +81,7 @@ class CategoryModelAdmin(SortableAdminMixin, ModelAdminCanHide):
     menu_label = _("Data Categories")
     exclude_from_explorer = True
     button_helper_class = CategoryButtonHelper
+    menu_icon = "layer-group"
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -116,6 +118,23 @@ class CategoryModelAdmin(SortableAdminMixin, ModelAdminCanHide):
         return mark_safe(button_html)
 
 
+class DatasetIndexView(IndexView):
+    def get_context_data(self, **kwargs):
+        context_data = super(DatasetIndexView, self).get_context_data(**kwargs)
+
+        categories_admin_helper = AdminURLHelper(Category)
+        url = categories_admin_helper.get_action_url("index")
+
+        context_data.update({
+            "custom_create_url": {
+                "label": _("Create from categories"),
+                "url": url
+            }
+        })
+
+        return context_data
+
+
 class DatasetCreateView(CreateView):
     def get_form(self):
         form = super().get_form()
@@ -134,8 +153,10 @@ class DatasetModelAdmin(ModelAdminCanHide):
     button_helper_class = DatasetButtonHelper
     list_display = ("__str__", "layer_type",)
     list_filter = ("category", "id",)
-    index_template_name = "modeladmin/index_without_create_button.html"
+    index_template_name = "modeladmin/index_without_custom_create.html"
+    menu_icon = "database"
 
+    index_view_class = DatasetIndexView
     create_view_class = DatasetCreateView
 
     def __init__(self, parent=None):
@@ -205,6 +226,23 @@ class DatasetModelAdmin(ModelAdminCanHide):
         return mark_safe(button_html)
 
 
+class LayerIndexView(IndexView):
+    def get_context_data(self, **kwargs):
+        context_data = super(LayerIndexView, self).get_context_data(**kwargs)
+
+        dataset_admin_helper = AdminURLHelper(Dataset)
+        url = dataset_admin_helper.get_action_url("index")
+
+        context_data.update({
+            "custom_create_url": {
+                "label": _("Create from datasets"),
+                "url": url
+            }
+        })
+
+        return context_data
+
+
 class FileImageLayerCreateView(CreateView):
     def get_form(self):
         form = super().get_form()
@@ -231,11 +269,12 @@ class FileImageLayerModelAdmin(ModelAdminCanHide):
     exclude_from_explorer = True
     menu_label = _("File Layers")
     button_helper_class = FileLayerButtonHelper
+    index_view_class = LayerIndexView
     create_view_class = FileImageLayerCreateView
     edit_view_class = FileImageLayerEditView
     list_display = ("title",)
     list_filter = ("dataset",)
-    index_template_name = "modeladmin/index_without_create_button.html"
+    index_template_name = "modeladmin/index_without_custom_create.html"
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -300,6 +339,7 @@ class FileImageLayerModelAdmin(ModelAdminCanHide):
 class MetadataModelAdmin(ModelAdminCanHide):
     model = Metadata
     exclude_from_explorer = True
+    menu_icon = 'info-circle'
 
 
 class ModelAdminGroupWithHiddenItems(ModelAdminGroup):
@@ -354,6 +394,7 @@ class RasterStyleModelAdmin(ModelAdminCanHide):
     create_view_class = RasterStyleCreateView
     list_display = ("__str__", "min", "max", "steps")
     form_view_extra_js = ["js/raster_style_extra.js"]
+    menu_icon = "palette"
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -391,7 +432,8 @@ class WmsLayerModelAdmin(ModelAdminCanHide):
     exclude_from_explorer = True
     create_view_class = WmsLayerCreateView
     hidden = True
-    index_template_name = "modeladmin/index_without_create_button.html"
+    index_template_name = "modeladmin/index_without_custom_create.html"
+    index_view_class = LayerIndexView
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -447,11 +489,12 @@ class VectorLayerModelAdmin(ModelAdminCanHide):
     hidden = True
     exclude_from_explorer = True
     menu_label = _("Vector Layers")
+    index_view_class = LayerIndexView
     create_view_class = VectorLayerCreateView
     edit_view_class = VectorLayerEditView
     list_display = ("title",)
     list_filter = ("dataset",)
-    index_template_name = "modeladmin/index_without_create_button.html"
+    index_template_name = "modeladmin/index_without_custom_create.html"
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -499,7 +542,8 @@ class VectorLayerModelAdmin(ModelAdminCanHide):
 
 class MBTSourceModelAdmin(ModelAdminCanHide):
     model = MBTSource
-    menu_label = _("Basemap Styles")
+    menu_label = _("Basemap Sources")
+    menu_icon = "globe-africa"
 
 
 class LayerRasterFileModelAdmin(ModelAdminCanHide):
@@ -508,12 +552,12 @@ class LayerRasterFileModelAdmin(ModelAdminCanHide):
     hidden = True
     list_display = ("__str__", "layer", "time",)
     list_filter = ("layer",)
-    index_template_name = "modeladmin/index_without_create_button.html"
+    index_template_name = "modeladmin/index_without_custom_create.html"
 
 
 class GeoManagerAdminGroup(ModelAdminGroupWithHiddenItems):
     menu_label = _('Geo Manager')
-    menu_icon = 'folder-inverse'
+    menu_icon = 'layer-group'
     menu_order = 700
     items = (
         CategoryModelAdmin, DatasetModelAdmin, MetadataModelAdmin, FileImageLayerModelAdmin,
@@ -523,11 +567,31 @@ class GeoManagerAdminGroup(ModelAdminGroupWithHiddenItems):
     def get_submenu_items(self):
         menu_items = super().get_submenu_items()
 
-        boundary_loader = MenuItem(label=_("Boundary Loader"), url=reverse("geomanager_load_boundary"),
-                                   icon_name="upload")
+        boundary_loader = MenuItem(label=_("Boundary Data"), url=reverse("geomanager_load_boundary"), icon_name="map")
         menu_items.append(boundary_loader)
+
+        try:
+            settings_url = reverse(
+                "wagtailsettings:edit",
+                args=[GeomanagerSettings._meta.app_label, GeomanagerSettings._meta.model_name, ],
+            )
+            gm_settings_menu = MenuItem(label=_("Settings"), url=settings_url, icon_name="cog")
+            menu_items.append(gm_settings_menu)
+        except Exception:
+            pass
 
         return menu_items
 
 
 modeladmin_register(GeoManagerAdminGroup)
+
+
+@hooks.register("register_icons")
+def register_icons(icons):
+    return icons + [
+        'wagtailfontawesomesvg/solid/palette.svg',
+        'wagtailfontawesomesvg/solid/database.svg',
+        'wagtailfontawesomesvg/solid/layer-group.svg',
+        'wagtailfontawesomesvg/solid/globe-africa.svg',
+        'wagtailfontawesomesvg/solid/map.svg',
+    ]

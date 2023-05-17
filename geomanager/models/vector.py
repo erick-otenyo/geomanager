@@ -12,7 +12,7 @@ from wagtail.fields import StreamField
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.snippets.models import register_snippet
 
-from geomanager.blocks import InlineLegendBlock
+from geomanager.blocks import InlineLegendBlock, FillVectorLayerBlock, LineVectorLayerBlock, CircleVectorLayerBlock
 from geomanager.fields import ListField
 from geomanager.models import Dataset
 from geomanager.models.core import BaseLayer
@@ -107,6 +107,12 @@ class VectorLayer(TimeStampedModel, BaseLayer):
         ('legend_image', ImageChooserBlock(),)
     ], use_json_field=True, null=True, blank=True, max_num=1, verbose_name=_("Legend"), )
 
+    render_layers = StreamField([
+        ("fill", FillVectorLayerBlock(label=_("Fill Layer"))),
+        ("line", LineVectorLayerBlock(label=_("Line Layer"))),
+        ("circle", CircleVectorLayerBlock(label=_("Point/Circle Layer"))),
+    ], use_json_field=True, null=True, blank=True, min_num=1, verbose_name=_("Render Layers"))
+
     @property
     def upload_url(self):
         upload_url = reverse(
@@ -127,7 +133,8 @@ class VectorLayer(TimeStampedModel, BaseLayer):
         return self.title
 
     def layer_config(self, request=None):
-        base_tiles_url = "/api/vector-tiles/{z}/{x}/{y}"
+        base_tiles_url = reverse("vector_tiles", args=(0, 0, 0))
+        base_tiles_url = base_tiles_url.replace("/0/0/0", r"/{z}/{x}/{y}")
 
         if request:
             base_absolute_url = request.scheme + '://' + request.get_host()
@@ -143,7 +150,54 @@ class VectorLayer(TimeStampedModel, BaseLayer):
             }
         }
 
+        render_layers = []
+
+        optional_keys = ["filter", "maxzoom", "minzoom"]
+
+        for layer in self.render_layers:
+            data = layer.block.get_api_representation(layer.value)
+
+            data.update({"type": layer.block_type})
+            data.update({"source-layer": "default"})
+
+            # remove optional keys if they do not have any value
+            for key in optional_keys:
+                if not data.get(key):
+                    data.pop(key, None)
+
+            paint = {}
+            for key, value in data.get("paint").items():
+                js_key = key.replace("_", "-")
+                paint.update({js_key: value})
+
+            data.update({"paint": paint})
+
+            render_layers.append(data)
+
+        layer_config.update({"render": {"layers": render_layers}})
+
         return layer_config
+
+    @property
+    def params(self):
+        recent = self.vector_tables.first()
+        return {
+            "table_name": recent.table_name if recent else ""
+        }
+
+    @property
+    def param_selector_config(self):
+        config = {
+            "key": "table_name",
+            "required": True,
+            "sentence": "{selector}",
+        }
+
+        return [config]
+
+    def get_legend_config(self, request=None):
+        legend_config = {}
+        return legend_config
 
 
 class VectorUpload(TimeStampedModel):

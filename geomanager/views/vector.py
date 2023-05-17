@@ -35,6 +35,13 @@ def load_boundary(request):
     country = lm_settings.country
     context = {"country": country}
 
+    settings_url = reverse(
+        "wagtailsettings:edit",
+        args=[GeomanagerSettings._meta.app_label, GeomanagerSettings._meta.model_name, ],
+    )
+
+    context.update({"settings_url": settings_url})
+
     if request.POST:
         form = BoundaryUploadForm(request.POST, request.FILES)
 
@@ -154,7 +161,7 @@ def upload_vector_file(request, dataset_id=None, layer_id=None):
         }
 
         form = render_to_string(
-            "vector_edit_form.html",
+            "geomanager/vector_edit_form.html",
             ctx,
             request=request,
         )
@@ -162,7 +169,7 @@ def upload_vector_file(request, dataset_id=None, layer_id=None):
 
         return JsonResponse(response)
 
-    return render(request, 'vector_upload.html', context)
+    return render(request, 'geomanager/vector_upload.html', context)
 
 
 @user_passes_test(user_has_any_page_permission)
@@ -200,7 +207,7 @@ def publish_vector(request, upload_id):
         return {
             "success": False,
             "form": render_to_string(
-                "vector_edit_form.html",
+                "geomanager/vector_edit_form.html",
                 ctx,
                 request=request,
             ),
@@ -307,7 +314,7 @@ def preview_vector_layers(request, dataset_id, layer_id=None):
         "vector_tiles_url": base_absolute_url + "/api/vector-tiles/{z}/{x}/{y}",
     }
 
-    return render(request, 'vector_preview.html', context)
+    return render(request, 'geomanager/vector_preview.html', context)
 
 
 class VectorTileView(View):

@@ -71,7 +71,7 @@ urlpatterns = [
                   # Tiles
                   path(r'api/raster-tiles/<int:z>/<int:x>/<int:y>', RasterTileView.as_view(), name="layer_tiles"),
                   path(r'api/vector-tiles/<int:z>/<int:x>/<int:y>', cache_page(3600)(VectorTileView.as_view()),
-                       name="vector_tile_serv"),
+                       name="vector_tiles"),
                   path(r'api/boundary-tiles/<int:z>/<int:x>/<int:y>',
                        BoundaryVectorTileView.as_view(),
                        name="boundary_tiles"),

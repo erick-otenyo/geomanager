@@ -78,7 +78,8 @@ The following packages will be automatically installed when installing `geomanag
 - wagtail>=4.2.2
 - django_extensions>=3.2.1
 - django-countries>=7.5.1
-- wagtail_color_panel>=1.4.1
+- wagtail_color_panel>=1.4.1 
+- wagtailfontawesomesvg>=0.0.3,
 - django_json_widget>=1.1.1
 - django_nextjs>= 2.2.2
 - django-allauth>=0.54.0
@@ -117,6 +118,7 @@ INSTALLED_APPS = [
     "wagtailhumanitarianicons",
     "django_countries",
     "django_extensions",
+    "wagtailfontawesomesvg"
     "allauth",
     "allauth.account",
 

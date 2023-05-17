@@ -1,6 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django_extensions.db.models import TimeStampedModel
 from modelcluster.fields import ParentalKey
@@ -55,7 +56,8 @@ class FileImageLayer(TimeStampedModel, BaseLayer):
         return url
 
     def layer_config(self, request=None):
-        base_tiles_url = "/api/raster-tiles/{z}/{x}/{y}"
+        base_tiles_url = reverse("raster_tiles", args=(0, 0, 0))
+        base_tiles_url = base_tiles_url.replace("/0/0/0", r"/{z}/{x}/{y}")
 
         if request:
             base_absolute_url = request.scheme + '://' + request.get_host()

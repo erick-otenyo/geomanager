@@ -377,7 +377,7 @@ class GeomanagerSettings(BaseSiteSetting):
         ], heading=_("CAP Layer Settings")),
         ObjectList([
             FieldPanel("country", widget=CountrySelectWidget()),
-        ], heading=_("Country Settings")),
+        ], heading=_("Region Settings")),
     ])
 
     @property

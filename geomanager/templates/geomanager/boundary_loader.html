@@ -22,6 +22,18 @@
 
             <div style="margin-bottom: 30px">
                 <h2>Country Selected: {{ country.name }}</h2>
+
+                <a href="{{ settings_url }}#tab-region_settings"
+                   class="button button-small bicolor button--icon button-secondary">
+                    <span class="icon-wrapper">
+                        <svg class="icon icon-plus icon" aria-hidden="true">
+                            <use href="#icon-map"></use>
+                        </svg>
+                    </span>
+                    <span>
+                        Update region
+                    </span>
+                </a>
             </div>
 
             {% if existing_countries %}
@@ -71,6 +83,33 @@
                     </ul>
                 </form>
             </div>
+            </div>
+        {% else %}
+            <div>
+                <div style="margin-bottom: 20px">
+
+                </div>
+
+                <div class="help-block help-info">
+                    <svg class="icon icon-help icon" aria-hidden="true">
+                        <use href="#icon-info-circle"></use>
+                    </svg>
+                    <p> You have not set up any region in Geo Manager Settings.</p>
+                    <p> To upload boundary data, the region needs to be set first.</p>
+                    <p> Please set up a region/country and try again</p>
+                </div>
+
+                <a href="{{ settings_url }}#tab-region_settings" class="button bicolor button--icon">
+                    <span class="icon-wrapper">
+                        <svg class="icon icon-plus icon" aria-hidden="true">
+                            <use href="#icon-map"></use>
+                        </svg>
+                    </span>
+                    <span>
+                        Set region now
+                    </span>
+                </a>
+
             </div>
         {% endif %}
 {% endblock %}

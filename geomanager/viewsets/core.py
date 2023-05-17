@@ -18,7 +18,14 @@ class DatasetListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
+        dataset_with_layers = []
+
+        # get only datasets with layers defined
+        for dataset in queryset:
+            if dataset.has_layers():
+                dataset_with_layers.append(dataset)
+
+        serializer = self.get_serializer(dataset_with_layers, many=True)
 
         lm_settings = GeomanagerSettings.for_request(request)
         datasets = serializer.data
