@@ -1,0 +1,87 @@
+{% extends "wagtailadmin/base.html" %}
+{% load i18n %}
+{% load l10n %}
+{% load wagtailadmin_tags wagtailimages_tags static %}
+{% block titletag %}{% blocktrans with title=page.get_admin_display_title %}Preview Layers{{ title }}
+{% endblocktrans %}{% endblock %}
+
+{% block extra_css %}
+    {{ block.super }}
+
+    {{ form_media.css }}
+
+    <link rel="stylesheet" href="{% static 'css/vendor/maplibre-gl.css' %}">
+    <link rel="stylesheet" href="{% static 'css/preview-map.css' %}">
+{% endblock %}
+
+
+{% block content %}
+    {% trans "Preview" as preview_str %}
+
+    {% include "wagtailadmin/shared/header.html" with title=preview_str|add:" - "|add:dataset.title subtitle=page.get_admin_display_title icon="view" %}
+
+    <div class="nice-padding">
+        <div class="go-to-datasets">
+            <a href="
+                    {% if selected_layer %}{{ image_file_layer_list_url }}{% else %}{{ datasets_index_url }}{% endif %}"
+               class="button bicolor button--icon">
+                <span class="icon-wrapper">
+                    <svg class="icon icon-plus icon" aria-hidden="true">
+                        <use href="#icon-arrow-left"></use>
+                    </svg>
+                </span>{% if selected_layer %}Back to Layers{% else %}Back to Datasets{% endif %}
+            </a>
+        </div>
+
+        <div class="w-field__input" data-field-input="">
+            <label class="w-field__label" for="layer_select" id="layer_select-label">
+                Select Layer
+            </label>
+            <select name="select" id="layer_select">
+                {% for layer in dataset.file_layers.all %}
+                    <option value="{{ layer.pk }}" {% if layer.style %}data-hasstyle="1"{% endif %}
+                            {% if selected_layer and selected_layer == layer.pk %}selected{% endif %}>{{ layer.title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div id="preview-map" style="position: relative">
+            <div class="layer-timestamps-wrapper">
+                <div class="w-field__input">
+                    <label class="w-field__label" for="timestamps_select" id="timestamps_select-label">
+                        Time
+                    </label>
+                    <select name="select" id="timestamps_select">
+                    </select>
+                </div>
+            </div>
+            <div class="colorscale-control-wrapper">
+                <div class="w-field__input">
+                    <label class="w-field__label" for="colorscale_select" id="colorscale_select-label">
+                        Color Scale
+                    </label>
+                    <select name="select" id="colorscale_select">
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block extra_js %}
+    {{ block.super }}
+
+    {{ form_media.js }}
+    <script src="{% static 'js/vendor/maplibre-gl.js' %}"></script>
+
+    <script>
+        window.geomanager_opts = {
+            layerTilesUrl: "{{ layer_tiles_url }}",
+            fileRasterApiBaseUrl: "{{ file_raster_api_base_url }}",
+            layerImageApiBaseUrl: "{{ large_image_api_base_url }}"
+        }
+    </script>
+
+    <!-- Main script -->
+    <script src="{% static 'js/raster-preview.js' %}"></script>
+{% endblock %}

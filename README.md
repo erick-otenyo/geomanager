@@ -68,13 +68,14 @@ pip install https://github.com/Lh4cKg/wagtail-admin-sortable/archive/baa0d1f13a6
 You can install the package using pip:
 
 ```shell
-pip install wagtail-layermanager
+pip install wagtail-geomanager
 ```
 
-The following packages will be automatically installed when installing `wagtail-layermanager`, if not already installed.
+The following packages will be automatically installed when installing `wagtail-geomanager`, if not already installed.
 
 - wagtail>=4.2.2
 - django_extensions>=3.2.1
+- django-countries>=7.5.1
 - wagtail_color_panel>=1.4.1
 - django_json_widget>=1.1.1
 - django_nextjs>= 2.2.2
@@ -104,22 +105,21 @@ Make sure the following are all added to your `INSTALLED_APPS` in your Wagtail `
 INSTALLED_APPS = [
     ...
 
-    "layermanager",
-
+    "geomanager",
     "django_large_image",
     'django_json_widget',
-    "django_nextjs",
+    'django_nextjs',
     "django_filters",
     "wagtail_color_panel",
     "wagtail_adminsortable",
     "wagtailhumanitarianicons",
-
-    "wagtail.contrib.modeladmin",
-
+    "django_countries",
+    "django_extensions",
     "allauth",
     "allauth.account",
+  
+    "wagtail.contrib.modeladmin",
     "rest_framework",
-
     "django.contrib.gis",
 
     ...
@@ -130,7 +130,7 @@ INSTALLED_APPS = [
 Run migrations
 
 ```shell
-python manage.py migrate layermanager
+python manage.py migrate geomanager
 ```
 
 Add the following to your project's `urls.py`
@@ -138,10 +138,15 @@ Add the following to your project's `urls.py`
 ```python
 urlpatterns = [
     ...
-    path("", include("layermanager.urls")),
+    path("", include("geomanager.urls")),
     ...
 ]
 ```
+
+
+# Including the Map Viewer
+This package is the backend component to the frontend [Map Viewer](). The Map Viewer is 
+
 
 # Documentation
 

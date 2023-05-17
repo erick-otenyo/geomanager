@@ -14,7 +14,7 @@ urlpatterns = [
     path("documents/", include(wagtaildocs_urls)),
     path("search/", search_views.search, name="search"),
 
-    path("", include("layermanager.urls")),
+    path("", include("geomanager.urls")),
 ]
 
 if settings.DEBUG:

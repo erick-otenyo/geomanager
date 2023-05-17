@@ -8,7 +8,7 @@ env = environ.Env(
     DEBUG=(bool, False),
 )
 
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "layermanager"))
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "geomanager"))
 
 # reading .env file
 if os.path.isfile(os.path.join(os.path.dirname(BASE_DIR), '.env')):
@@ -22,7 +22,7 @@ GEOS_LIBRARY_PATH = env.str('GEOS_LIBRARY_PATH', None)
 SECRET_KEY = "django-insecure-od#(q8@gly39*2_to74w6eg78_5@*y53%w*tvgo0yvuenv-_t="
 
 INSTALLED_APPS = [
-    "layermanager",
+    "geomanager",
 
     "wagtail",
     "taggit",

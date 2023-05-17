@@ -1,0 +1,136 @@
+import json
+
+from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.geos import MultiPolygon
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import mixins
+from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.exceptions import NotFound
+from rest_framework.response import Response
+
+from geomanager import serializers
+from geomanager.models import Geostore, CountryBoundary
+from geomanager.models.vector import PgVectorTable
+from geomanager.serializers.vector import CountrySerializer, GeostoreSerializer
+
+
+class VectorTableFileDetailViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = PgVectorTable.objects.all()
+    serializer_class = serializers.PgVectorTableSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ["layer"]
+
+
+class CountryBoundaryViewSet(viewsets.ViewSet):
+    @action(detail=True, methods=['get'])
+    def get(self, request):
+        countries = CountryBoundary.objects.filter(level=0)
+        data = CountrySerializer(countries, many=True).data
+        return Response(data)
+
+    @action(detail=True, methods=['get'])
+    def get_regions(self, request, gid_0):
+        countries = CountryBoundary.objects.filter(level=1, gid_0=gid_0)
+        data = CountrySerializer(countries, many=True).data
+        return Response(data)
+
+    @action(detail=True, methods=['get'])
+    def get_sub_regions(self, request, gid_0, gid_1):
+        countries = CountryBoundary.objects.filter(level=2, gid_0=gid_0, gid_1=gid_1)
+        data = CountrySerializer(countries, many=True).data
+        return Response(data)
+
+
+class GeostoreViewSet(viewsets.ViewSet):
+    @action(detail=True, methods=['post'])
+    def post(self, request):
+        # parse the GeoJSON from the POST data
+        payload = json.loads(request.body.decode('utf-8'))
+
+        geojson = payload.get("geojson")
+
+        # extract the MultiPolygon geometry from the GeoJSON
+        geometry = geojson['geometry']
+        geom = GEOSGeometry(json.dumps(geometry))
+
+        if geom.geom_type == "Polygon":
+            geom = MultiPolygon(geom)
+
+        # create a new Geostore object and save it to the database
+        geostore = Geostore(geom=geom)
+        geostore.save()
+
+        res_data = GeostoreSerializer(geostore).data
+
+        return Response(res_data)
+
+    @action(detail=True, methods=['get'])
+    def get(self, request, geostore_id):
+        try:
+            geostore = Geostore.objects.get(id=geostore_id)
+            res_data = GeostoreSerializer(geostore).data
+            return Response(res_data)
+        except Geostore.DoesNotExist:
+            raise NotFound(detail='Geostore not found')
+
+    @action(detail=True, methods=['get'])
+    def get_by_admin(self, request, gid_0, gid_1=None, gid_2=None):
+
+        simplify_thresh = request.GET.get("thresh")
+
+        geostore_filter = {
+            "iso": gid_0,
+            "id1": None,
+            "id2": None,
+        }
+
+        boundary_filter = {
+            "gid_0": gid_0,
+            "level": 0
+        }
+
+        if gid_1:
+            geostore_filter.update({"id1": gid_1})
+            boundary_filter.update({"gid_1": f"{gid_0}.{gid_1}_1", "level": 1})
+        if gid_2:
+            geostore_filter.update({"id2": gid_2})
+            boundary_filter.update({"gid_2": f"{gid_0}.{gid_1}.{gid_2}_1", "level": 2})
+
+        geostore = Geostore.objects.filter(**geostore_filter)
+        should_save = False
+
+        if not geostore.exists():
+            should_save = True
+            geostore = CountryBoundary.objects.filter(**boundary_filter)
+
+        if not geostore.exists():
+            raise NotFound(detail='Geostore not found')
+
+        geostore = geostore.first()
+
+        geom = geostore.geom
+
+        if simplify_thresh:
+            geom = geostore.geom.simplify(tolerance=float(simplify_thresh))
+
+        # convert to multipolygon if not
+        if geom.geom_type != "MultiPolygon":
+            geom = MultiPolygon(geom)
+
+        if should_save:
+            geostore_data = {
+                "iso": geostore.gid_0,
+                "id1": gid_1,
+                "id2": gid_2,
+                "name_0": geostore.name_0,
+                "name_1": geostore.name_1,
+                "name_2": geostore.name_2,
+                "geom": geom
+            }
+
+            geostore = Geostore.objects.create(**geostore_data)
+
+        res_data = GeostoreSerializer(geostore).data
+
+        return Response(res_data)

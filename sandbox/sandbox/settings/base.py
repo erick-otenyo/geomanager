@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     "home",
     "search",
 
-    "layermanager",
+    "geomanager",
     "django_large_image",
     'django_json_widget',
     'django_nextjs',

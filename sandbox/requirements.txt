@@ -100,7 +100,7 @@ wagtail==5.0
 wagtail-adminsortable @ https://github.com/Lh4cKg/wagtail-admin-sortable/archive/baa0d1f13a6bca4cc60e0d7dcd0522ecafcf5d67.zip#sha256=ab6ea62b180659f56330397e97e9fcc2769dd10801f52fd259bc3175d77e27b7
 wagtail-color-panel==1.4.1
 wagtail-humanitarian-icons==1.0.3
--e git+https://github.com/wmo-raf/wagtail-layermanager.git@b8e005af979ec1df4d133fb7cb72082c476514b7#egg=wagtail_layermanager
+-e git+https://github.com/wmo-raf/wagtail-geomanager.git@b8e005af979ec1df4d133fb7cb72082c476514b7#egg=wagtail_geomanager
 webencodings==0.5.1
 websockets==11.0.3
 Willow==1.5
