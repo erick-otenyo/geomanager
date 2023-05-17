@@ -1,6 +1,6 @@
-# Wagtail Layer Manager
+# GeoMapViewer Manager
 
-Wagtail based Geospatial Layer Manager and backend CMS for [nmhs-mapviewer](https://github.com/wmo-raf/nmhs-mapviewer)
+Wagtail based Geospatial data Manager and backend CMS for [geomapviewer-ui](https://github.com/wmo-raf/geomapviewer-ui)
 
 # Background
 
@@ -35,7 +35,7 @@ Data management and visualization
 
 MapViewer Management
 
-- Management of layers visualized on the [nmhs-mapviewer](https://github.com/wmo-raf/nmhs-mapviewer)
+- Management of layers visualized on the [geomapviewer-ui](https://github.com/wmo-raf/geomapviewer-ui)
     - Control on visibility (public or private) of layers on the MapViewer
 
 # Installation
@@ -145,7 +145,7 @@ urlpatterns = [
 
 
 # Including the Map Viewer
-This package is the backend component to the frontend [Map Viewer](). The Map Viewer is 
+This package is the backend component to the frontend [geomapviewer-ui](https://github.com/wmo-raf/geomapviewer-ui).
 
 
 # Documentation
