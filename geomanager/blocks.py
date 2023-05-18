@@ -1,7 +1,11 @@
+from django import forms
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from wagtail import blocks
+from wagtail.blocks import FieldBlock
 from wagtail_color_panel.blocks import NativeColorBlock
+from wagtailiconchooser.blocks import IconChooserBlock
 
 
 class WmsRequestParamSelectableBlock(blocks.StructBlock):
@@ -134,7 +138,7 @@ class IconVectorLayerBlock(blocks.StructBlock):
     )
 
     layout = blocks.StructBlock([
-        ('icon_image', blocks.CharBlock(label=_("Icon image"))),
+        ('icon_image', IconChooserBlock(label=_("Icon Image"))),
         ('icon_allow_overlap', blocks.BooleanBlock(required=False, default=False, label=_("Icon allow overlap"))),
         ('icon_anchor', blocks.ChoiceBlock(required=False, choices=SYMBOL_ANCHOR_CHOICES, default="center",
                                            label=_("Icon anchor"))),

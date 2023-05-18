@@ -16,7 +16,7 @@ from wagtail.fields import StreamField, RichTextField
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.models import Orderable
 from wagtail_adminsortable.models import AdminSortable
-from wagtailhumanitarianicons.widgets import IconChooserWidget
+from wagtailiconchooser.widgets import IconChooserWidget
 
 from geomanager.helpers import get_layer_action_url, get_preview_url, get_upload_url
 from geomanager.utils.vector_utils import ensure_pg_service_schema_exists
@@ -341,6 +341,8 @@ class GeomanagerSettings(BaseSiteSetting):
                                                         "to disable auto refreshing"))
     cap_shown_by_default = models.BooleanField(default=True, verbose_name=_("CAP layer shown by default"),
                                                help_text=_("CAP Layer shown on map by default"))
+    cap_metadata = models.ForeignKey(Metadata, on_delete=models.SET_NULL, blank=True, null=True,
+                                     verbose_name=_("Metadata"))
     country = CountryField(blank_label=_("Select Country"), verbose_name=_("country"))
 
     base_maps = StreamField([
@@ -374,6 +376,7 @@ class GeomanagerSettings(BaseSiteSetting):
             FieldPanel("cap_sub_category"),
             FieldPanel("cap_auto_refresh_interval"),
             FieldPanel("cap_shown_by_default"),
+            FieldPanel("cap_metadata"),
         ], heading=_("CAP Layer Settings")),
         ObjectList([
             FieldPanel("country", widget=CountrySelectWidget()),

@@ -69,7 +69,7 @@ urlpatterns = [
                        name="get_by_gid2"),
 
                   # Tiles
-                  path(r'api/raster-tiles/<int:z>/<int:x>/<int:y>', RasterTileView.as_view(), name="layer_tiles"),
+                  path(r'api/raster-tiles/<int:z>/<int:x>/<int:y>', RasterTileView.as_view(), name="raster_tiles"),
                   path(r'api/vector-tiles/<int:z>/<int:x>/<int:y>', cache_page(3600)(VectorTileView.as_view()),
                        name="vector_tiles"),
                   path(r'api/boundary-tiles/<int:z>/<int:x>/<int:y>',

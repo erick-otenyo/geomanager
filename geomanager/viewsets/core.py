@@ -44,7 +44,8 @@ class DatasetListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                     "baseUrl": lm_settings.cap_base_url,
                     "category": lm_settings.cap_sub_category.category.pk,
                     "subCategory": lm_settings.cap_sub_category.pk,
-                    "refreshInterval": lm_settings.cap_auto_refresh_interval_milliseconds
+                    "refreshInterval": lm_settings.cap_auto_refresh_interval_milliseconds,
+                    "metadata": lm_settings.cap_metadata.pk if lm_settings.cap_metadata else None
                 }})
 
         return Response({"datasets": datasets, "config": config})
