@@ -39,6 +39,15 @@ class InlineLegendBlock(blocks.StructBlock):
     ), min_num=1, label=_("Legend Items"), )
 
 
+class InlineIconLegendBlock(blocks.StructBlock):
+    items = blocks.ListBlock(blocks.StructBlock([
+        ('icon_image', IconChooserBlock(label=_("Icon Image"))),
+        ('icon_label', blocks.CharBlock(label=_("Icon Label"), )),
+        ('icon_color', NativeColorBlock(required=False, default="#000000", label=_("Icon color"))),
+    ]
+    ), min_num=1, label=_("Legend Icons"), )
+
+
 # A filled polygon with an optional stroked border
 class FillVectorLayerBlock(blocks.StructBlock):
     paint = blocks.StructBlock([
@@ -154,8 +163,9 @@ class IconVectorLayerBlock(blocks.StructBlock):
                                             default=0, label=_("icon rotate"))),
         ('icon_rotation_alignment', blocks.ChoiceBlock(required=False, choices=SYMBOL_ALIGNMENT_CHOICES, default="auto",
                                                        label=_("Icon rotation alignment"))),
-        ('icon_size', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=1,
-                                        label=_("icon size"))),
+        ('icon_size',
+         blocks.FloatBlock(required=False, validators=[MinValueValidator(0), MaxValueValidator(1)], default=1,
+                           label=_("icon size"))),
         ('icon_text_fit', blocks.ChoiceBlock(required=False, choices=ICON_TEXT_FIT_CHOICES, default="none",
                                              label=_("Icon text fit"))),
 

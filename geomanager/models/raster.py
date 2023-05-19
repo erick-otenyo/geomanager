@@ -15,7 +15,7 @@ from wagtail.models import Orderable
 from wagtail_color_panel.edit_handlers import NativeColorPanel
 from wagtail_color_panel.fields import ColorField
 
-from geomanager.blocks import WmsRequestParamSelectableBlock, InlineLegendBlock
+from geomanager.blocks import WmsRequestParamSelectableBlock, InlineLegendBlock, InlineIconLegendBlock
 from geomanager.forms import RasterStyleModelForm
 from geomanager.helpers import get_raster_layer_files_url
 from geomanager.models.core import Dataset, BaseLayer
@@ -367,8 +367,8 @@ class WmsLayer(TimeStampedModel, ClusterableModel, BaseLayer):
     params_selectors_side_by_side = models.BooleanField(default=False,
                                                         verbose_name=_("Arrange Param Selectors side by side"))
     legend = StreamField([
-        ('legend', InlineLegendBlock(label=_("Legend")),),
-        ('legend_image', ImageChooserBlock(),)
+        ('legend', InlineLegendBlock(label=_("Custom Legend")),),
+        ('legend_image', ImageChooserBlock(label=_("Custom Image")),),
     ], use_json_field=True, null=True, blank=True, max_num=1, verbose_name=_("Legend"), )
 
     panels = [

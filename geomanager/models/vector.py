@@ -10,10 +10,12 @@ from django_extensions.db.models import TimeStampedModel
 from wagtail.admin.panels import FieldPanel
 from wagtail.fields import StreamField
 from wagtail.images.blocks import ImageChooserBlock
+from wagtail.images.models import Image
 from wagtail.snippets.models import register_snippet
 
 from geomanager.blocks import InlineLegendBlock, FillVectorLayerBlock, LineVectorLayerBlock, CircleVectorLayerBlock, \
-    IconVectorLayerBlock, TextVectorLayerBlock
+    IconVectorLayerBlock, TextVectorLayerBlock, InlineIconLegendBlock
+from geomanager.constants import MAPBOX_GL_STYLE_SPEC
 from geomanager.fields import ListField
 from geomanager.models import Dataset
 from geomanager.models.core import BaseLayer
@@ -103,11 +105,6 @@ class Geostore(TimeStampedModel):
 
 class VectorLayer(TimeStampedModel, BaseLayer):
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, related_name="vector_layers", verbose_name="dataset")
-    legend = StreamField([
-        ('legend', InlineLegendBlock(label=_("Legend")),),
-        ('legend_image', ImageChooserBlock(),)
-    ], use_json_field=True, null=True, blank=True, max_num=1, verbose_name=_("Legend"), )
-
     render_layers = StreamField([
         ("fill", FillVectorLayerBlock(label=_("Fill Layer"))),
         ("line", LineVectorLayerBlock(label=_("Line Layer"))),
@@ -115,6 +112,11 @@ class VectorLayer(TimeStampedModel, BaseLayer):
         ("icon", IconVectorLayerBlock(label=_("Icon Layer"))),
         ("text", TextVectorLayerBlock(label=_("Text Label Layer"))),
     ], use_json_field=True, null=True, blank=True, min_num=1, verbose_name=_("Render Layers"))
+    legend = StreamField([
+        ('legend', InlineLegendBlock(label=_("Legend")),),
+        ('legend_image', ImageChooserBlock(label=_("Legend Image")),),
+        ('legend_icon', InlineIconLegendBlock(label=_("Legend Icon")),)
+    ], use_json_field=True, null=True, blank=True, max_num=1, verbose_name=_("Legend"), )
 
     @property
     def upload_url(self):
@@ -160,7 +162,12 @@ class VectorLayer(TimeStampedModel, BaseLayer):
         for layer in self.render_layers:
             data = layer.block.get_api_representation(layer.value)
 
-            data.update({"type": layer.block_type})
+            render_layer_type = layer.block_type
+            if render_layer_type == "icon" or render_layer_type == "text":
+                render_layer_type = "symbol"
+
+            data.update({"type": render_layer_type})
+
             data.update({"source-layer": "default"})
 
             # remove optional keys if they do not have any value
@@ -168,12 +175,38 @@ class VectorLayer(TimeStampedModel, BaseLayer):
                 if not data.get(key):
                     data.pop(key, None)
 
+            paint_defaults = MAPBOX_GL_STYLE_SPEC.get("PAINT_DEFAULTS", {})
+            layout_defaults = MAPBOX_GL_STYLE_SPEC.get("LAYOUT_DEFAULTS", {})
+
             paint = {}
-            for key, value in data.get("paint").items():
+            for key, value in data.get("paint", {}).items():
+                default_spec_value = paint_defaults.get(key)
+                #  if is equal to default value, no need to include it
+                if default_spec_value == value:
+                    continue
                 js_key = key.replace("_", "-")
                 paint.update({js_key: value})
 
-            data.update({"paint": paint})
+            layout = {}
+            for key, value in data.get("layout", {}).items():
+                default_spec_value = layout_defaults.get(key)
+                #  if is equal to default value, no need to include it
+                if default_spec_value == value:
+                    continue
+                js_key = key.replace("_", "-")
+                layout.update({js_key: value})
+
+            if bool(paint):
+                data.update({"paint": paint})
+            else:
+                # nothing for paint. Just delete it
+                data.pop("paint", None)
+
+            if bool(layout):
+                data.update({"layout": layout})
+            else:
+                # nothing for layout. Just delete it
+                data.pop("layout", None)
 
             render_layers.append(data)
 
@@ -199,8 +232,48 @@ class VectorLayer(TimeStampedModel, BaseLayer):
         return [config]
 
     def get_legend_config(self, request=None):
-        legend_config = {}
-        return legend_config
+        # default config
+        config = {
+            "type": "basic",
+            "items": []
+        }
+
+        legend_block = self.legend
+
+        # only one legend block entry is expected
+        if legend_block:
+            legend_block = legend_block[0]
+
+        if legend_block:
+
+            if legend_block.block_type == "legend_image":
+                image_url = legend_block.value.file.url
+                if request:
+                    image_url = request.build_absolute_uri(image_url)
+                config.update({"type": "image", "imageUrl": image_url})
+                return config
+
+            data = legend_block.block.get_api_representation(legend_block.value)
+
+            if legend_block.block_type == "legend_icon":
+                for item in data.get("items", []):
+                    config["items"].append({
+                        "icon": item.get("icon_image"),
+                        "name": item.get("icon_label"),
+                        "color": item.get("icon_color"),
+                        "iconSource": "sprite",
+                    })
+                return config
+
+            config.update({"type": data.get("type", config.get("type"))})
+
+            for item in data.get("items", []):
+                config["items"].append({
+                    "name": item.get("value"),
+                    "color": item.get("color")
+                })
+
+        return config
 
 
 class VectorUpload(TimeStampedModel):

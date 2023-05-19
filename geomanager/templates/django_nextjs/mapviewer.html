@@ -10,7 +10,9 @@
 {% icon %}
 
 {% block body %}
-    {{ svg_sprite|safe }}
+    <div id="svg-data-sprite">
+        {{ svg_sprite|safe }}
+    </div>
     <div style="height: 50px;position: absolute;top:0;z-index: 9999;background: #fff;width: 100%;">
         <nav class="navbar" role="navigation" aria-label="main navigation"
              style="height: 100%;width: 100%">
