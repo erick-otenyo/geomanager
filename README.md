@@ -2,7 +2,7 @@
 
 Wagtail based Geospatial Data Manager and backend CMS for [geomapviewer](https://github.com/wmo-raf/geomapviewer)
 
-![Geomanager Admin Screenshot](./screenshots/geomanager.png)
+![Geomanager Admin Screenshot](./screenshots/geomanager_with_frontend.png)
 
 # Background
 
