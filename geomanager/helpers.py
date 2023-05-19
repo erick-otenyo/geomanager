@@ -178,3 +178,14 @@ def get_raster_layer_files_url(layer_id=None):
         url = url + f"?layer__id={layer_id}"
 
     return url
+
+
+def get_vector_layer_files_url(layer_id=None):
+    from geomanager.models import PgVectorTable
+    admin_helper = AdminURLHelper(PgVectorTable)
+    url = admin_helper.get_action_url("index")
+
+    if layer_id:
+        url = url + f"?layer__id={layer_id}"
+
+    return url

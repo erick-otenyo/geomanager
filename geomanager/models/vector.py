@@ -10,15 +10,15 @@ from django_extensions.db.models import TimeStampedModel
 from wagtail.admin.panels import FieldPanel
 from wagtail.fields import StreamField
 from wagtail.images.blocks import ImageChooserBlock
-from wagtail.images.models import Image
-from wagtail.snippets.models import register_snippet
 
 from geomanager.blocks import InlineLegendBlock, FillVectorLayerBlock, LineVectorLayerBlock, CircleVectorLayerBlock, \
     IconVectorLayerBlock, TextVectorLayerBlock, InlineIconLegendBlock
 from geomanager.constants import MAPBOX_GL_STYLE_SPEC
 from geomanager.fields import ListField
+from geomanager.helpers import get_vector_layer_files_url
 from geomanager.models import Dataset
 from geomanager.models.core import BaseLayer
+from geomanager.panels import ReadOnlyFieldPanel
 from geomanager.utils.vector_utils import drop_vector_table
 
 
@@ -118,6 +118,13 @@ class VectorLayer(TimeStampedModel, BaseLayer):
         ('legend_icon', InlineIconLegendBlock(label=_("Legend Icon")),)
     ], use_json_field=True, null=True, blank=True, max_num=1, verbose_name=_("Legend"), )
 
+    def __str__(self):
+        return self.title
+
+    def get_uploads_list_url(self):
+        url = get_vector_layer_files_url(self.pk)
+        return url
+
     @property
     def upload_url(self):
         upload_url = reverse(
@@ -133,9 +140,6 @@ class VectorLayer(TimeStampedModel, BaseLayer):
             args=[quote(self.dataset.pk), quote(self.pk)],
         )
         return preview_url
-
-    def __str__(self):
-        return self.title
 
     def layer_config(self, request=None):
         base_tiles_url = reverse("vector_tiles", args=(0, 0, 0))
@@ -207,6 +211,12 @@ class VectorLayer(TimeStampedModel, BaseLayer):
             else:
                 # nothing for layout. Just delete it
                 data.pop("layout", None)
+
+            data.update({
+                "metadata": {
+                    "position": "top",
+                }
+            })
 
             render_layers.append(data)
 
@@ -290,7 +300,6 @@ class VectorUpload(TimeStampedModel):
         return f"{self.dataset} - {self.created}"
 
 
-@register_snippet
 class PgVectorTable(TimeStampedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     layer = models.ForeignKey(VectorLayer, on_delete=models.CASCADE, related_name="vector_tables")
@@ -303,9 +312,23 @@ class PgVectorTable(TimeStampedModel):
     geometry_type = models.CharField(max_length=100)
     bounds = ListField(max_length=256)
 
+    panels = [
+        ReadOnlyFieldPanel("layer"),
+        ReadOnlyFieldPanel("table_name"),
+        ReadOnlyFieldPanel("full_table_name"),
+        ReadOnlyFieldPanel("description"),
+        ReadOnlyFieldPanel("time"),
+        ReadOnlyFieldPanel("properties"),
+        ReadOnlyFieldPanel("geometry_type"),
+        ReadOnlyFieldPanel("bounds"),
+    ]
+
     class Meta:
         ordering = ["-time"]
         unique_together = ('layer', 'time')
+
+    def __str__(self):
+        return f"{self.layer}  - {self.geometry_type}"
 
 
 @receiver(pre_delete, sender=PgVectorTable)

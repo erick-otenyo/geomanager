@@ -20,7 +20,7 @@ from .models import (
 )
 from .models.core import SubCategory, GeomanagerSettings
 from .models.raster import (RasterStyle, WmsLayer, LayerRasterFile)
-from .models.vector import VectorLayer
+from .models.vector import VectorLayer, PgVectorTable
 from .views import (
     upload_raster_file,
     publish_raster,
@@ -498,8 +498,10 @@ class VectorLayerModelAdmin(ModelAdminCanHide):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.list_display = (list(self.list_display) or []) + ['dataset_link', "upload_files", 'preview_layer']
+        self.list_display = (list(self.list_display) or []) + ['dataset_link', "uploaded_files", "upload_files",
+                                                               'preview_layer']
         self.dataset_link.__func__.short_description = _('Dataset')
+        self.uploaded_files.__func__.short_description = _("View Uploaded Files")
         self.upload_files.__func__.short_description = _('Upload Vector Files')
         self.preview_layer.__func__.short_description = _('Preview on Map')
 
@@ -539,6 +541,20 @@ class VectorLayerModelAdmin(ModelAdminCanHide):
         """
         return mark_safe(button_html)
 
+    def uploaded_files(self, obj):
+        label = _("Uploaded Files")
+        button_html = f"""
+            <a href="{obj.get_uploads_list_url()}" class="button button-small button--icon bicolor button-secondary">
+                <span class="icon-wrapper">
+                    <svg class="icon icon-list-ol icon" aria-hidden="true">
+                        <use href="#icon-list-ol"></use>
+                    </svg>
+                </span>
+                {label}
+            </a>
+        """
+        return mark_safe(button_html)
+
 
 class MBTSourceModelAdmin(ModelAdminCanHide):
     model = MBTSource
@@ -555,6 +571,15 @@ class LayerRasterFileModelAdmin(ModelAdminCanHide):
     index_template_name = "modeladmin/index_without_custom_create.html"
 
 
+class PgVectorTableModelAdmin(ModelAdminCanHide):
+    model = PgVectorTable
+    hidden = True
+    list_display = ("__str__", "table_name",)
+    list_filter = ("layer",)
+    index_template_name = "modeladmin/index_without_custom_create.html"
+    inspect_view_enabled = True
+
+
 class GeoManagerAdminGroup(ModelAdminGroupWithHiddenItems):
     menu_label = _('Geo Manager')
     menu_icon = 'layer-group'
@@ -562,7 +587,7 @@ class GeoManagerAdminGroup(ModelAdminGroupWithHiddenItems):
     items = (
         CategoryModelAdmin, DatasetModelAdmin, MetadataModelAdmin, FileImageLayerModelAdmin,
         RasterStyleModelAdmin, VectorLayerModelAdmin, WmsLayerModelAdmin, MBTSourceModelAdmin,
-        LayerRasterFileModelAdmin)
+        LayerRasterFileModelAdmin, PgVectorTableModelAdmin)
 
     def get_submenu_items(self):
         menu_items = super().get_submenu_items()
