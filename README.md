@@ -4,24 +4,25 @@ Wagtail based Geospatial Data Manager and backend CMS for [geomapviewer](https:/
 
 # Background
 
-National Meteorological and Hydrological Services (NMHSs) and other national/regional institutions working in weather/climate 
-sectors usually use, produce or disseminate data and information that is Geo-referenced. 
-This can range from forecast model outputs, earth observation data, stations observation, periodic bulletins 
-and advisories and so on. Usually these are shared on their websites and social media pages in static formats, mostly PNGs.
+National Meteorological and Hydrological Services (NMHSs) and other national/regional institutions working in
+weather/climate sectors usually use, produce or disseminate data and information that is Geo-referenced. This can range
+from forecast model outputs, earth observation data, stations observation, periodic bulletins and advisories and so on.
+Usually these are shared on their websites and social media pages in static formats, mostly PNGs.
 
 This project is an initiative by the [WMO RAF](https://github.com/wmo-raf), as part of the Digital Transformation
 Package for the NMHSs in Africa, to provide an interactive system for managing and publishing Geo-referenced (GIS)
-datasets. As the NMHSs produce and share their products in static formats, they can also use packages like this, to make their
-data interactive.
+datasets. As the NMHSs produce and share their products in static formats, they can also use packages like this, to make
+their data interactive.
 
-The package is developed primarily for the NMHSs at national levels, but can be adapted in other institutions or places that need
-to visualize their geospatial data.
+The package is developed primarily for the NMHSs at national levels, but can be adapted in other institutions or places
+that need to visualize their geospatial data.
 
 # Features
 
 All the raster and vector datasets uploaded must have time associated with each file.
 
-For netCDF files with time dimension, time is automatically extracted from the file. For Geotiff, each uploaded file is manually assigned time.
+For netCDF files with time dimension, time is automatically extracted from the file. For Geotiff, each uploaded file
+must be manually assigned time.
 
 Data management and visualization
 
@@ -37,7 +38,7 @@ Data management and visualization
 
 MapViewer Management
 
-- Management of layers visualized on the [geomapviewer-ui](https://github.com/wmo-raf/geomapviewer-ui)
+- Management of layers visualized on the [geomapviewer](https://github.com/wmo-raf/geomapviewer)
     - Control on visibility (public or private) of layers on the MapViewer
 
 # Installation
@@ -78,7 +79,7 @@ The following packages will be automatically installed when installing `geomanag
 - wagtail>=4.2.2
 - django_extensions>=3.2.1
 - django-countries>=7.5.1
-- wagtail_color_panel>=1.4.1 
+- wagtail_color_panel>=1.4.1
 - wagtailfontawesomesvg>=0.0.3,
 - django_json_widget>=1.1.1
 - django_nextjs>= 2.2.2
