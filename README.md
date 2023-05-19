@@ -2,6 +2,8 @@
 
 Wagtail based Geospatial Data Manager and backend CMS for [geomapviewer](https://github.com/wmo-raf/geomapviewer)
 
+![Geomanager Admin Screenshot](./screenshots/geomanager.png)
+
 # Background
 
 National Meteorological and Hydrological Services (NMHSs) and other national/regional institutions working in
