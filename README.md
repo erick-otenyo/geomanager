@@ -99,6 +99,7 @@ The following packages will be automatically installed when installing `geomanag
 - shapely>=2.0.1
 - djangorestframework-simplejwt>=5.2.2
 - wagtail-humanitarian-icons>=1.0.3
+- wagtail-icon-chooser>=0.0.1
 - matplotlib>=3.7.1
 
 # Usage
@@ -117,6 +118,7 @@ INSTALLED_APPS = [
     "wagtail_color_panel",
     "wagtail_adminsortable",
     "wagtailhumanitarianicons",
+    "wagtailiconchooser",
     "django_countries",
     "django_extensions",
     "wagtailfontawesomesvg"
