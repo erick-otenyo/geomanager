@@ -36,25 +36,33 @@ class NoDbfFound(Error):
 
 # Tile GL
 
-class MissingTileError(Exception):
+class MissingTileError(Error):
     pass
 
 
-class MBTilesNotFoundError(Exception):
+class MBTilesNotFoundError(Error):
     pass
 
 
-class MBTilesInvalid(Exception):
+class MBTilesInvalid(Error):
     pass
 
 
-class MissingBoundaryField(Exception):
+class MissingBoundaryField(Error):
     pass
 
 
-class NoMatchingBoundaryData(Exception):
+class NoMatchingBoundaryData(Error):
     pass
 
 
-class InvalidBoundaryGeomType(Exception):
+class InvalidBoundaryGeomType(Error):
+    pass
+
+
+class RasterFileNotFound(Error):
+    pass
+
+
+class QueryParamRequired(Error):
     pass

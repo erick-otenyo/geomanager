@@ -3,9 +3,11 @@ import tempfile
 
 import numpy as np
 import pandas as pd
+import rasterio
 import rasterio as rio
 import xarray as xr
 from django.core.files import File
+from django.forms import FileField
 from django_large_image import tilesource
 from django_large_image.utilities import field_file_to_local_path
 from large_image.exceptions import TileSourceError
@@ -17,7 +19,10 @@ from geomanager.errors import UnsupportedRasterFormat
 from geomanager.models import LayerRasterFile
 
 
-def get_tile_source(path, options):
+def get_tile_source(path, options=None):
+    if options is None:
+        options = {}
+
     encoding = options.get("encoding")
     style = options.get("style")
     projection = options.get("projection")
@@ -38,6 +43,22 @@ def get_tile_source(path, options):
     except TileSourceError as e:
         # Raise 500 server error if tile source failed to open
         raise APIException(str(e))
+
+
+def get_raster_pixel_data(file: FileField, x_coord: float, y_coord: float):
+    source = get_tile_source(path=file)
+    # get raster gdal geotransform
+    gdal_geot = source.getInternalMetadata().get("GeoTransform")
+    transform = rasterio.Affine.from_gdal(*gdal_geot)
+
+    # get corresponding row col
+    row_col = rasterio.transform.rowcol(transform, xs=x_coord, ys=y_coord)
+    pixel_data = source.getPixel(region={'left': abs(row_col[1]), 'top': abs(row_col[0])})
+
+    if pixel_data:
+        return pixel_data.get("bands", {}).get(1)
+
+    return None
 
 
 def get_no_data_val(val):

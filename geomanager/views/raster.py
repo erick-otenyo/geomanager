@@ -1,5 +1,6 @@
 import datetime
 import json
+from typing import Optional, Any
 
 from django.core.exceptions import ValidationError
 from django.http import JsonResponse, HttpResponse
@@ -9,21 +10,38 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from django.views import View
 from django_large_image import tilesource
 from large_image.exceptions import TileSourceXYZRangeError
-from wagtail.admin.auth import user_passes_test, user_has_any_page_permission, permission_denied
+from rest_framework.request import Request
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from wagtail.admin.auth import (
+    user_passes_test,
+    user_has_any_page_permission,
+    permission_denied
+)
 from wagtail.contrib.modeladmin.helpers import AdminURLHelper
 from wagtail.models import Site
 from wagtail.snippets.permissions import get_permission_name
 
+from geomanager.errors import RasterFileNotFound, QueryParamRequired
 from geomanager.forms import LayerRasterFileForm
-from geomanager.models import Dataset, RasterUpload, FileImageLayer, LayerRasterFile
+from geomanager.models import (
+    Dataset,
+    RasterUpload,
+    FileImageLayer,
+    LayerRasterFile
+)
 from geomanager.models.core import GeomanagerSettings
 from geomanager.models.raster import WmsLayer
 from geomanager.serializers.raster import WmsLayerSerializer
 from geomanager.utils import UUIDEncoder
-from geomanager.utils.raster_utils import get_tile_source, read_raster_info, create_layer_raster_file
+from geomanager.utils.raster_utils import (
+    get_tile_source,
+    read_raster_info,
+    create_layer_raster_file,
+    get_raster_pixel_data
+)
 
 ALLOWED_RASTER_EXTENSIONS = ["tif", "tiff", "geotiff", "nc"]
 
@@ -278,72 +296,6 @@ def delete_raster_upload(request, upload_id):
     return JsonResponse({"success": True, "layer_raster_file_id": upload_id, })
 
 
-class RasterTileView(View):
-    # TODO: Validate style query param thoroughly. If not validated, the whole app just exits without warning.
-    # TODO: Cache getting layer style. We should not ne querying the database each time for style
-    def get(self, request, z, x, y):
-        layer_id = request.GET.get("layer")
-        time = request.GET.get("time")
-        fmt = request.GET.get("format", "png")
-        projection = request.GET.get("projection", "EPSG:3857")
-        style = request.GET.get("style", None)
-
-        if layer_id is None:
-            return HttpResponse("Missing layer query parameter", status=400)
-        if time is None:
-            return HttpResponse("Missing time query parameter", status=400)
-
-        try:
-            raster_file = LayerRasterFile.objects.filter(layer=layer_id, time=time)
-        except Exception:
-            return HttpResponse(f"File not found matching 'layer': {layer_id} and 'time': {time} ",
-                                status=404)
-
-        if not raster_file.exists():
-            return HttpResponse(f"File not found matching 'layer': {layer_id} and 'time': {time} ",
-                                status=404)
-
-        if raster_file.exists():
-            raster_file = raster_file.first()
-
-        if style:
-            # explict request to use layer defined style. Mostly used for admin previews
-            if style == "layer-style":
-                layer_style = raster_file.layer.style
-                if layer_style:
-                    style = layer_style.get_style_as_json()
-            else:
-                # try validating style
-                # TODO: do more thorough validation
-                try:
-                    style = json.loads(style)
-                except Exception:
-                    style = None
-        else:
-            layer_style = raster_file.layer.style
-            if layer_style:
-                style = layer_style.get_style_as_json()
-
-        encoding = tilesource.format_to_encoding(fmt, pil_safe=True)
-
-        options = {
-            "encoding": encoding,
-            "projection": projection,
-            "style": style
-        }
-
-        source = get_tile_source(path=raster_file.file, options=options)
-
-        try:
-            tile_binary = source.getTile(int(x), int(y), int(z))
-        except TileSourceXYZRangeError as e:
-            raise ValidationError(e)
-
-        mime_type = source.getTileMimeType()
-
-        return HttpResponse(tile_binary, content_type=mime_type)
-
-
 @user_passes_test(user_has_any_page_permission)
 def preview_raster_layers(request, dataset_id, layer_id=None):
     dataset = get_object_or_404(Dataset, pk=dataset_id)
@@ -394,3 +346,152 @@ def preview_wms_layers(request, dataset_id, layer_id=None):
     }
 
     return render(request, 'geomanager/wms_preview.html', context)
+
+
+class RasterDataMixin:
+    def get_single_raster_file(self, request: Request) -> LayerRasterFile:
+        layer_id = self.get_query_param(request, "layer")
+        time = self.get_query_param(request, "time")
+
+        if not layer_id:
+            raise QueryParamRequired("layer param required")
+        if not time:
+            raise QueryParamRequired("time param required")
+
+        raster_file = LayerRasterFile.objects.filter(layer=layer_id, time=time)
+
+        if raster_file.exists():
+            return raster_file.first()
+
+        raise RasterFileNotFound(f"File not found matching 'layer': {layer_id} and 'time': {time}")
+
+    def get_multiple_raster_files(self, request: Request) -> LayerRasterFile:
+        layer_id = self.get_query_param(request, "layer")
+        time_from = self.get_query_param(request, "time_from")
+        time_to = self.get_query_param(request, "time_to")
+
+        if not time_from and not time_to:
+            raise QueryParamRequired("time_from or time_to param required")
+
+        time_filter = {}
+
+        if time_to and time_from:
+            time_filter.update({"time__range": [time_from, time_to]})
+        elif time_from:
+            time_filter.update({"time__gte": time_from})
+        else:
+            time_filter.update({"time__lte": time_to})
+
+        raster_files = LayerRasterFile.objects.filter(layer=layer_id, **time_filter)
+
+        return raster_files
+
+    def get_coords(self, request: Request):
+        x_coord = self.get_query_param(request, "x")
+        y_coord = self.get_query_param(request, "y")
+
+        if not x_coord:
+            raise QueryParamRequired("x param required")
+
+        if not y_coord:
+            return QueryParamRequired("y param required")
+
+        x_coord = float(x_coord)
+        y_coord = float(y_coord)
+
+        return x_coord, y_coord
+
+    def get_pixel_data(self, request: Request):
+        raster_file = self.get_single_raster_file(request)
+        x_coord, y_coord = self.get_coords(request)
+
+        pixel_data = get_raster_pixel_data(raster_file.file, x_coord, y_coord)
+
+        return {"time": raster_file.time, "value": pixel_data}
+
+    def get_query_param(self, request: Request, key: str, default: Optional[Any] = '') -> str:
+        return request.query_params.get(key, str(default))
+
+
+class RasterTileView(RasterDataMixin, APIView):
+    # TODO: Validate style query param thoroughly. If not validated, the whole app just exits without warning.
+    # TODO: Cache getting layer style. We should not be querying the database each time for style
+    def get(self, request, z, x, y):
+        try:
+            raster_file = self.get_single_raster_file(request)
+        except QueryParamRequired as e:
+            return HttpResponse(e.message, status=400)
+        except RasterFileNotFound as e:
+            return HttpResponse(e, status=404)
+
+        fmt = self.get_query_param(request, "format", "png")
+        projection = self.get_query_param(request, "projection", "EPSG:3857")
+        style = self.get_query_param(request, "style")
+
+        if style:
+            # explict request to use layer defined style. Mostly used for admin previews
+            if style == "layer-style":
+                layer_style = raster_file.layer.style
+                if layer_style:
+                    style = layer_style.get_style_as_json()
+            else:
+                # try validating style
+                # TODO: do more thorough validation
+                try:
+                    style = json.loads(style)
+                except Exception:
+                    style = None
+        else:
+            layer_style = raster_file.layer.style
+            if layer_style:
+                style = layer_style.get_style_as_json()
+
+        encoding = tilesource.format_to_encoding(fmt, pil_safe=True)
+
+        options = {
+            "encoding": encoding,
+            "projection": projection,
+            "style": style
+        }
+
+        source = get_tile_source(path=raster_file.file, options=options)
+
+        try:
+            tile_binary = source.getTile(int(x), int(y), int(z))
+        except TileSourceXYZRangeError as e:
+            raise ValidationError(e)
+
+        mime_type = source.getTileMimeType()
+
+        return HttpResponse(tile_binary, content_type=mime_type)
+
+
+class RasterDataPixelView(RasterDataMixin, APIView):
+    def get(self, request):
+        try:
+            pixel_data = self.get_pixel_data(request)
+        except QueryParamRequired as e:
+            return JsonResponse(e.serialize, status=400)
+        except RasterFileNotFound as e:
+            return JsonResponse({"message": e}, status=404)
+
+        return Response(pixel_data)
+
+
+class RasterDataPixelTimeseriesView(RasterDataMixin, APIView):
+    def get(self, request):
+        try:
+            raster_files = self.get_multiple_raster_files(request)
+            x_coord, y_coord = self.get_coords(request)
+        except QueryParamRequired as e:
+            return JsonResponse(e.serialize, status=400)
+        except RasterFileNotFound as e:
+            return JsonResponse({"message": e}, status=404)
+
+        timeseries_data = []
+
+        for raster_file in raster_files:
+            pixel_data = get_raster_pixel_data(raster_file.file, x_coord, y_coord)
+            timeseries_data.append({"time": raster_file.time, "value": pixel_data})
+
+        return Response(timeseries_data)

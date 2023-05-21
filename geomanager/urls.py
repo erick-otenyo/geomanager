@@ -14,6 +14,7 @@ from geomanager.views import (
     ResetPasswordView,
     BoundaryVectorTileView, tile_gl, tile_json_gl, style_json_gl, get_mapviewer_config, GeoJSONPgTableView
 )
+from geomanager.views.raster import RasterDataPixelView, RasterDataPixelTimeseriesView
 from geomanager.viewsets import (
     FileImageLayerRasterFileDetailViewSet,
     VectorTableFileDetailViewSet,
@@ -75,6 +76,11 @@ urlpatterns = [
                   path(r'api/boundary-tiles/<int:z>/<int:x>/<int:y>',
                        BoundaryVectorTileView.as_view(),
                        name="boundary_tiles"),
+
+                  # Data
+                  path(r'api/raster-data/pixel', RasterDataPixelView.as_view(), name="raster_data_pixel"),
+                  path(r'api/raster-data/pixel/timeseries', RasterDataPixelTimeseriesView.as_view(),
+                       name="raster_data_pixel_timeseries"),
 
                   # FeatureServ
                   path(r'api/feature-serv/<str:table_name>.geojson', cache_page(3600)(GeoJSONPgTableView.as_view()),

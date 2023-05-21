@@ -65,7 +65,7 @@ class FileImageLayerRasterFileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = LayerRasterFile
-        fields = ["layer", "time", "id", "file"]
+        fields = ["time", "id"]
 
     def get_time(self, obj):
         return obj.time.strftime("%Y-%m-%dT%H:%M:%S.000Z")
