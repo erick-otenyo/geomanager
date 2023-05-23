@@ -75,8 +75,8 @@ class SubCategory(Orderable):
 class Dataset(TimeStampedModel):
     DATASET_TYPE_CHOICES = (
         ("file", "Raster"),
-        ("vector", "Vector"),
         ("wms", "WMS"),
+        ("vector", "Vector"),
     )
 
     CURRENT_TIME_METHOD_CHOICES = (
@@ -130,10 +130,10 @@ class Dataset(TimeStampedModel):
                                                    " disable auto updating"))
 
     panels = [
+        FieldPanel("title"),
         FieldPanel("category"),
         FieldPanel("sub_category"),
         FieldPanel("layer_type"),
-        FieldPanel("title"),
         FieldPanel("summary"),
         FieldPanel("metadata"),
         FieldPanel("published"),
