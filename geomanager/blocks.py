@@ -1,9 +1,6 @@
-from django import forms
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from wagtail import blocks
-from wagtail.blocks import FieldBlock
 from wagtail_color_panel.blocks import NativeColorBlock
 from wagtailiconchooser.blocks import IconChooserBlock
 
@@ -52,7 +49,7 @@ class InlineIconLegendBlock(blocks.StructBlock):
 class FillVectorLayerBlock(blocks.StructBlock):
     paint = blocks.StructBlock([
         ('fill_color', NativeColorBlock(required=False, default="#000000", label=_("fill color"))),
-        ('fill_opacity', blocks.FloatBlock(required=False, default=1,
+        ('fill_opacity', blocks.FloatBlock(required=False, default=1.0,
                                            validators=[MinValueValidator(0), MaxValueValidator(1)],
                                            label=_("fill opacity"))),
         ('fill_outline_color', NativeColorBlock(required=False, default="#000000", label=_("fill outline color"))),
@@ -81,11 +78,11 @@ class LineVectorLayerBlock(blocks.StructBlock):
     paint = blocks.StructBlock([
         ('line_color', NativeColorBlock(required=False, default="#000000", label=_("Line color"))),
         ('line_dasharray', blocks.CharBlock(required=False, label=_("Line dasharray"))),
-        ('line_gap_width', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=0,
+        ('line_gap_width', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=0.0,
                                              label=_("Line gap width"))),
         ('line_opacity', blocks.FloatBlock(required=False, validators=[MinValueValidator(0), MaxValueValidator(1)],
-                                           default=1, label=_("line opacity"))),
-        ('line_width', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=1,
+                                           default=1.0, label=_("line opacity"))),
+        ('line_width', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=1.0,
                                          label=_("Line width"))),
         ('line_offset', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=0,
                                           label=_("Line offset"))),
@@ -103,7 +100,7 @@ class LineVectorLayerBlock(blocks.StructBlock):
         ('line_cap', blocks.ChoiceBlock(required=False, choices=LINE_CAP_CHOICES, default="butt", label=_("Line cap"))),
         ('line_join', blocks.ChoiceBlock(required=False, choices=LINE_JOIN_CHOICES, default="miter",
                                          label=_("Line join"))),
-        ('line_miter_limit', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=2,
+        ('line_miter_limit', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=2.0,
                                                label=_("line miter limit"))),
         ('line_round_limit', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=1.05,
                                                label=_("line round limit"))),
@@ -155,7 +152,7 @@ class IconVectorLayerBlock(blocks.StructBlock):
         ('icon_keep_upright', blocks.BooleanBlock(required=False, default=False, label=_("Icon keep upright"))),
         ('icon_offset', blocks.CharBlock(required=False, label=_("Icon offset"))),
         ('icon_optional', blocks.BooleanBlock(required=False, default=False, label=_("Icon optional"))),
-        ('icon_padding', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=2,
+        ('icon_padding', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=2.0,
                                            label=_("Icon padding"))),
         ('icon_pitch_alignment', blocks.ChoiceBlock(required=False, choices=SYMBOL_ALIGNMENT_CHOICES, default="auto",
                                                     label=_("Icon pitch alignment"))),
@@ -177,13 +174,13 @@ class IconVectorLayerBlock(blocks.StructBlock):
 
     paint = blocks.StructBlock([
         ('icon_color', NativeColorBlock(required=False, default="#000000", label=_("Icon color"))),
-        ('icon_halo_blur', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=0,
+        ('icon_halo_blur', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=0.0,
                                              label=_("Icon halo blur"))),
         ('icon_halo_color', NativeColorBlock(required=False, default="#000000", label=_("Icon halo color"))),
-        ('icon_halo_width', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=0,
+        ('icon_halo_width', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=0.0,
                                               label=_("icon halo width"))),
         ('icon_opacity', blocks.FloatBlock(required=False, validators=[MinValueValidator(0), MaxValueValidator(1)],
-                                           default=1, label=_("icon opacity"))),
+                                           default=1.0, label=_("icon opacity"))),
 
         # Not implemented yet
         # icon-translate
@@ -225,10 +222,10 @@ class TextVectorLayerBlock(blocks.StructBlock):
 
     paint = blocks.StructBlock([
         ('text_color', NativeColorBlock(required=False, default="#000000", label=_("Text color"))),
-        ('text_halo_blur', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=0,
+        ('text_halo_blur', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=0.0,
                                              label=_("Text halo blur"))),
         ('text_halo_color', NativeColorBlock(required=False, default="#000000", label=_("Text halo color"))),
-        ('text_halo_width', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=0,
+        ('text_halo_width', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=0.0,
                                               label=_("text halo width"))),
         ('text_translate', blocks.CharBlock(required=False, label=_("Text translate"))),
         ('text_translate_anchor', blocks.ChoiceBlock(required=False, choices=TEXT_TRANSLATE_ANCHOR_CHOICES,
@@ -251,7 +248,7 @@ class TextVectorLayerBlock(blocks.StructBlock):
         ('text_justify', blocks.ChoiceBlock(required=False, choices=TEXT_JUSTIFY_CHOICES, default="center",
                                             label=_("Text justify"))),
         ('text_keep_upright', blocks.BooleanBlock(required=False, default=False, label=_("Text keep upright"))),
-        ('text_letter_spacing', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=0,
+        ('text_letter_spacing', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=0.0,
                                                   label=_("Text letter spacing"))),
         ('text_line_height', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=1.2,
                                                label=_("Text line height"))),
@@ -262,7 +259,7 @@ class TextVectorLayerBlock(blocks.StructBlock):
                                                label=_("Text max width"))),
         ('text_offset', blocks.CharBlock(required=False, label=_("Text offset"))),
         ('text_opacity', blocks.FloatBlock(required=False, validators=[MinValueValidator(0), MaxValueValidator(1)],
-                                           default=1, label=_("text opacity"))),
+                                           default=1.0, label=_("text opacity"))),
         ('text_padding', blocks.IntegerBlock(required=False, validators=[MinValueValidator(0)], default=2,
                                              label=_("Text  padding"))),
         ('text_pitch_alignment', blocks.ChoiceBlock(required=False, choices=SYMBOL_ALIGNMENT_CHOICES, default="auto",
@@ -293,11 +290,11 @@ class CircleVectorLayerBlock(blocks.StructBlock):
     paint = blocks.StructBlock([
         ('circle_color', NativeColorBlock(required=False, default="#000000", label=_("circle color"))),
         ('circle_opacity', blocks.FloatBlock(required=False, validators=[MinValueValidator(0), MaxValueValidator(1)],
-                                             default=1, label=_("circle opacity"))),
-        ('circle_radius', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=5,
+                                             default=1.0, label=_("circle opacity"))),
+        ('circle_radius', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=5.0,
                                             label=_("circle radius"))),
         ('circle_stroke_color', NativeColorBlock(required=False, default="#000000", label=_("circle stroke color"))),
-        ('circle_stroke_width', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=0,
+        ('circle_stroke_width', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=0.0,
                                                   label=_("circle_stroke_width"))),
 
     ], label="Paint Properties")
