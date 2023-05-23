@@ -128,6 +128,7 @@ INSTALLED_APPS = [
     "allauth.account",
 
     "wagtail.contrib.modeladmin",
+    "wagtail.contrib.settings",
     "rest_framework",
     "django.contrib.gis",
 
