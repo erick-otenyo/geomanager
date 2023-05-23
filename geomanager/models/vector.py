@@ -106,9 +106,9 @@ class Geostore(TimeStampedModel):
 class VectorLayer(TimeStampedModel, BaseLayer):
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, related_name="vector_layers", verbose_name="dataset")
     render_layers = StreamField([
-        ("fill", FillVectorLayerBlock(label=_("Fill Layer"))),
+        ("fill", FillVectorLayerBlock(label=_("Polygon Layer"))),
         ("line", LineVectorLayerBlock(label=_("Line Layer"))),
-        ("circle", CircleVectorLayerBlock(label=_("Circle Layer"))),
+        ("circle", CircleVectorLayerBlock(label=_("Point Layer"))),
         ("icon", IconVectorLayerBlock(label=_("Icon Layer"))),
         ("text", TextVectorLayerBlock(label=_("Text Label Layer"))),
     ], use_json_field=True, null=True, blank=True, min_num=1, verbose_name=_("Render Layers"))
