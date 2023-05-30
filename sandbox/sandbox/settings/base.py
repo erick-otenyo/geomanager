@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "rest_framework",
+    "corsheaders",
 
     "django.contrib.admin",
     "django.contrib.gis",
@@ -85,6 +86,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -193,3 +195,11 @@ WAGTAILSEARCH_BACKENDS = {
 # Base URL to use when referring to full URLs within the Wagtail admin backend -
 # e.g. in notification emails. Don't include '/admin' or a trailing slash
 WAGTAILADMIN_BASE_URL = "http://example.com"
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+
+CORS_ORIGIN_ALLOW_ALL = True

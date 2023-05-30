@@ -1,6 +1,9 @@
 from django import forms
+from django.forms import ModelForm
 from django.utils.translation import gettext_lazy as _
 from wagtail.admin.forms import WagtailAdminModelForm
+
+from geomanager.models.user import GeoManagerUser
 
 
 class LayerRasterFileForm(forms.Form):
@@ -50,13 +53,13 @@ class VectorLayerFileForm(forms.Form):
 
 class BoundaryUploadForm(forms.Form):
     remove_existing = forms.BooleanField(required=False, widget=forms.HiddenInput)
-    shape_file = forms.FileField(required=True, label=_("Zipped Shapefile"),
-                                 help_text=_("The uploaded file should be a zipped shapefile"),
-                                 widget=forms.FileInput(attrs={'accept': '.zip'}))
+    geopackage = forms.FileField(required=True, label=_("GADM Country Geopackage"),
+                                 help_text=_("The uploaded file should be a geopackage, "
+                                             "downloaded from https://gadm.org/download_country.html"),
+                                 widget=forms.FileInput(attrs={'accept': '.gpkg'}))
 
 
 class RasterStyleModelForm(WagtailAdminModelForm):
-
     def is_valid(self):
         valid = super().is_valid()
         if not valid:
@@ -116,3 +119,9 @@ class RasterStyleModelForm(WagtailAdminModelForm):
                     form.add_error("threshold", _("Value must be less than maximum value"))
                     return False
         return True
+
+
+class GeoManagerUserForm(ModelForm):
+    class Meta:
+        model = GeoManagerUser
+        fields = "__all__"

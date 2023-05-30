@@ -140,6 +140,7 @@ class DatasetCreateView(CreateView):
         form = super().get_form()
         category_id = self.request.GET.get("category_id")
         if category_id:
+            # form.fields["category"].widget.attrs.update({"disabled": "true"})
             form.fields["sub_category"].queryset = SubCategory.objects.filter(category=category_id)
             initial = {**form.initial}
             initial.update({"category": category_id})
@@ -278,10 +279,10 @@ class FileImageLayerModelAdmin(ModelAdminCanHide):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.list_display = (list(self.list_display) or []) + ["dataset_link", "uploaded_files", "upload_files",
+        self.list_display = (list(self.list_display) or []) + ["dataset_link", "upload_files", "uploaded_files",
                                                                "preview_layer"]
         self.dataset_link.__func__.short_description = _("Dataset")
-        self.uploaded_files.__func__.short_description = _("View Uploaded Raster Files")
+        self.uploaded_files.__func__.short_description = _("Uploaded Files")
         self.upload_files.__func__.short_description = _("Upload Raster Files")
         self.preview_layer.__func__.short_description = _("Preview on Map")
 
@@ -308,7 +309,7 @@ class FileImageLayerModelAdmin(ModelAdminCanHide):
         return mark_safe(button_html)
 
     def uploaded_files(self, obj):
-        label = _("Uploaded Files")
+        label = _("View Uploaded Files")
         button_html = f"""
             <a href="{obj.get_uploads_list_url()}" class="button button-small button--icon bicolor button-secondary">
                 <span class="icon-wrapper">

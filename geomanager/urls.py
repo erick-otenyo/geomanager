@@ -2,9 +2,7 @@ from django.urls import include, path
 from django.views.decorators.cache import cache_page
 from rest_framework.routers import SimpleRouter
 from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-)
+    TokenRefreshView, )
 
 from geomanager.views import (
     RasterTileView,
@@ -14,6 +12,7 @@ from geomanager.views import (
     ResetPasswordView,
     BoundaryVectorTileView, tile_gl, tile_json_gl, style_json_gl, get_mapviewer_config, GeoJSONPgTableView
 )
+from geomanager.views.auth import EmailTokenObtainPairView, UserTokenVerifyView
 from geomanager.views.raster import RasterDataPixelView, RasterDataPixelTimeseriesView
 from geomanager.viewsets import (
     FileImageLayerRasterFileDetailViewSet,
@@ -23,6 +22,7 @@ from geomanager.viewsets import (
     CountryBoundaryViewSet,
     MetadataViewSet
 )
+from geomanager.viewsets.user import GeoManagerUserViewSet
 
 router = SimpleRouter(trailing_slash=False)
 
@@ -32,21 +32,24 @@ router.register(r'api/metadata', MetadataViewSet)
 router.register(r'api/file-raster', FileImageLayerRasterFileDetailViewSet)
 router.register(r'api/vector-data', VectorTableFileDetailViewSet)
 
+router.register(r'api/geomanager/user', GeoManagerUserViewSet)
+
 urlpatterns = [
                   # MapViewer
                   path(r'mapviewer/', map_view, name="mapview"),
                   path(r'mapviewer/<str:location_type>/', map_view, name="mapview"),
                   path(r'mapviewer/<str:location_type>/<str:adm0>/', map_view, name="mapview"),
                   path(r'mapviewer/<str:location_type>/<str:adm0>/<str:adm1>/', map_view, name="mapview"),
+                  path(r'mapviewer/<str:location_type>/<str:adm0>/<str:adm1>/', map_view, name="mapview"),
                   path(r'mapviewer/<str:location_type>/<str:adm0>/<str:adm1>/<str:adm2>/', map_view, name="mapview"),
 
                   # MapViewer configuration
                   path(r'api/mapviewer-config', get_mapviewer_config, name="mapview_config"),
-
                   # Authentication
                   path('api/auth/register/', RegisterView.as_view(), name='auth_register'),
-                  path('api/auth/password-reset/', ResetPasswordView.as_view(), name='auth_password_reset'),
-                  path('api/auth/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+                  path('api/auth/reset-password/', ResetPasswordView.as_view(), name='auth_password_reset'),
+                  path('api/auth/token/', EmailTokenObtainPairView.as_view(), name='token_obtain_pair'),
+                  path('api/auth/token/verify/', UserTokenVerifyView.as_view(), name='token_verify'),
                   path('api/auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
                   # Country

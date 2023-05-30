@@ -1,4 +1,5 @@
 import math
+import pathlib
 import tempfile
 
 import numpy as np
@@ -9,14 +10,17 @@ import xarray as xr
 from django.core.files import File
 from django.forms import FileField
 from django_large_image import tilesource
-from django_large_image.utilities import field_file_to_local_path
+from django_large_image.utilities import field_file_to_local_path, get_cache_dir, get_file_lock, get_file_safe_path
 from large_image.exceptions import TileSourceError
+from rasterio import CRS
+from rasterio.mask import mask
 from rest_framework.exceptions import APIException
 from rio_cogeo.cogeo import cog_translate
 from rio_cogeo.profiles import cog_profiles
+from shapely import wkb
 
 from geomanager.errors import UnsupportedRasterFormat
-from geomanager.models import LayerRasterFile
+from geomanager.models import LayerRasterFile, Geostore
 
 
 def get_tile_source(path, options=None):
@@ -26,6 +30,7 @@ def get_tile_source(path, options=None):
     encoding = options.get("encoding")
     style = options.get("style")
     projection = options.get("projection")
+    geostore_id = options.get("geostore_id")
 
     kwargs = {}
 
@@ -36,7 +41,26 @@ def get_tile_source(path, options=None):
     if projection:
         kwargs["projection"] = projection
 
-    file_path = field_file_to_local_path(path)
+    geostore = None
+
+    if geostore_id:
+        try:
+            geostore = Geostore.objects.get(pk=geostore_id)
+        except Exception:
+            pass
+
+    if geostore:
+        field_file_basename = pathlib.PurePath(path.name).name
+        directory = get_cache_dir() / f'{type(path.instance).__name__}-{geostore_id}-{path.instance.pk}'
+        dest_path = directory / field_file_basename
+        lock = get_file_lock(dest_path)
+        safe = get_file_safe_path(dest_path)
+        with lock.acquire():
+            if not safe.exists():
+                dest_path.parent.mkdir(parents=True, exist_ok=True)
+                file_path = clip_geotiff(path.file.name, geostore.geom, dest_path)
+    else:
+        file_path = field_file_to_local_path(path)
 
     try:
         return tilesource.get_tilesource_from_path(file_path, source=None, **kwargs)
@@ -183,3 +207,22 @@ def create_layer_raster_file(layer, upload, time, band_index=None, data_variable
                 file_name = f"{data_variable}_{file_name}"
             raster.file.save(file_name, file_content)
             raster.save()
+
+
+def clip_geotiff(geotiff_path, geom, out_file):
+    geom = wkb.loads(geom.hex)
+    data = rasterio.open(geotiff_path)
+    out_img, out_transform = mask(data, shapes=[geom], crop=True)
+    out_meta = data.meta.copy()
+    out_meta.update({
+        "driver": "GTiff",
+        "height": out_img.shape[1],
+        "width": out_img.shape[2],
+        "transform": out_transform,
+        "crs": CRS.from_epsg(code=4326),
+    })
+
+    with rasterio.open(out_file, "w", **out_meta) as dest:
+        dest.write(out_img)
+
+    return out_file

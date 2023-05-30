@@ -1,5 +1,6 @@
 import uuid
 
+from django import forms
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django_countries.fields import CountryField
@@ -28,7 +29,7 @@ class Category(TimeStampedModel, AdminSortable, ClusterableModel):
     title = models.CharField(max_length=16, verbose_name=_("title"), help_text=_("Title of the category"))
     icon = models.CharField(max_length=255, verbose_name=_("icon"), blank=True, null=True)
     active = models.BooleanField(default=True, verbose_name=_("active"), help_text=_("Is the category active ?"))
-    public = models.BooleanField(default=False, verbose_name=_("public"), help_text=_("Is the category public ?"))
+    public = models.BooleanField(default=True, verbose_name=_("public"), help_text=_("Is the category public ?"))
 
     class Meta(AdminSortable.Meta):
         verbose_name_plural = _("Categories")
@@ -88,9 +89,8 @@ class Dataset(TimeStampedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=255, verbose_name=_("title"),
                              help_text=_("The Dataset title as will appear to the public"))
-    category = models.ForeignKey(Category, verbose_name=_("category"), null=True, blank=True, on_delete=models.SET_NULL)
-    sub_category = models.ForeignKey(SubCategory, verbose_name=_("sub_category"), null=True, blank=True,
-                                     on_delete=models.SET_NULL)
+    category = models.ForeignKey(Category, verbose_name=_("category"), on_delete=models.PROTECT)
+    sub_category = models.ForeignKey(SubCategory, verbose_name=_("sub_category"), on_delete=models.PROTECT)
     summary = models.CharField(max_length=100, null=True, blank=True,
                                verbose_name=_("summary"),
                                help_text=_("Short summary of less than 100 characters"))
@@ -311,8 +311,34 @@ def get_styles():
     return [(style.id, style.name) for style in TileGlStyle.objects.all()]
 
 
+class BaseLayer(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=255, verbose_name=_("title"), help_text=_("layer title"))
+    default = models.BooleanField(default=False, verbose_name=_("default"), help_text=_("Is Default Layer"))
+
+    @property
+    def edit_url(self):
+        edit_url = get_layer_action_url(layer_type=self.dataset.layer_type, action="edit", action_args=self.pk)
+        return edit_url
+
+    @property
+    def upload_url(self):
+        return get_upload_url(layer_type=self.dataset.layer_type, dataset_id=self.dataset.pk, layer_id=self.pk)
+
+    @property
+    def preview_url(self):
+        return get_preview_url(layer_type=self.dataset.layer_type, dataset_id=self.dataset.pk, layer_id=self.pk)
+
+    class Meta:
+        abstract = True
+
+
 @register_setting
 class GeomanagerSettings(BaseSiteSetting):
+    GADM_VERSION = (
+        ("4.1", "4.1"),
+    )
+
     max_upload_size_mb = models.IntegerField(default=DEFAULT_RASTER_MAX_UPLOAD_SIZE_MB,
                                              verbose_name=_("Maximum upload size in MegaBytes"),
                                              help_text=_(
@@ -325,6 +351,7 @@ class GeomanagerSettings(BaseSiteSetting):
     pg_service_user = models.CharField(max_length=100, default="vectordata_user",
                                        verbose_name=_("vector database user"), help_text=_("Postgis vector data user"))
     pg_service_user_password = models.CharField(max_length=100,
+                                                default="vectordata_#*!_change_me+>?",
                                                 verbose_name=_("vector database user password"),
                                                 help_text=_("Postgis vector data user password"))
     tile_gl_fonts_url = models.URLField(max_length=256,
@@ -344,6 +371,11 @@ class GeomanagerSettings(BaseSiteSetting):
     cap_metadata = models.ForeignKey(Metadata, on_delete=models.SET_NULL, blank=True, null=True,
                                      verbose_name=_("Metadata"))
     country = CountryField(blank_label=_("Select Country"), verbose_name=_("country"))
+    gadm_version = models.CharField(max_length=50, choices=GADM_VERSION, default="4.1",
+                                    verbose_name=_("GADM Boundary Data Version"),
+                                    help_text=_(
+                                        "It is encouraged to use the latest version. "
+                                        "See available versions here: https://gadm.org/old_versions.html"))
 
     base_maps = StreamField([
         ('basemap', blocks.StructBlock([
@@ -380,6 +412,7 @@ class GeomanagerSettings(BaseSiteSetting):
         ], heading=_("CAP Layer Settings")),
         ObjectList([
             FieldPanel("country", widget=CountrySelectWidget()),
+            FieldPanel("gadm_version"),
         ], heading=_("Region Settings")),
     ])
 
@@ -397,25 +430,3 @@ class GeomanagerSettings(BaseSiteSetting):
         if self.pg_service_schema and self.pg_service_user and self.pg_service_user_password:
             ensure_pg_service_schema_exists(self.pg_service_schema, self.pg_service_user, self.pg_service_user_password)
         super(GeomanagerSettings, self).save(*args, **kwargs)
-
-
-class BaseLayer(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    title = models.CharField(max_length=255, verbose_name=_("title"), help_text=_("layer title"))
-    default = models.BooleanField(default=False, verbose_name=_("default"), help_text=_("Is Default Layer"))
-
-    @property
-    def edit_url(self):
-        edit_url = get_layer_action_url(layer_type=self.dataset.layer_type, action="edit", action_args=self.pk)
-        return edit_url
-
-    @property
-    def upload_url(self):
-        return get_upload_url(layer_type=self.dataset.layer_type, dataset_id=self.dataset.pk, layer_id=self.pk)
-
-    @property
-    def preview_url(self):
-        return get_preview_url(layer_type=self.dataset.layer_type, dataset_id=self.dataset.pk, layer_id=self.pk)
-
-    class Meta:
-        abstract = True

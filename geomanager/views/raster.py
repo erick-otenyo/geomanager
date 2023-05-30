@@ -427,6 +427,7 @@ class RasterTileView(RasterDataMixin, APIView):
         fmt = self.get_query_param(request, "format", "png")
         projection = self.get_query_param(request, "projection", "EPSG:3857")
         style = self.get_query_param(request, "style")
+        geostore_id = self.get_query_param(request, "geostore_id")
 
         if style:
             # explict request to use layer defined style. Mostly used for admin previews
@@ -451,7 +452,8 @@ class RasterTileView(RasterDataMixin, APIView):
         options = {
             "encoding": encoding,
             "projection": projection,
-            "style": style
+            "style": style,
+            "geostore_id": geostore_id
         }
 
         source = get_tile_source(path=raster_file.file, options=options)

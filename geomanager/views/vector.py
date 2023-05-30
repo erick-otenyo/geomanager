@@ -33,6 +33,7 @@ def load_boundary(request):
 
     lm_settings = GeomanagerSettings.for_request(request)
     country = lm_settings.country
+    gadm_version = lm_settings.gadm_version
     context = {"country": country}
 
     settings_url = reverse(
@@ -46,24 +47,26 @@ def load_boundary(request):
         form = BoundaryUploadForm(request.POST, request.FILES)
 
         if form.is_valid():
-            shp_file = form.cleaned_data.get("shape_file")
+            geopackage = form.cleaned_data.get("geopackage")
             remove_existing = form.cleaned_data.get("remove_existing")
 
             if not country:
                 form.add_error(None, "Please select a country in layer manager settings and try again")
 
-            with tempfile.NamedTemporaryFile(delete=False, suffix=f"_{shp_file.name}") as temp_file:
-                for chunk in shp_file.chunks():
+            with tempfile.NamedTemporaryFile(delete=False, suffix=f"_{geopackage.name}") as temp_file:
+                for chunk in geopackage.chunks():
                     temp_file.write(chunk)
 
                 try:
-                    load_country_boundary(shp_zip_path=temp_file.name,
+                    load_country_boundary(geopackage_path=temp_file.name,
                                           country_iso=country.alpha3,
+                                          gadm_version=gadm_version,
                                           remove_existing=remove_existing)
                 except Exception as e:
                     form.add_error(None, str(e))
                     context.update({"form": form, "has_error": True})
                     countries = CountryBoundary.objects.filter(level=0)
+
                     if countries.exists():
                         context.update({"existing_countries": countries})
 

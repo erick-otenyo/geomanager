@@ -52,6 +52,10 @@ class MissingBoundaryField(Error):
     pass
 
 
+class NoMatchingBoundaryLayer(Error):
+    pass
+
+
 class NoMatchingBoundaryData(Error):
     pass
 

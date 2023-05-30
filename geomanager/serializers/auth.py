@@ -1,56 +1,43 @@
-from allauth.account.forms import ResetPasswordForm
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+
+class EmailTokenObtainSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        raw_username = attrs["username"]
+        user = get_user_model().objects.filter(email=raw_username)
+        if user:
+            user = user.first()
+            attrs['username'] = user.username
+
+        data = super().validate(attrs)
+        return data
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(
+    username = serializers.EmailField(
         required=True,
-        validators=[UniqueValidator(queryset=User.objects.all())]
+        validators=[
+            UniqueValidator(queryset=get_user_model().objects.all(), message="User with this email already exists")]
     )
 
     class Meta:
-        model = User
-        fields = ('email',)
-
-    def create(self, validated_data):
-        request = self.context.get("request")
-
-        user = User.objects.create(
-            username=validated_data['email'],
-            email=validated_data['email']
-        )
-
-        user.save()
-
-        form = ResetPasswordForm({"email": user.email})
-        if form.is_valid():
-            form.save(request)
-
-        return user
+        model = get_user_model()
+        fields = ('username',)
 
 
 class ResetPasswordSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(required=True)
+    username = serializers.EmailField(required=True)
 
     class Meta:
-        model = User
-        fields = ('email',)
+        model = get_user_model()
+        fields = ('username',)
 
-    def create(self, validated_data):
-        request = self.context.get("request")
-
-        username = validated_data['email']
-
+    def validate_username(self, value):
         try:
-            user = User.objects.get(username=username)
-            form = ResetPasswordForm({"email": user.email})
-            if form.is_valid():
-                form.save(request)
-
-            return user
-
+            get_user_model().objects.get(email=value)
         except ObjectDoesNotExist:
-            raise ValidationError({"email": "User with this email does not exist"})
+            raise ValidationError("User with this email does not exists")
