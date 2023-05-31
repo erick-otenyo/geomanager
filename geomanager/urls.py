@@ -10,10 +10,22 @@ from geomanager.views import (
     map_view,
     RegisterView,
     ResetPasswordView,
-    BoundaryVectorTileView, tile_gl, tile_json_gl, style_json_gl, get_mapviewer_config, GeoJSONPgTableView
+    BoundaryVectorTileView,
+    tile_gl,
+    tile_json_gl,
+    style_json_gl,
+    get_mapviewer_config,
+    GeoJSONPgTableView
 )
-from geomanager.views.auth import EmailTokenObtainPairView, UserTokenVerifyView
-from geomanager.views.raster import RasterDataPixelView, RasterDataPixelTimeseriesView
+from geomanager.views.auth import (
+    EmailTokenObtainPairView,
+    UserTokenVerifyView
+)
+from geomanager.views.raster import (
+    RasterDataPixelView,
+    RasterDataPixelTimeseriesView,
+    RasterDataGeostoreView
+)
 from geomanager.viewsets import (
     FileImageLayerRasterFileDetailViewSet,
     VectorTableFileDetailViewSet,
@@ -84,6 +96,8 @@ urlpatterns = [
                   path(r'api/raster-data/pixel', RasterDataPixelView.as_view(), name="raster_data_pixel"),
                   path(r'api/raster-data/pixel/timeseries', RasterDataPixelTimeseriesView.as_view(),
                        name="raster_data_pixel_timeseries"),
+
+                  path(r'api/raster-data/geostore', RasterDataGeostoreView.as_view(), name="raster_data_geostore"),
 
                   # FeatureServ
                   path(r'api/feature-serv/<str:table_name>.geojson', cache_page(3600)(GeoJSONPgTableView.as_view()),

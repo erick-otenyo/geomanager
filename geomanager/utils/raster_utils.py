@@ -22,6 +22,8 @@ from shapely import wkb
 from geomanager.errors import UnsupportedRasterFormat
 from geomanager.models import LayerRasterFile, Geostore
 
+from osgeo import gdal
+
 
 def get_tile_source(path, options=None):
     if options is None:
@@ -50,15 +52,7 @@ def get_tile_source(path, options=None):
             pass
 
     if geostore:
-        field_file_basename = pathlib.PurePath(path.name).name
-        directory = get_cache_dir() / f'{type(path.instance).__name__}-{geostore_id}-{path.instance.pk}'
-        dest_path = directory / field_file_basename
-        lock = get_file_lock(dest_path)
-        safe = get_file_safe_path(dest_path)
-        with lock.acquire():
-            if not safe.exists():
-                dest_path.parent.mkdir(parents=True, exist_ok=True)
-                file_path = clip_geotiff(path.file.name, geostore.geom, dest_path)
+        file_path = field_file_to_local_path_for_geostore(path, geostore)
     else:
         file_path = field_file_to_local_path(path)
 
@@ -83,6 +77,20 @@ def get_raster_pixel_data(file: FileField, x_coord: float, y_coord: float):
         return pixel_data.get("bands", {}).get(1)
 
     return None
+
+
+def get_geostore_data(file: FileField, geostore):
+    file_path = field_file_to_local_path_for_geostore(file, geostore)
+
+    raster = gdal.Open(str(file_path))
+    band = raster.GetRasterBand(1)
+    no_data_value = band.GetNoDataValue()
+    band_array = band.ReadAsArray()
+    valid_values = band_array[band_array != no_data_value]
+
+    raster = None
+
+    return valid_values
 
 
 def get_no_data_val(val):
@@ -226,3 +234,18 @@ def clip_geotiff(geotiff_path, geom, out_file):
         dest.write(out_img)
 
     return out_file
+
+
+def field_file_to_local_path_for_geostore(path, geostore):
+    field_file_basename = pathlib.PurePath(path.name).name
+    directory = get_cache_dir() / f'{type(path.instance).__name__}-{geostore.pk.hex}-{path.instance.pk}'
+    dest_path = directory / field_file_basename
+    lock = get_file_lock(dest_path)
+    safe = get_file_safe_path(dest_path)
+
+    with lock.acquire():
+        if not safe.exists():
+            dest_path.parent.mkdir(parents=True, exist_ok=True)
+            clip_geotiff(path.file.name, geostore.geom, dest_path)
+
+    return dest_path

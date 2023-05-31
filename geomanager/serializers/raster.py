@@ -17,11 +17,13 @@ class FileLayerSerializer(serializers.ModelSerializer):
     isMultiLayer = serializers.SerializerMethodField()
     nestedLegend = serializers.SerializerMethodField()
     canClip = serializers.SerializerMethodField()
+    analysisConfig = serializers.SerializerMethodField()
 
     class Meta:
         model = FileImageLayer
         fields = ["id", "dataset", "name", "layerType", "multiTemporal", "isMultiLayer", "legendConfig", "nestedLegend",
-                  "layerConfig", "params", "paramsSelectorConfig", "currentTimeMethod", "autoUpdateInterval", "canClip"]
+                  "layerConfig", "params", "paramsSelectorConfig", "currentTimeMethod", "autoUpdateInterval", "canClip",
+                  "analysisConfig"]
 
     def get_isMultiLayer(self, obj):
         return obj.dataset.multi_layer
@@ -62,6 +64,9 @@ class FileLayerSerializer(serializers.ModelSerializer):
 
     def get_canClip(self, obj):
         return obj.dataset.can_clip
+
+    def get_analysisConfig(self, obj):
+        return obj.get_analysis_config()
 
 
 class FileImageLayerRasterFileSerializer(serializers.ModelSerializer):

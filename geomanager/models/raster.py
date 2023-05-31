@@ -15,7 +15,12 @@ from wagtail.models import Orderable
 from wagtail_color_panel.edit_handlers import NativeColorPanel
 from wagtail_color_panel.fields import ColorField
 
-from geomanager.blocks import WmsRequestParamSelectableBlock, InlineLegendBlock, InlineIconLegendBlock
+from geomanager.blocks import (
+    WmsRequestParamSelectableBlock,
+    InlineLegendBlock,
+    FileLayerPointAnalysisBlock,
+    FileLayerAreaAnalysisBlock
+)
 from geomanager.forms import RasterStyleModelForm
 from geomanager.helpers import get_raster_layer_files_url
 from geomanager.models.core import Dataset, BaseLayer
@@ -27,11 +32,18 @@ class FileImageLayer(TimeStampedModel, BaseLayer):
                                 verbose_name=_("dataset"))
     style = models.ForeignKey("RasterStyle", null=True, blank=True, on_delete=models.SET_NULL, verbose_name=_("style"))
 
+    analysis = StreamField([
+        ('point_analysis', FileLayerPointAnalysisBlock(label=_("Point Analysis")),),
+        ('area_analysis', FileLayerAreaAnalysisBlock(label=_("Area Analysis")),),
+    ], block_counts={'point_analysis': {'max_num': 1}, 'area_analysis': {'max_num': 1}}, use_json_field=True,
+        null=True, blank=True, max_num=2, verbose_name=_("Analysis"), )
+
     panels = [
         FieldPanel("dataset"),
         FieldPanel("title"),
         FieldPanel("default"),
-        FieldPanel("style")
+        FieldPanel("style"),
+        FieldPanel("analysis")
     ]
 
     def __str__(self):
@@ -107,6 +119,45 @@ class FileImageLayer(TimeStampedModel, BaseLayer):
 
         config = {}
         return config
+
+    def get_analysis_config(self):
+        analysis_config = []
+
+        for analysis in self.analysis:
+            data = analysis.block.get_api_representation(analysis.value)
+
+            if analysis.block_type == "point_analysis":
+                if data.get("instance_data_enabled"):
+                    analysis_config.append({
+                        "locationType": "point",
+                        "analysisType": "instance",
+                        "unit": data.get("unit")
+                    })
+
+                if data.get("timeseries_data_enabled"):
+                    analysis_config.append({
+                        "locationType": "point",
+                        "analysisType": "timeseries",
+                        "unit": data.get("unit")
+                    })
+
+            if analysis.block_type == "area_analysis":
+                if data.get("instance_data_enabled"):
+                    analysis_config.append({
+                        "locationType": "admin",
+                        "analysisType": "instance",
+                        "unit": data.get("unit"),
+                        "valueType": data.get("instance_value_type")
+                    })
+                if data.get("timeseries_data_enabled"):
+                    analysis_config.append({
+                        "locationType": "admin",
+                        "analysisType": "timeseries",
+                        "unit": data.get("unit"),
+                        "aggregationMethod": data.get("timeseries_aggregation_method")
+                    })
+
+        return analysis_config
 
     def clean(self):
         # if adding a layer to a dataset that already has a layer and is not multi layer

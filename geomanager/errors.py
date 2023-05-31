@@ -68,5 +68,9 @@ class RasterFileNotFound(Error):
     pass
 
 
+class GeostoreNotFound(Error):
+    pass
+
+
 class QueryParamRequired(Error):
     pass

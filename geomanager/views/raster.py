@@ -2,7 +2,8 @@ import datetime
 import json
 from typing import Optional, Any
 
-from django.core.exceptions import ValidationError
+import numpy as np
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.template.defaultfilters import filesizeformat
@@ -24,13 +25,13 @@ from wagtail.contrib.modeladmin.helpers import AdminURLHelper
 from wagtail.models import Site
 from wagtail.snippets.permissions import get_permission_name
 
-from geomanager.errors import RasterFileNotFound, QueryParamRequired
+from geomanager.errors import RasterFileNotFound, QueryParamRequired, GeostoreNotFound
 from geomanager.forms import LayerRasterFileForm
 from geomanager.models import (
     Dataset,
     RasterUpload,
     FileImageLayer,
-    LayerRasterFile
+    LayerRasterFile, Geostore
 )
 from geomanager.models.core import GeomanagerSettings
 from geomanager.models.raster import WmsLayer
@@ -40,7 +41,7 @@ from geomanager.utils.raster_utils import (
     get_tile_source,
     read_raster_info,
     create_layer_raster_file,
-    get_raster_pixel_data
+    get_raster_pixel_data, get_geostore_data
 )
 
 ALLOWED_RASTER_EXTENSIONS = ["tif", "tiff", "geotiff", "nc"]
@@ -409,6 +410,44 @@ class RasterDataMixin:
 
         return {"time": raster_file.time, "value": pixel_data}
 
+    def get_geostore_data(self, request: Request):
+        geostore_id = self.get_query_param(request, "geostore_id")
+        value_type = self.get_query_param(request, "value_type")
+        if not geostore_id:
+            raise QueryParamRequired("geostore_id param required")
+
+        raster_file = self.get_single_raster_file(request)
+
+        try:
+            geostore = Geostore.objects.get(pk=geostore_id)
+        except ObjectDoesNotExist:
+            raise GeostoreNotFound(f"geostore with id {geostore_id} does not exist")
+
+        geostore_data = get_geostore_data(raster_file.file, geostore)
+
+        data = {}
+
+        if value_type:
+            if value_type == "mean":
+                data.update({"mean": geostore_data.mean()})
+            if value_type == "sum":
+                data.update({"sum": geostore_data.sum()})
+            elif value_type == "minmax":
+                data.update({
+                    "min": geostore_data.min(),
+                    "max": geostore_data.max()
+                })
+            elif value_type == "minmeanmax":
+                data.update({
+                    "min": geostore_data.min(),
+                    "max": geostore_data.max(),
+                    "mean": geostore_data.mean()
+                })
+        else:
+            data.update({"mean": geostore_data.mean()})
+
+        return data
+
     def get_query_param(self, request: Request, key: str, default: Optional[Any] = '') -> str:
         return request.query_params.get(key, str(default))
 
@@ -478,6 +517,17 @@ class RasterDataPixelView(RasterDataMixin, APIView):
             return JsonResponse({"message": e}, status=404)
 
         return Response(pixel_data)
+
+
+class RasterDataGeostoreView(RasterDataMixin, APIView):
+    def get(self, request):
+        try:
+            geostore = self.get_geostore_data(request)
+        except QueryParamRequired as e:
+            return JsonResponse(e.serialize, status=400)
+        except (RasterFileNotFound, GeostoreNotFound) as e:
+            return JsonResponse({"message": e}, status=404)
+        return Response(geostore)
 
 
 class RasterDataPixelTimeseriesView(RasterDataMixin, APIView):

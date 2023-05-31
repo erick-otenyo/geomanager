@@ -302,3 +302,37 @@ class CircleVectorLayerBlock(blocks.StructBlock):
     filter = blocks.CharBlock(required=False, label=_("filter"))
     maxzoom = blocks.IntegerBlock(required=False, label=_("maxzoom"))
     minzoom = blocks.IntegerBlock(required=False, label=_("minzoom"))
+
+
+class FileLayerPointAnalysisBlock(blocks.StructBlock):
+    instance_data_enabled = blocks.BooleanBlock(required=False, default=True, label=_("Show data for point"))
+    timeseries_data_enabled = blocks.BooleanBlock(required=False, default=True,
+                                                  label=_("Show timeseries data for point"))
+    unit = blocks.CharBlock(required=False, label=_("Data unit"))
+
+
+class FileLayerAreaAnalysisBlock(blocks.StructBlock):
+    TIMESERIES_AGGREGATION_METHODS = (
+        ("mean", "By Mean"),
+        ("sum", "By Sum")
+    )
+
+    INSTANCE_VALUE_TYPE_CHOICES = (
+        ("mean", "Mean of pixel values"),
+        ("sum", "Sum of pixel values"),
+        ("minmax", "Minimum, Maximum pixel values"),
+        ("minmeanmax", "Minimum, Mean, Maximum pixel values")
+    )
+
+    instance_data_enabled = blocks.BooleanBlock(required=False, default=True, label=_("Show data for area"))
+    instance_value_type = blocks.ChoiceBlock(choices=INSTANCE_VALUE_TYPE_CHOICES, default="mean",
+                                             label=_("Area value type"),
+                                             help_text=_("The value type that should be displayed"))
+
+    timeseries_data_enabled = blocks.BooleanBlock(required=False, default=True,
+                                                  label=_("Show timeseries data for area"))
+    timeseries_aggregation_method = blocks.ChoiceBlock(choices=TIMESERIES_AGGREGATION_METHODS, default="mean",
+                                                       label=_("Area timeseries data aggregation Method"),
+                                                       help_text=_("How should the region data be aggregated ?"))
+
+    unit = blocks.CharBlock(required=False, label=_("Data unit"))
