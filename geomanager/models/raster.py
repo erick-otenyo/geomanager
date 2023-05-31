@@ -65,6 +65,9 @@ class FileImageLayer(TimeStampedModel, BaseLayer):
 
         tile_url = f"{base_tiles_url}?layer={self.id}&time={{time}}"
 
+        if self.dataset.can_clip:
+            tile_url = tile_url + "&geostore_id={geostore_id}"
+
         layer_config = {
             "type": "raster",
             "source": {
@@ -77,9 +80,14 @@ class FileImageLayer(TimeStampedModel, BaseLayer):
 
     @property
     def params(self):
-        return {
+        params = {
             "time": ""
         }
+
+        if self.dataset.can_clip:
+            params.update({"geostore_id": ""})
+
+        return params
 
     @property
     def param_selector_config(self):

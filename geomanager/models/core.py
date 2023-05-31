@@ -129,6 +129,10 @@ class Dataset(TimeStampedModel):
                                                    "show current data, if multi-temporal. Leave empty to"
                                                    " disable auto updating"))
 
+    can_clip = models.BooleanField(default=False, verbose_name=_("Enable Clipping by shape"),
+                                   help_text=_("Check to enable clipping by boundary or drawn shapes, "
+                                               "for raster and vector datasets. Not implemented for WMS types"))
+
     panels = [
         FieldPanel("title"),
         FieldPanel("category"),
@@ -144,6 +148,7 @@ class Dataset(TimeStampedModel):
         FieldPanel("near_realtime"),
         FieldPanel("current_time_method"),
         FieldPanel("auto_update_interval"),
+        FieldPanel("can_clip"),
     ]
 
     def __str__(self):

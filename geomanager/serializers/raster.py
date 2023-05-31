@@ -16,11 +16,12 @@ class FileLayerSerializer(serializers.ModelSerializer):
     autoUpdateInterval = serializers.SerializerMethodField()
     isMultiLayer = serializers.SerializerMethodField()
     nestedLegend = serializers.SerializerMethodField()
+    canClip = serializers.SerializerMethodField()
 
     class Meta:
         model = FileImageLayer
         fields = ["id", "dataset", "name", "layerType", "multiTemporal", "isMultiLayer", "legendConfig", "nestedLegend",
-                  "layerConfig", "params", "paramsSelectorConfig", "currentTimeMethod", "autoUpdateInterval"]
+                  "layerConfig", "params", "paramsSelectorConfig", "currentTimeMethod", "autoUpdateInterval", "canClip"]
 
     def get_isMultiLayer(self, obj):
         return obj.dataset.multi_layer
@@ -58,6 +59,9 @@ class FileLayerSerializer(serializers.ModelSerializer):
 
     def get_currentTimeMethod(self, obj):
         return obj.dataset.current_time_method
+
+    def get_canClip(self, obj):
+        return obj.dataset.can_clip
 
 
 class FileImageLayerRasterFileSerializer(serializers.ModelSerializer):
