@@ -53,7 +53,6 @@ class ResetPasswordView(generics.CreateAPIView):
                 form.save(self.request)
 
             return user
-
         except ObjectDoesNotExist:
             raise ValidationError({"email": "User with this email does not exist"})
 

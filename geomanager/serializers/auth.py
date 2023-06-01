@@ -39,5 +39,6 @@ class ResetPasswordSerializer(serializers.ModelSerializer):
     def validate_username(self, value):
         try:
             get_user_model().objects.get(email=value)
+            return value
         except ObjectDoesNotExist:
             raise ValidationError("User with this email does not exists")
