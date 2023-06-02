@@ -2,7 +2,6 @@ import datetime
 import json
 from typing import Optional, Any
 
-import numpy as np
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404, render

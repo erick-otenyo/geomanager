@@ -3,7 +3,8 @@ from django.forms import ModelForm
 from django.utils.translation import gettext_lazy as _
 from wagtail.admin.forms import WagtailAdminModelForm
 
-from geomanager.models.user import GeoManagerUser
+from geomanager.models.aoi import AreaOfInterest
+from geomanager.models.profile import GeoManagerUserProfile
 
 
 class LayerRasterFileForm(forms.Form):
@@ -121,7 +122,13 @@ class RasterStyleModelForm(WagtailAdminModelForm):
         return True
 
 
-class GeoManagerUserForm(ModelForm):
+class GeoManagerUserProfileForm(ModelForm):
     class Meta:
-        model = GeoManagerUser
+        model = GeoManagerUserProfile
+        fields = "__all__"
+
+
+class AoiForm(ModelForm):
+    class Meta:
+        model = AreaOfInterest
         fields = "__all__"

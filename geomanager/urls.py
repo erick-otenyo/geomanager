@@ -21,6 +21,10 @@ from geomanager.views.auth import (
     EmailTokenObtainPairView,
     UserTokenVerifyView
 )
+from geomanager.views.profile import (
+    get_geomanager_user_profile,
+    create_or_update_geomanager_user_profile
+)
 from geomanager.views.raster import (
     RasterDataPixelView,
     RasterDataPixelTimeseriesView,
@@ -34,7 +38,7 @@ from geomanager.viewsets import (
     CountryBoundaryViewSet,
     MetadataViewSet
 )
-from geomanager.viewsets.user import GeoManagerUserViewSet
+from geomanager.viewsets.aoi import AoiViewSet
 
 router = SimpleRouter(trailing_slash=False)
 
@@ -44,7 +48,7 @@ router.register(r'api/metadata', MetadataViewSet)
 router.register(r'api/file-raster', FileImageLayerRasterFileDetailViewSet)
 router.register(r'api/vector-data', VectorTableFileDetailViewSet)
 
-router.register(r'api/geomanager/user', GeoManagerUserViewSet)
+router.register(r'api/aoi', AoiViewSet)
 
 urlpatterns = [
                   # MapViewer
@@ -57,12 +61,24 @@ urlpatterns = [
 
                   # MapViewer configuration
                   path(r'api/mapviewer-config', get_mapviewer_config, name="mapview_config"),
+
                   # Authentication
                   path('api/auth/register/', RegisterView.as_view(), name='auth_register'),
                   path('api/auth/reset-password/', ResetPasswordView.as_view(), name='auth_password_reset'),
                   path('api/auth/token/', EmailTokenObtainPairView.as_view(), name='token_obtain_pair'),
                   path('api/auth/token/verify/', UserTokenVerifyView.as_view(), name='token_verify'),
                   path('api/auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+
+                  # User Profile
+                  path('api/geomanager-profile/<int:user_id>', get_geomanager_user_profile,
+                       name='get_geomanager_user_profile'),
+                  path('api/geomanager-profile/update/<str:user_id>', create_or_update_geomanager_user_profile,
+                       name='update_geomanager_user_profile'),
+
+                  # # User Areas of Interest
+                  # path('api/aoi/<int:user_id>', get_user_aoi_list, name='get_user_aoi_list'),
+                  # path('api/aoi/', create_aoi, name='create_user_aoi'),
+                  # path('api/aoi/', create_aoi, name='create_user_aoi'),
 
                   # Country
                   path(r'api/country', CountryBoundaryViewSet.as_view({"get": "get"}), name="country_list"),
