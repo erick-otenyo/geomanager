@@ -4,7 +4,6 @@ import tempfile
 
 import numpy as np
 import pandas as pd
-import rasterio
 import rasterio as rio
 import xarray as xr
 from django.core.files import File
@@ -12,6 +11,7 @@ from django.forms import FileField
 from django_large_image import tilesource
 from django_large_image.utilities import field_file_to_local_path, get_cache_dir, get_file_lock, get_file_safe_path
 from large_image.exceptions import TileSourceError
+from osgeo import gdal
 from rasterio import CRS
 from rasterio.mask import mask
 from rest_framework.exceptions import APIException
@@ -21,8 +21,6 @@ from shapely import wkb
 
 from geomanager.errors import UnsupportedRasterFormat
 from geomanager.models import LayerRasterFile, Geostore
-
-from osgeo import gdal
 
 
 def get_tile_source(path, options=None):
@@ -67,10 +65,10 @@ def get_raster_pixel_data(file: FileField, x_coord: float, y_coord: float):
     source = get_tile_source(path=file)
     # get raster gdal geotransform
     gdal_geot = source.getInternalMetadata().get("GeoTransform")
-    transform = rasterio.Affine.from_gdal(*gdal_geot)
+    transform = rio.Affine.from_gdal(*gdal_geot)
 
     # get corresponding row col
-    row_col = rasterio.transform.rowcol(transform, xs=x_coord, ys=y_coord)
+    row_col = rio.transform.rowcol(transform, xs=x_coord, ys=y_coord)
     pixel_data = source.getPixel(region={'left': abs(row_col[1]), 'top': abs(row_col[0])})
 
     if pixel_data:
@@ -174,6 +172,8 @@ def convert_upload_to_geotiff(upload, out_file_path, band_index=None, data_varia
             if np.isnan(nodata_value):
                 rds = rds.rio.write_nodata(-9999, encoded=True)
 
+            # Clear attributes
+            rds.attrs = {}
             rds.rio.to_raster(out_file_path, driver="COG", compress="DEFLATE")
         except Exception as e:
             raise e
@@ -219,7 +219,7 @@ def create_layer_raster_file(layer, upload, time, band_index=None, data_variable
 
 def clip_geotiff(geotiff_path, geom, out_file):
     geom = wkb.loads(geom.hex)
-    data = rasterio.open(geotiff_path)
+    data = rio.open(geotiff_path)
     out_img, out_transform = mask(data, shapes=[geom], crop=True)
     out_meta = data.meta.copy()
     out_meta.update({
@@ -230,7 +230,7 @@ def clip_geotiff(geotiff_path, geom, out_file):
         "crs": CRS.from_epsg(code=4326),
     })
 
-    with rasterio.open(out_file, "w", **out_meta) as dest:
+    with rio.open(out_file, "w", **out_meta) as dest:
         dest.write(out_img)
 
     return out_file
