@@ -121,40 +121,42 @@ class FileImageLayer(TimeStampedModel, BaseLayer):
         return config
 
     def get_analysis_config(self):
-        analysis_config = []
+        analysis_config = {}
 
         for analysis in self.analysis:
             data = analysis.block.get_api_representation(analysis.value)
 
             if analysis.block_type == "point_analysis":
+                unit = data.get("unit")
                 if data.get("instance_data_enabled"):
-                    analysis_config.append({
-                        "locationType": "point",
-                        "analysisType": "instance",
-                        "unit": data.get("unit")
+                    analysis_config.update({
+                        "pointInstanceAnalysis": {"unit": unit}
                     })
-
                 if data.get("timeseries_data_enabled"):
-                    analysis_config.append({
-                        "locationType": "point",
-                        "analysisType": "timeseries",
-                        "unit": data.get("unit")
+                    analysis_config.update({
+                        "pointTimeseriesAnalysis": {
+                            "unit": unit,
+                            "chartType": data.get("timeseries_chart_type"),
+                            "chartColor": data.get("timeseries_chart_color")
+                        }
                     })
-
             if analysis.block_type == "area_analysis":
+                unit = data.get("unit")
                 if data.get("instance_data_enabled"):
-                    analysis_config.append({
-                        "locationType": "admin",
-                        "analysisType": "instance",
-                        "unit": data.get("unit"),
-                        "valueType": data.get("instance_value_type")
+                    analysis_config.update({
+                        "areaInstanceAnalysis": {
+                            "unit": unit,
+                            "valueType": data.get("instance_value_type")
+                        }
                     })
                 if data.get("timeseries_data_enabled"):
-                    analysis_config.append({
-                        "locationType": "admin",
-                        "analysisType": "timeseries",
-                        "unit": data.get("unit"),
-                        "aggregationMethod": data.get("timeseries_aggregation_method")
+                    analysis_config.update({
+                        "areaTimeseriesAnalysis": {
+                            "unit": unit,
+                            "aggregationMethod": data.get("timeseries_aggregation_method"),
+                            "chartType": data.get("timeseries_chart_type"),
+                            "chartColor": data.get("timeseries_chart_color")
+                        }
                     })
 
         return analysis_config
@@ -168,10 +170,15 @@ class FileImageLayer(TimeStampedModel, BaseLayer):
                     "To add multiple layers to a dataset, please mark the dataset as Multi Layer and try again")
 
 
+def layer_raster_file_dir_path(instance, filename):
+    file_dir = f"raster_files/{type(instance.layer).__name__}-{instance.layer.pk}/{filename}"
+    return file_dir
+
+
 class LayerRasterFile(TimeStampedModel):
     layer = models.ForeignKey(FileImageLayer, on_delete=models.CASCADE, related_name="raster_files",
                               verbose_name=_("layer"))
-    file = models.FileField(upload_to="raster_files", editable=False, verbose_name=_("file"))
+    file = models.FileField(upload_to=layer_raster_file_dir_path, editable=False, verbose_name=_("file"))
     time = models.DateTimeField(verbose_name=_("time"),
                                 help_text="Time for the raster file. This can be the time the data was acquired, "
                                           "or the date and time for which the data applies", )
@@ -627,6 +634,11 @@ class WmsLayer(TimeStampedModel, ClusterableModel, BaseLayer):
     @property
     def layer_name(self):
         return self.wms_request_layers.all()[0].name
+
+    def get_analysis_config(self):
+        analysis_config = []
+
+        return analysis_config
 
 
 class WmsRequestLayer(Orderable):

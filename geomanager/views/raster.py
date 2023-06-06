@@ -365,10 +365,13 @@ class RasterDataMixin:
 
         raise RasterFileNotFound(f"File not found matching 'layer': {layer_id} and 'time': {time}")
 
-    def get_multiple_raster_files(self, request: Request) -> LayerRasterFile:
+    def get_multiple_raster_files(self, request: Request) -> [LayerRasterFile]:
         layer_id = self.get_query_param(request, "layer")
         time_from = self.get_query_param(request, "time_from")
         time_to = self.get_query_param(request, "time_to")
+
+        if not layer_id:
+            raise QueryParamRequired("layer param required")
 
         if not time_from and not time_to:
             raise QueryParamRequired("time_from or time_to param required")
@@ -407,45 +410,23 @@ class RasterDataMixin:
 
         pixel_data = get_raster_pixel_data(raster_file.file, x_coord, y_coord)
 
-        return {"time": raster_file.time, "value": pixel_data}
+        return {"date": raster_file.time, "value": pixel_data}
 
-    def get_geostore_data(self, request: Request):
+    def get_geostore(self, request: Request):
         geostore_id = self.get_query_param(request, "geostore_id")
-        value_type = self.get_query_param(request, "value_type")
+
         if not geostore_id:
             raise QueryParamRequired("geostore_id param required")
-
-        raster_file = self.get_single_raster_file(request)
 
         try:
             geostore = Geostore.objects.get(pk=geostore_id)
         except ObjectDoesNotExist:
             raise GeostoreNotFound(f"geostore with id {geostore_id} does not exist")
 
+        return geostore
+
+    def get_raster_geostore_data(self, raster_file, geostore, value_type):
         geostore_data = get_geostore_data(raster_file.file, geostore)
-
-        data = {}
-
-        if value_type:
-            if value_type == "mean":
-                data.update({"mean": geostore_data.mean()})
-            if value_type == "sum":
-                data.update({"sum": geostore_data.sum()})
-            elif value_type == "minmax":
-                data.update({
-                    "min": geostore_data.min(),
-                    "max": geostore_data.max()
-                })
-            elif value_type == "minmeanmax":
-                data.update({
-                    "min": geostore_data.min(),
-                    "max": geostore_data.max(),
-                    "mean": geostore_data.mean()
-                })
-        else:
-            data.update({"mean": geostore_data.mean()})
-
-        return data
 
     def get_query_param(self, request: Request, key: str, default: Optional[Any] = '') -> str:
         return request.query_params.get(key, str(default))
@@ -518,17 +499,6 @@ class RasterDataPixelView(RasterDataMixin, APIView):
         return Response(pixel_data)
 
 
-class RasterDataGeostoreView(RasterDataMixin, APIView):
-    def get(self, request):
-        try:
-            geostore = self.get_geostore_data(request)
-        except QueryParamRequired as e:
-            return JsonResponse(e.serialize, status=400)
-        except (RasterFileNotFound, GeostoreNotFound) as e:
-            return JsonResponse({"message": e}, status=404)
-        return Response(geostore)
-
-
 class RasterDataPixelTimeseriesView(RasterDataMixin, APIView):
     def get(self, request):
         try:
@@ -543,6 +513,46 @@ class RasterDataPixelTimeseriesView(RasterDataMixin, APIView):
 
         for raster_file in raster_files:
             pixel_data = get_raster_pixel_data(raster_file.file, x_coord, y_coord)
-            timeseries_data.append({"time": raster_file.time, "value": pixel_data})
+            timeseries_data.append({"date": raster_file.time, "value": pixel_data})
+
+        return Response(timeseries_data)
+
+
+class RasterDataGeostoreView(RasterDataMixin, APIView):
+    def get(self, request):
+        try:
+            value_type = self.get_query_param(request, "value_type")
+            geostore = self.get_geostore(request)
+            raster_file = self.get_single_raster_file(request)
+            data = get_geostore_data(raster_file.file, geostore, value_type)
+        except QueryParamRequired as e:
+            return JsonResponse(e.serialize, status=400)
+        except (RasterFileNotFound, GeostoreNotFound) as e:
+            return JsonResponse({"message": e}, status=404)
+        return Response(data)
+
+
+class RasterDataGeostoreTimeseriesView(RasterDataMixin, APIView):
+    def get(self, request):
+        try:
+            value_type = self.get_query_param(request, "value_type")
+            raster_files = self.get_multiple_raster_files(request)
+            geostore = self.get_geostore(request)
+        except QueryParamRequired as e:
+            return JsonResponse(e.serialize, status=400)
+        except (RasterFileNotFound, GeostoreNotFound) as e:
+            return JsonResponse({"message": e}, status=404)
+
+        timeseries_data = []
+
+        for raster_file in raster_files:
+            data = get_geostore_data(raster_file.file, geostore, value_type)
+
+            if value_type and data.get(value_type):
+                data = data[value_type]
+            else:
+                data = data.get("mean")
+
+            timeseries_data.append({"date": raster_file.time, "value": data})
 
         return Response(timeseries_data)

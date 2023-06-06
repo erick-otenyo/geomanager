@@ -272,11 +272,7 @@ def publish_vector(request, upload_id):
 
         # cleanup
         upload.delete()
-        return JsonResponse(
-            {
-                "success": True,
-            }
-        )
+        return JsonResponse({"success": True, })
     else:
         return JsonResponse(get_response())
 

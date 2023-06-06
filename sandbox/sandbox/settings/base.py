@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "django_countries",
     "django_extensions",
     "wagtailfontawesomesvg",
+    "django_cleanup.apps.CleanupConfig",
 
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",

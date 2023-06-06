@@ -304,19 +304,22 @@ class CircleVectorLayerBlock(blocks.StructBlock):
     minzoom = blocks.IntegerBlock(required=False, label=_("minzoom"))
 
 
+TIMESERIES_CHART_TYPES = (
+    ("lines", "Line Chart"),
+    ("bars", "Bar Chart"),
+)
+
+
 class FileLayerPointAnalysisBlock(blocks.StructBlock):
     instance_data_enabled = blocks.BooleanBlock(required=False, default=True, label=_("Show data for point"))
     timeseries_data_enabled = blocks.BooleanBlock(required=False, default=True,
                                                   label=_("Show timeseries data for point"))
     unit = blocks.CharBlock(required=False, label=_("Data unit"))
+    timeseries_chart_type = blocks.ChoiceBlock(choices=TIMESERIES_CHART_TYPES, default="bars", label=_("Chart Type"))
+    timeseries_chart_color = NativeColorBlock(required=True, default="#367DA4", label=_("Chart Line/Bar Color"))
 
 
 class FileLayerAreaAnalysisBlock(blocks.StructBlock):
-    TIMESERIES_AGGREGATION_METHODS = (
-        ("mean", "By Mean"),
-        ("sum", "By Sum")
-    )
-
     INSTANCE_VALUE_TYPE_CHOICES = (
         ("mean", "Mean of pixel values"),
         ("sum", "Sum of pixel values"),
@@ -324,15 +327,21 @@ class FileLayerAreaAnalysisBlock(blocks.StructBlock):
         ("minmeanmax", "Minimum, Mean, Maximum pixel values")
     )
 
+    TIMESERIES_AGGREGATION_METHODS = (
+        ("mean", "By Mean"),
+        ("sum", "By Sum")
+    )
+
     instance_data_enabled = blocks.BooleanBlock(required=False, default=True, label=_("Show data for area"))
     instance_value_type = blocks.ChoiceBlock(choices=INSTANCE_VALUE_TYPE_CHOICES, default="mean",
                                              label=_("Area value type"),
                                              help_text=_("The value type that should be displayed"))
-
+    unit = blocks.CharBlock(required=False, label=_("Data unit"))
     timeseries_data_enabled = blocks.BooleanBlock(required=False, default=True,
                                                   label=_("Show timeseries data for area"))
     timeseries_aggregation_method = blocks.ChoiceBlock(choices=TIMESERIES_AGGREGATION_METHODS, default="mean",
                                                        label=_("Area timeseries data aggregation Method"),
                                                        help_text=_("How should the region data be aggregated ?"))
 
-    unit = blocks.CharBlock(required=False, label=_("Data unit"))
+    timeseries_chart_type = blocks.ChoiceBlock(choices=TIMESERIES_CHART_TYPES, default="bars", label=_("Chart Type"))
+    timeseries_chart_color = NativeColorBlock(required=True, default="#367DA4", label=_("circle stroke color"))

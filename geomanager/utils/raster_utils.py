@@ -9,7 +9,12 @@ import xarray as xr
 from django.core.files import File
 from django.forms import FileField
 from django_large_image import tilesource
-from django_large_image.utilities import field_file_to_local_path, get_cache_dir, get_file_lock, get_file_safe_path
+from django_large_image.utilities import (
+    field_file_to_local_path,
+    get_cache_dir,
+    get_file_lock,
+    get_file_safe_path
+)
 from large_image.exceptions import TileSourceError
 from osgeo import gdal
 from rasterio import CRS
@@ -77,18 +82,40 @@ def get_raster_pixel_data(file: FileField, x_coord: float, y_coord: float):
     return None
 
 
-def get_geostore_data(file: FileField, geostore):
+def get_geostore_data(file: FileField, geostore, value_type=None):
     file_path = field_file_to_local_path_for_geostore(file, geostore)
 
     raster = gdal.Open(str(file_path))
     band = raster.GetRasterBand(1)
     no_data_value = band.GetNoDataValue()
     band_array = band.ReadAsArray()
-    valid_values = band_array[band_array != no_data_value]
+    values = band_array[band_array != no_data_value]
+    del raster
 
-    raster = None
+    data = {}
 
-    return valid_values
+    if value_type:
+        if value_type == "mean":
+            data.update({"mean": values.mean()})
+        elif value_type == "sum":
+            data.update({"sum": values.sum()})
+        elif value_type == "minmax":
+            data.update({
+                "min": values.min(),
+                "max": values.max()
+            })
+        elif value_type == "minmeanmax":
+            data.update({
+                "min": values.min(),
+                "max": values.max(),
+                "mean": values.mean()
+            })
+        else:
+            data.update({"mean": values.mean()})
+    else:
+        data.update({"mean": values.mean()})
+
+    return data
 
 
 def get_no_data_val(val):
@@ -172,8 +199,19 @@ def convert_upload_to_geotiff(upload, out_file_path, band_index=None, data_varia
             if np.isnan(nodata_value):
                 rds = rds.rio.write_nodata(-9999, encoded=True)
 
-            # Clear attributes
-            rds.attrs = {}
+            netcdf_attrs = []
+            for key in rds.attrs.keys():
+                if key.startswith("NETCDF_"):
+                    netcdf_attrs.append(key)
+
+                # assign only one unit
+                if key == "units" and isinstance(rds.attrs["units"], list):
+                    rds.attrs["units"] = rds.attrs["units"][0]
+
+            # delete 'NETCDF_*' attributes
+            for nc_attr in netcdf_attrs:
+                rds.attrs.pop(nc_attr)
+
             rds.rio.to_raster(out_file_path, driver="COG", compress="DEFLATE")
         except Exception as e:
             raise e
@@ -227,7 +265,7 @@ def clip_geotiff(geotiff_path, geom, out_file):
         "height": out_img.shape[1],
         "width": out_img.shape[2],
         "transform": out_transform,
-        "crs": CRS.from_epsg(code=4326),
+        "crs": CRS().from_epsg(code=4326),
     })
 
     with rio.open(out_file, "w", **out_meta) as dest:
@@ -238,8 +276,8 @@ def clip_geotiff(geotiff_path, geom, out_file):
 
 def field_file_to_local_path_for_geostore(path, geostore):
     field_file_basename = pathlib.PurePath(path.name).name
-    directory = get_cache_dir() / f'{type(path.instance).__name__}-{geostore.pk.hex}-{path.instance.pk}'
-    dest_path = directory / field_file_basename
+    directory = get_cache_dir() / f"{type(path.instance).__name__}-{path.instance.pk}" / "geostore"
+    dest_path = directory / f"{geostore.pk.hex}-{field_file_basename}"
     lock = get_file_lock(dest_path)
     safe = get_file_safe_path(dest_path)
 

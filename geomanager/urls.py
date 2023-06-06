@@ -28,7 +28,8 @@ from geomanager.views.profile import (
 from geomanager.views.raster import (
     RasterDataPixelView,
     RasterDataPixelTimeseriesView,
-    RasterDataGeostoreView
+    RasterDataGeostoreView,
+    RasterDataGeostoreTimeseriesView
 )
 from geomanager.viewsets import (
     FileImageLayerRasterFileDetailViewSet,
@@ -114,6 +115,8 @@ urlpatterns = [
                        name="raster_data_pixel_timeseries"),
 
                   path(r'api/raster-data/geostore', RasterDataGeostoreView.as_view(), name="raster_data_geostore"),
+                  path(r'api/raster-data/geostore/timeseries', RasterDataGeostoreTimeseriesView.as_view(),
+                       name="raster_data_geostore_timeseries"),
 
                   # FeatureServ
                   path(r'api/feature-serv/<str:table_name>.geojson', cache_page(3600)(GeoJSONPgTableView.as_view()),
