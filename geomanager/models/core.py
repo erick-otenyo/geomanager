@@ -8,7 +8,12 @@ from django_extensions.db.models import TimeStampedModel
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
 from wagtail import blocks
-from wagtail.admin.panels import FieldPanel, TabbedInterface, ObjectList, InlinePanel
+from wagtail.admin.panels import (
+    FieldPanel,
+    TabbedInterface,
+    ObjectList,
+    InlinePanel
+)
 from wagtail.contrib.modeladmin.helpers import AdminURLHelper
 from wagtail.contrib.settings.models import BaseSiteSetting
 from wagtail.contrib.settings.registry import register_setting
@@ -18,8 +23,13 @@ from wagtail.models import Orderable
 from wagtail_adminsortable.models import AdminSortable
 from wagtailiconchooser.widgets import IconChooserWidget
 
-from geomanager.helpers import get_layer_action_url, get_preview_url, get_upload_url
-from geomanager.utils.vector_utils import ensure_pg_service_schema_exists
+from geomanager.helpers import (
+    get_layer_action_url,
+    get_preview_url,
+    get_upload_url
+)
+from .tile_gl import MBTSource
+from ..blocks import NavigationItemsBlock
 
 DEFAULT_RASTER_MAX_UPLOAD_SIZE_MB = 10
 
@@ -311,8 +321,8 @@ class Metadata(TimeStampedModel):
 
 
 def get_styles():
-    from geomanager.models.tile_gl import TileGlStyle
-    return [(style.id, style.name) for style in TileGlStyle.objects.all()]
+    from geomanager.models import MBTSource
+    return [(style.id, style.name) for style in MBTSource.objects.all()]
 
 
 class BaseLayer(models.Model):
@@ -349,19 +359,6 @@ class GeomanagerSettings(BaseSiteSetting):
                                                  "Maximum raster file size that can be uploaded in MegaBytes. "
                                                  "Default is 10Mbs."))
 
-    pg_service_schema = models.CharField(max_length=100, default="vectordata",
-                                         verbose_name=_("vector database schema"),
-                                         help_text=_("Postgis vector database schema"))
-    pg_service_user = models.CharField(max_length=100, default="vectordata_user",
-                                       verbose_name=_("vector database user"), help_text=_("Postgis vector data user"))
-    pg_service_user_password = models.CharField(max_length=100,
-                                                default="vectordata_#*!_change_me+>?",
-                                                verbose_name=_("vector database user password"),
-                                                help_text=_("Postgis vector data user password"))
-    tile_gl_fonts_url = models.URLField(max_length=256,
-                                        default="https://fonts.openmaptiles.org/{fontstack}/{range}.pbf",
-                                        verbose_name=_("GL Styles Font Url"),
-                                        help_text=_("GL Styles Font Url"))
     cap_base_url = models.URLField(max_length=256, null=True, blank=True, verbose_name=_("cap base url"))
     cap_sub_category = models.ForeignKey(SubCategory, null=True, blank=True, verbose_name=_("cap layer sub category"),
                                          on_delete=models.SET_NULL)
@@ -380,6 +377,25 @@ class GeomanagerSettings(BaseSiteSetting):
                                     help_text=_(
                                         "It is encouraged to use the latest version. "
                                         "See available versions here: https://gadm.org/old_versions.html"))
+    tile_gl_fonts_url = models.URLField(max_length=256,
+                                        default="https://fonts.openmaptiles.org/{fontstack}/{range}.pbf",
+                                        verbose_name=_("GL Styles Font Url"),
+                                        help_text=_("GL Styles Font Url"))
+    tile_gl_source = models.ForeignKey(MBTSource, blank=True, null=True, on_delete=models.SET_NULL,
+                                       verbose_name=_("Open Map Tiles Source"))
+    logo = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        verbose_name=_("Logo")
+    )
+    navigation = StreamField([
+        ('menu_items', blocks.ListBlock(NavigationItemsBlock(max_num=8))),
+    ], block_counts={
+        'menu_items': {'max_num': 1},
+    }, use_json_field=True, null=True, blank=True)
 
     base_maps = StreamField([
         ('basemap', blocks.StructBlock([
@@ -388,7 +404,6 @@ class GeomanagerSettings(BaseSiteSetting):
             ('image', ImageChooserBlock(required=False, label=_("image"))),
             ('basemapGroup', blocks.CharBlock(label=_("basemap group"))),
             ('labelsGroup', blocks.CharBlock(label=_("labels group"))),
-            ('mapStyle', blocks.ChoiceBlock(choices=get_styles, lable=_("map style"))),
             ('url', blocks.URLBlock(required=False, label=_("url"))),
             ('default', blocks.BooleanBlock(required=False, label=_("default"), help_text=_("Is default style ?"))),
         ]))
@@ -399,12 +414,8 @@ class GeomanagerSettings(BaseSiteSetting):
             FieldPanel("max_upload_size_mb"),
         ], heading=_("Upload Settings")),
         ObjectList([
-            FieldPanel("pg_service_schema"),
-            FieldPanel("pg_service_user"),
-            FieldPanel("pg_service_user_password"),
-        ], heading=_("Vector DB Settings")),
-        ObjectList([
             FieldPanel("tile_gl_fonts_url"),
+            FieldPanel("tile_gl_source"),
             FieldPanel("base_maps"),
         ], heading=_("Basemap TileServer Settings")),
         ObjectList([
@@ -418,6 +429,10 @@ class GeomanagerSettings(BaseSiteSetting):
             FieldPanel("country", widget=CountrySelectWidget()),
             FieldPanel("gadm_version"),
         ], heading=_("Region Settings")),
+        ObjectList([
+            FieldPanel("logo"),
+            FieldPanel("navigation"),
+        ], heading=_("Branding Settings")),
     ])
 
     @property
@@ -429,8 +444,3 @@ class GeomanagerSettings(BaseSiteSetting):
     @property
     def max_upload_size_bytes(self):
         return self.max_upload_size_mb * 1024 * 1024
-
-    def save(self, *args, **kwargs):
-        if self.pg_service_schema and self.pg_service_user and self.pg_service_user_password:
-            ensure_pg_service_schema_exists(self.pg_service_schema, self.pg_service_user, self.pg_service_user_password)
-        super(GeomanagerSettings, self).save(*args, **kwargs)

@@ -1,9 +1,33 @@
 {% extends "django_nextjs/document_base.html" %}
-{% load wagtailadmin_tags %}
-
+{% load wagtailadmin_tags wagtailimages_tags static %}
 
 {% block head %}
     {{ block.super }}
+
+    <style>
+        .navbar {
+            border-bottom: 1px solid rgb(229, 229, 223);
+        }
+
+        .navbar-logo {
+            height: 100%;
+            max-width: 300px;
+            min-width: 200px;
+        }
+
+        .navbar-item {
+            padding: 0 10px;
+            margin: 0 5px;
+            cursor: pointer;
+            color: rgb(85, 85, 85);
+            font-size: 14px;
+            text-transform: uppercase;
+            text-decoration: none;
+            position: relative;
+            white-space: nowrap;
+            line-height: 1;
+        }
+    </style>
 
 {% endblock %}
 
@@ -15,13 +39,33 @@
     </div>
     <div style="height: 50px;position: absolute;top:0;z-index: 9999;background: #fff;width: 100%;">
         <nav class="navbar" role="navigation" aria-label="main navigation"
-             style="height: 100%;width: 100%">
-            <div class="navbar-brand" style="height: 100%;width: 100%">
-                <a class="navbar-item" href="/" style="height: 100%;width: 100%">
-                    <img src="http://20.56.94.119/cms/media/images/MINISTRY_OF_ENVIRONMENT_AND_FORESTRY_2.width-1000.png"
-                         style="padding:4px;height: 100%;max-width: 200px" alt="Brand Logo">
-                </a>
+             style="height: 100%;width: 100%;display: flex;align-items: center">
+            <div class="navbar-brand">
+                {% if logo %}
+                    <a class="navbar-item navbar-logo" href="/" style="height: 100%;width: 100%;margin-left: 10px">
+                        {% image logo original as logo_img %}
+                        <img src="{{ logo_img.url }}" style="padding:4px;height: 100%;max-width: 200px"
+                             alt="Brand Logo">
+                    </a>
+                {% else %}
+                    <a class="navbar-item" href="/" style="height: 100%;width: 100%;margin-left: 10px">
+                        <img src="{% static 'geomanager/images/geomapviewer-logo.png' %}"
+                             style="padding:4px;height: 100%;max-width: 200px"
+                             alt="Brand Logo">
+                    </a>
+                {% endif %}
             </div>
+
+            {% if menu_items %}
+                <div class="navbar-menu" style="display: flex">
+                    {% for menu_item in menu_items %}
+                        <a class="navbar-item" href="{{ menu_item.page.url }}" target="_blank"
+                           rel="noopener noreferrer">
+                            {{ menu_item.label }}
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
         </nav>
     </div>
     {{ block.super }}

@@ -17,6 +17,33 @@ def open_mbtiles(database_path):
     return MBTiles(str(database_path))
 
 
+MBTILES_SCHEMA = {
+    "metadata_keys": {
+        "must": ["name", "format", "json"],
+        "should": ["bounds", "center", "minzoom", "maxzoom", ],
+        "may": ["attribution", "description", "type", "version", "scheme"]
+    },
+    "layers": [
+        "aerodrome_label",
+        "aeroway",
+        "boundary",
+        "building",
+        "housenumber",
+        "landcover",
+        "landuse",
+        "mountain_peak",
+        "park",
+        "place",
+        "poi",
+        "transportation",
+        "transportation_name",
+        "water",
+        "water_name",
+        "waterway",
+    ]
+}
+
+
 class MBTiles:
     _connection = None
 
@@ -62,9 +89,11 @@ class MBTiles:
             if field not in metadata:
                 raise MBTilesInvalid(f'Missing required metadata field "{field}"')
 
-        if metadata["format"] == "pbf":
-            if "json" not in metadata:
-                raise MBTilesInvalid(f'Missing required metadata field "json"')
+        if metadata["format"] != "pbf":
+            raise MBTilesInvalid(f"Times format must be pbf")
+
+        if "json" not in metadata:
+            raise MBTilesInvalid(f'Missing required metadata field "json"')
 
     def _parse_metadata_bounds(self, metadata):
         if "bounds" in metadata:
@@ -82,6 +111,18 @@ class MBTiles:
     def _parse_metadata_json(self, metadata):
         if "json" in metadata:
             metadata["json"] = json.loads(metadata["json"])
+
+            if not metadata.get("json").get("vector_layers"):
+                raise MBTilesInvalid("Metadata JSON has not vector_layers")
+
+            available_layer_ids = []
+
+            for layer in metadata["json"].get("vector_layers"):
+                available_layer_ids.append(layer.get("id"))
+
+            for layer in MBTILES_SCHEMA.get("layers"):
+                if layer not in available_layer_ids:
+                    raise MBTilesInvalid(f"Required layer '{layer}' not in available layers {str(available_layer_ids)}")
 
     # FIXME: WHAT SHOULD BE THE DEFAULT?
     def _add_scheme_with_default(self, metadata, default="tms"):
@@ -102,7 +143,7 @@ class MBTiles:
         cursor.close()
 
         if not tile:
-            raise MissingTileError()
+            raise MissingTileError("Tile missing")
         return tile
 
     def __enter__(self):

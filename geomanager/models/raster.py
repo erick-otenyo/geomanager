@@ -178,7 +178,7 @@ def layer_raster_file_dir_path(instance, filename):
 class LayerRasterFile(TimeStampedModel):
     layer = models.ForeignKey(FileImageLayer, on_delete=models.CASCADE, related_name="raster_files",
                               verbose_name=_("layer"))
-    file = models.FileField(upload_to=layer_raster_file_dir_path, editable=False, verbose_name=_("file"))
+    file = models.FileField(upload_to=layer_raster_file_dir_path, verbose_name=_("file"))
     time = models.DateTimeField(verbose_name=_("time"),
                                 help_text="Time for the raster file. This can be the time the data was acquired, "
                                           "or the date and time for which the data applies", )

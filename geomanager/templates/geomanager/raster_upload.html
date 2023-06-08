@@ -9,7 +9,7 @@
     {{ block.super }}
     {{ form_media.css }}
 
-    <link rel="stylesheet" href="{% static 'css/upload.css' %}">
+    <link rel="stylesheet" href="{% static 'geomanager/css/upload.css' %}">
 {% endblock %}
 
 
@@ -108,7 +108,7 @@
     <script src="{% versioned_static 'wagtailimages/js/vendor/jquery.fileupload-validate.js' %}"></script>
 
     <!-- Main script -->
-    <script src="{% static 'js/add-multiple.js' %}"></script>
+    <script src="{% static 'geomanager/js/add-multiple.js' %}"></script>
 
     <script>
         window.fileupload_opts = {

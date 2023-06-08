@@ -16,7 +16,6 @@ from django_large_image.utilities import (
     get_file_safe_path
 )
 from large_image.exceptions import TileSourceError
-from osgeo import gdal
 from rasterio import CRS
 from rasterio.mask import mask
 from rest_framework.exceptions import APIException
@@ -58,22 +57,22 @@ def get_tile_source(path, options=None):
         file_path = field_file_to_local_path_for_geostore(path, geostore)
     else:
         file_path = field_file_to_local_path(path)
-
     try:
         return tilesource.get_tilesource_from_path(file_path, source=None, **kwargs)
-    except TileSourceError as e:
+    except (TileSourceError, Exception) as e:
         # Raise 500 server error if tile source failed to open
         raise APIException(str(e))
 
 
 def get_raster_pixel_data(file: FileField, x_coord: float, y_coord: float):
     source = get_tile_source(path=file)
-    # get raster gdal geotransform
-    gdal_geot = source.getInternalMetadata().get("GeoTransform")
-    transform = rio.Affine.from_gdal(*gdal_geot)
+
+    # get raster affine transform
+    metadata = source.getInternalMetadata()
+    affine = metadata.get("Affine")
 
     # get corresponding row col
-    row_col = rio.transform.rowcol(transform, xs=x_coord, ys=y_coord)
+    row_col = rio.transform.rowcol(affine, xs=x_coord, ys=y_coord)
     pixel_data = source.getPixel(region={'left': abs(row_col[1]), 'top': abs(row_col[0])})
 
     if pixel_data:
@@ -83,37 +82,37 @@ def get_raster_pixel_data(file: FileField, x_coord: float, y_coord: float):
 
 
 def get_geostore_data(file: FileField, geostore, value_type=None):
-    file_path = field_file_to_local_path_for_geostore(file, geostore)
-
-    raster = gdal.Open(str(file_path))
-    band = raster.GetRasterBand(1)
-    no_data_value = band.GetNoDataValue()
-    band_array = band.ReadAsArray()
-    values = band_array[band_array != no_data_value]
-    del raster
-
     data = {}
 
-    if value_type:
-        if value_type == "mean":
-            data.update({"mean": values.mean()})
-        elif value_type == "sum":
-            data.update({"sum": values.sum()})
-        elif value_type == "minmax":
-            data.update({
-                "min": values.min(),
-                "max": values.max()
-            })
-        elif value_type == "minmeanmax":
-            data.update({
-                "min": values.min(),
-                "max": values.max(),
-                "mean": values.mean()
-            })
+    try:
+        file_path = field_file_to_local_path_for_geostore(file, geostore)
+
+        with rio.open(str(file_path), 'r') as src:
+            band_array = src.read(1)
+            values = band_array[band_array != src.nodata]
+
+        if value_type:
+            if value_type == "mean":
+                data.update({"mean": values.mean()})
+            elif value_type == "sum":
+                data.update({"sum": values.sum()})
+            elif value_type == "minmax":
+                data.update({
+                    "min": values.min(),
+                    "max": values.max()
+                })
+            elif value_type == "minmeanmax":
+                data.update({
+                    "min": values.min(),
+                    "max": values.max(),
+                    "mean": values.mean()
+                })
+            else:
+                data.update({"mean": values.mean()})
         else:
             data.update({"mean": values.mean()})
-    else:
-        data.update({"mean": values.mean()})
+    except Exception:
+        pass
 
     return data
 
@@ -183,16 +182,23 @@ def convert_upload_to_geotiff(upload, out_file_path, band_index=None, data_varia
     if driver == "netCDF":
         rds = xr.open_dataset(upload.file.path)
 
-        # write crs if not available
-        if not crs:
-            rds.rio.write_crs("epsg:4326", inplace=True)
         try:  # index must start from 0
-
             if data_variable:
                 rds = rds[data_variable]
 
             if timestamps and band_index:
                 rds = rds.isel(time=int(band_index))
+
+            # write crs if not available
+            if not rds.rio.crs:
+                epsg = "epsg:4326"
+                if crs and isinstance(crs, dict) and crs.get("init"):
+                    epsg = crs.get("init")
+                rds = rds.rio.write_crs(epsg)
+
+            # drop grid_mapping attr. somehow it causes errors when saving
+            if rds.rio.crs and rds.attrs.get("grid_mapping"):
+                rds.attrs.pop("grid_mapping")
 
             # make sure no data value is not nan
             nodata_value = rds.encoding.get('nodata', rds.encoding.get('_FillValue'))

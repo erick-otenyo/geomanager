@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.views.decorators.cache import cache_control
 
 from geomanager.errors import MissingTileError
-from geomanager.models import MBTSource, TileGlStyle
+from geomanager.models import MBTSource
 from geomanager.utils.tile_gl import center_from_bounds, open_mbtiles
 
 DEFAULT_ZOOM = 13
@@ -15,8 +15,8 @@ MONTH_SECONDS = 60 * 60 * 24 * 30
 
 
 @cache_control(max_age=MONTH_SECONDS)
-def tile_gl(request, source, z, x, y):
-    source = MBTSource.objects.get(slug=source)
+def tile_gl(request, source_slug, z, x, y):
+    source = MBTSource.objects.get(slug=source_slug)
     with (open_mbtiles(source.file.path)) as mbtiles:
         try:
             data = mbtiles.tile(z, x, y)
@@ -35,8 +35,8 @@ def tile_gl(request, source, z, x, y):
             )
 
 
-def tile_json_gl(request, source):
-    source = MBTSource.objects.get(slug=source)
+def tile_json_gl(request, source_slug):
+    source = MBTSource.objects.get(slug=source_slug)
     with open_mbtiles(source.file.path) as mbtiles:
         metadata = mbtiles.metadata()
 
@@ -87,13 +87,14 @@ def tile_json_gl(request, source):
         return JsonResponse(spec)
 
 
-def style_json_gl(request, style_name):
-    style = TileGlStyle.objects.get(slug=style_name)
-    tilejson_url = request.build_absolute_uri(reverse("tile_json_gl", args=[style.data_source.slug]))
+def style_json_gl(request, source_slug):
+    source = MBTSource.objects.get(slug=source_slug)
+    tilejson_url = request.build_absolute_uri(reverse("tile_json_gl", args=[source.slug]))
 
-    style_config = style.json
-    style_config["id"] = style.pk
-    style_config["name"] = style.name
+    style_config = source.json_style
+
+    style_config["id"] = source.pk
+    style_config["name"] = source.name
     style_config["glyphs"] = "https://fonts.openmaptiles.org/{fontstack}/{range}.pbf"
     style_config["sources"] = {
         "openmaptiles": {

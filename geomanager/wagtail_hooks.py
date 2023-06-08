@@ -394,7 +394,7 @@ class RasterStyleModelAdmin(ModelAdminCanHide):
     exclude_from_explorer = True
     create_view_class = RasterStyleCreateView
     list_display = ("__str__", "min", "max", "steps")
-    form_view_extra_js = ["js/raster_style_extra.js"]
+    form_view_extra_js = ["geomanager/js/raster_style_extra.js"]
     menu_icon = "palette"
 
     def __init__(self, parent=None):
@@ -561,6 +561,7 @@ class MBTSourceModelAdmin(ModelAdminCanHide):
     model = MBTSource
     menu_label = _("Basemap Sources")
     menu_icon = "globe-africa"
+    form_view_extra_js = ["geomanager/js/mbt_source_extra.js"]
 
 
 class LayerRasterFileModelAdmin(ModelAdminCanHide):

@@ -7,7 +7,6 @@ from urllib.parse import unquote
 from zipfile import ZipFile
 
 from django.db import connection
-from django.db.utils import OperationalError
 
 from geomanager.errors import NoShpFound, NoShxFound, NoDbfFound, InvalidFile
 
@@ -19,30 +18,6 @@ GEOM_TYPES = {
     "LINESTRING": "LineString",
     "MULTILINESTRING": "MultiLineString",
 }
-
-
-def ensure_pg_service_schema_exists(schema, user, password):
-    with connection.cursor() as cursor:
-        try:
-            schema_sql = f"""DO
-                    $do$
-                    BEGIN
-                        CREATE EXTENSION IF NOT EXISTS postgis;
-                        CREATE SCHEMA IF NOT EXISTS {schema};
-                        IF NOT EXISTS (
-                          SELECT FROM pg_catalog.pg_roles
-                          WHERE  rolname = '{user}') 
-                        THEN
-                          CREATE ROLE {user} LOGIN ENCRYPTED PASSWORD '{password}';
-                          GRANT USAGE ON SCHEMA {schema} TO {user};
-                          ALTER DEFAULT PRIVILEGES IN SCHEMA {schema} GRANT SELECT ON TABLES TO {user};
-                        END IF;
-                    END
-                    $do$;"""
-            cursor.execute(schema_sql)
-        except OperationalError:
-            # If the schema already exists, do nothing
-            pass
 
 
 def ogr2pg(file_path, table_name, db_settings, srid=4326):

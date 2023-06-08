@@ -3,7 +3,7 @@ import tempfile
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-from django.db import connection
+from django.db import connection, close_old_connections
 from django.http import JsonResponse, Http404, HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.template.defaultfilters import filesizeformat
@@ -21,6 +21,7 @@ from geomanager.forms import VectorLayerFileForm, BoundaryUploadForm
 from geomanager.models import Dataset
 from geomanager.models.core import GeomanagerSettings
 from geomanager.models.vector import VectorLayer, VectorUpload, PgVectorTable, CountryBoundary
+from geomanager.settings import geomanager_settings
 from geomanager.utils.boundary_loader import load_country_boundary
 from geomanager.utils.vector_utils import ogr_db_import
 
@@ -237,9 +238,6 @@ def publish_vector(request, upload_id):
             "description": description
         }
 
-        site = Site.objects.get(is_default_site=True)
-        layer_manager_settings = GeomanagerSettings.for_site(site)
-
         default_db_settings = settings.DATABASES['default']
 
         db_params = {
@@ -252,7 +250,7 @@ def publish_vector(request, upload_id):
 
         db_settings = {
             **db_params,
-            "pg_service_schema": layer_manager_settings.pg_service_schema
+            "pg_service_schema": geomanager_settings.get("vector_db_schema")
         }
 
         table_info = ogr_db_import(upload.file.path, table_name, db_settings)
@@ -345,6 +343,7 @@ class VectorTileView(View):
             SELECT ST_AsMVT(mvtgeom, 'default') FROM mvtgeom;
             """
 
+        close_old_connections()
         with connection.cursor() as cursor:
             cursor.execute(sql)
             tile = cursor.fetchone()[0]
@@ -373,7 +372,7 @@ class BoundaryVectorTileView(View):
             )
             SELECT ST_AsMVT(mvtgeom, 'default') FROM mvtgeom;
             """
-
+        close_old_connections()
         with connection.cursor() as cursor:
             cursor.execute(sql)
             tile = cursor.fetchone()[0]
@@ -392,6 +391,8 @@ class GeoJSONPgTableView(View):
 
         table_columns = [prop.get("name") for prop in vector_table.properties]
         property_fields = ", ".join(table_columns) if table_columns else "*"
+
+        close_old_connections()
 
         with connection.cursor() as cursor:
             query = f"""

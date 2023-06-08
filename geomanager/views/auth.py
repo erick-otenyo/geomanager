@@ -86,7 +86,10 @@ class UserTokenVerifyView(TokenVerifyView):
             token = AccessToken(request.data.get("token"))
 
         user_id = token.get("user_id")
-        user = get_user_model().objects.get(id=user_id)
-        user_details = {"email": user.email, "id": user.id}
+        try:
+            user = get_user_model().objects.get(id=user_id)
+            user_details = {"email": user.email, "id": user.id}
+        except ObjectDoesNotExist:
+            return Response({"detail": "user does not exist"}, status=404)
 
         return Response(user_details)

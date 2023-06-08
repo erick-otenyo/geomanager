@@ -10,8 +10,8 @@
 
     {{ form_media.css }}
 
-    <link rel="stylesheet" href="{% static 'css/vendor/maplibre-gl.css' %}">
-    <link rel="stylesheet" href="{% static 'css/preview-map.css' %}">
+    <link rel="stylesheet" href="{% static 'geomanager/css/vendor/maplibre-gl.css' %}">
+    <link rel="stylesheet" href="{% static 'geomanager/css/preview-map.css' %}">
 {% endblock %}
 
 
@@ -63,8 +63,8 @@
     {{ block.super }}
 
     {{ form_media.js }}
-    <script src="{% static 'js/vendor/maplibre-gl.js' %}"></script>
-    <script src="{% static 'js/vendor/ol.min.js' %}"></script>
+    <script src="{% static 'geomanager/js/vendor/maplibre-gl.js' %}"></script>
+    <script src="{% static 'geomanager/js/vendor/ol.min.js' %}"></script>
 
     <script>
         let dataLayers = '{{ dataset_layers|escapejs }}';
@@ -77,6 +77,6 @@
     </script>
 
     <!-- Main script -->
-    <script src="{% static 'js/wms-preview.js' %}"></script>
+    <script src="{% static 'geomanager/js/wms-preview.js' %}"></script>
 
 {% endblock %}

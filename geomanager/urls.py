@@ -123,9 +123,9 @@ urlpatterns = [
                        name="feature_serv"),
 
                   # Tiles GL
-                  path(r'api/tile-gl/tile/<str:source>/<int:z>/<int:x>/<int:y>.pbf', tile_gl, name="tile_gl"),
-                  path(r'api/tile-gl/tile-json/<str:source>.json', tile_json_gl, name="tile_json_gl"),
-                  path(r'api/tile-gl/style/<str:style_name>.json', style_json_gl, name="style_json_gl"),
+                  path(r'api/tile-gl/tile/<str:source_slug>/<int:z>/<int:x>/<int:y>.pbf', tile_gl, name="tile_gl"),
+                  path(r'api/tile-gl/tile-json/<str:source_slug>.json', tile_json_gl, name="tile_json_gl"),
+                  path(r'api/tile-gl/style/<str:source_slug>.json', style_json_gl, name="style_json_gl"),
 
                   # Additional, standalone URLs from django-large-image
                   path('', include('django_large_image.urls')),

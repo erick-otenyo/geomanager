@@ -5,6 +5,11 @@ from wagtail_color_panel.blocks import NativeColorBlock
 from wagtailiconchooser.blocks import IconChooserBlock
 
 
+class NavigationItemsBlock(blocks.StructBlock):
+    label = blocks.CharBlock(label=_("Label"))
+    page = blocks.PageChooserBlock(label=_("Page"))
+
+
 class WmsRequestParamSelectableBlock(blocks.StructBlock):
     SELECTOR_TYPE_CHOICES = (
         ("radio", "Radio"),
