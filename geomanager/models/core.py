@@ -138,7 +138,7 @@ class Dataset(TimeStampedModel):
                                                    "show current data, if multi-temporal. Leave empty to"
                                                    " disable auto updating"))
 
-    can_clip = models.BooleanField(default=False, verbose_name=_("Enable Clipping by shape"),
+    can_clip = models.BooleanField(default=True, verbose_name=_("Enable Clipping by shape"),
                                    help_text=_("Check to enable clipping by boundary or drawn shapes, "
                                                "for raster and vector datasets. Not implemented for WMS types"))
 
