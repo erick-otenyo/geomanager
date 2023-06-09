@@ -393,13 +393,13 @@ class RasterStyleModelAdmin(ModelAdminCanHide):
     model = RasterStyle
     exclude_from_explorer = True
     create_view_class = RasterStyleCreateView
-    list_display = ("__str__", "min", "max", "steps")
+    list_display = ("__str__", "min", "max")
     form_view_extra_js = ["geomanager/js/raster_style_extra.js"]
     menu_icon = "palette"
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.list_display = (list(self.list_display) or []) + ['preview']
+        self.list_display = (list(self.list_display) or []) + ["preview"]
         self.preview.__func__.short_description = _("Color Preview")
 
     def preview(self, obj):

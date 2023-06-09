@@ -227,7 +227,7 @@ class RasterStyle(TimeStampedModel, ClusterableModel):
                                        verbose_name=_("Color for the rest of values"),
                                        help_text=_(
                                            "Color for values greater than the values defined above, "
-                                           "as well as values greater than the maximum value"))
+                                           "as well as values greater than the maximum defined value"))
 
     def __str__(self):
         return self.name
@@ -239,15 +239,15 @@ class RasterStyle(TimeStampedModel, ClusterableModel):
             [
                 FieldPanel("min"),
                 FieldPanel("max"),
-                FieldPanel("steps"),
-            ]
+            ], _("Data values")
         ),
-        FieldPanel("use_custom_colors"),
+        FieldPanel("steps"),
         FieldPanel("palette", widget=RasterStyleWidget),
+        FieldPanel("use_custom_colors"),
         MultiFieldPanel([
             InlinePanel("color_values", heading=_("Color Values"), label=_("Color Value")),
             NativeColorPanel("custom_color_for_rest"),
-        ], "Custom Color Values"),
+        ], _("Custom Color Values")),
 
         # FieldPanel("interpolate")
     ]
@@ -372,9 +372,10 @@ class RasterStyle(TimeStampedModel, ClusterableModel):
 
 class ColorValue(TimeStampedModel, Orderable):
     layer = ParentalKey(RasterStyle, related_name='color_values')
-    threshold = models.FloatField(verbose_name=_("threshold"))
+    threshold = models.FloatField(verbose_name=_("Threshold value"), help_text=_(
+        "Values less than or equal to the input value, will be assigned the chosen color"))
     color = ColorField(default="#ff0000", verbose_name=_("color"))
-    label = models.CharField(max_length=100, blank=True, null=True, verbose_name=_('label'))
+    label = models.CharField(max_length=100, blank=True, null=True, verbose_name=_('Label for Legend'))
 
     class Meta:
         verbose_name = _("Color Value")
