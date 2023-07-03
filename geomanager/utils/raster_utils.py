@@ -180,7 +180,7 @@ def convert_upload_to_geotiff(upload, out_file_path, band_index=None, data_varia
 
     # handle netcdf
     if driver == "netCDF":
-        rds = xr.open_dataset(upload.file.path)
+        rds = xr.open_dataset(upload.file.path, engine="rasterio")
 
         try:  # index must start from 0
             if data_variable:
@@ -220,6 +220,7 @@ def convert_upload_to_geotiff(upload, out_file_path, band_index=None, data_varia
 
             rds.rio.to_raster(out_file_path, driver="COG", compress="DEFLATE")
         except Exception as e:
+            print(e)
             raise e
         finally:
             rds.close()
