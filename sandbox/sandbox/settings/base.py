@@ -210,3 +210,7 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': datetime.timedelta(days=15),
     'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=15),
 }
+
+NEXTJS_SETTINGS = {
+    "nextjs_server_url": env.str('NEXTJS_SERVER_URL', None)
+}
