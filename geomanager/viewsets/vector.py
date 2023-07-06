@@ -1,18 +1,21 @@
 import json
 
+from adminboundarymanager.models import AdminBoundary, AdminBoundarySettings
 from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.gis.geos import MultiPolygon
+from django.utils.decorators import method_decorator
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
+from wagtailcache.cache import cache_page
 
 from geomanager import serializers
-from geomanager.models import Geostore, CountryBoundary
+from geomanager.models import Geostore
 from geomanager.models.vector import PgVectorTable
-from geomanager.serializers.vector import CountrySerializer, GeostoreSerializer
+from geomanager.serializers.vector import AdminBoundarySerializer, GeostoreSerializer
 
 
 class VectorTableFileDetailViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -22,23 +25,26 @@ class VectorTableFileDetailViewSet(mixins.ListModelMixin, viewsets.GenericViewSe
     filterset_fields = ["layer"]
 
 
-class CountryBoundaryViewSet(viewsets.ViewSet):
+class AdminBoundaryViewSet(viewsets.ViewSet):
     @action(detail=True, methods=['get'])
+    @method_decorator(cache_page)
     def get(self, request):
-        countries = CountryBoundary.objects.filter(level=0)
-        data = CountrySerializer(countries, many=True).data
+        countries = AdminBoundary.objects.filter(level=0)
+        data = AdminBoundarySerializer(countries, many=True).data
         return Response(data)
 
     @action(detail=True, methods=['get'])
+    @method_decorator(cache_page)
     def get_regions(self, request, gid_0):
-        countries = CountryBoundary.objects.filter(level=1, gid_0=gid_0)
-        data = CountrySerializer(countries, many=True).data
+        countries = AdminBoundary.objects.filter(level=1, gid_0=gid_0)
+        data = AdminBoundarySerializer(countries, many=True).data
         return Response(data)
 
     @action(detail=True, methods=['get'])
+    @method_decorator(cache_page)
     def get_sub_regions(self, request, gid_0, gid_1):
-        countries = CountryBoundary.objects.filter(level=2, gid_0=gid_0, gid_1=gid_1)
-        data = CountrySerializer(countries, many=True).data
+        countries = AdminBoundary.objects.filter(level=2, gid_0=gid_0, gid_1=gid_1)
+        data = AdminBoundarySerializer(countries, many=True).data
         return Response(data)
 
 
@@ -66,6 +72,7 @@ class GeostoreViewSet(viewsets.ViewSet):
         return Response(res_data)
 
     @action(detail=True, methods=['get'])
+    @method_decorator(cache_page)
     def get(self, request, geostore_id):
         try:
             geostore = Geostore.objects.get(id=geostore_id)
@@ -75,7 +82,10 @@ class GeostoreViewSet(viewsets.ViewSet):
             raise NotFound(detail='Geostore not found')
 
     @action(detail=True, methods=['get'])
+    @method_decorator(cache_page)
     def get_by_admin(self, request, gid_0, gid_1=None, gid_2=None):
+        abm_settings = AdminBoundarySettings.for_request(request)
+        data_source = abm_settings.data_source
 
         simplify_thresh = request.GET.get("thresh")
 
@@ -90,19 +100,27 @@ class GeostoreViewSet(viewsets.ViewSet):
             "level": 0
         }
 
-        if gid_1:
-            geostore_filter.update({"id1": gid_1})
-            boundary_filter.update({"gid_1": f"{gid_0}.{gid_1}_1", "level": 1})
-        if gid_2:
-            geostore_filter.update({"id2": gid_2})
-            boundary_filter.update({"gid_2": f"{gid_0}.{gid_1}.{gid_2}_1", "level": 2})
+        if data_source != "gadm41":
+            if gid_1:
+                geostore_filter.update({"id1": gid_1})
+                boundary_filter.update({"gid_1": gid_1, "level": 1})
+            if gid_2:
+                geostore_filter.update({"id2": gid_2})
+                boundary_filter.update({"gid_2": gid_2, "level": 2})
+        else:
+            if gid_1:
+                geostore_filter.update({"id1": gid_1})
+                boundary_filter.update({"gid_1": f"{gid_0}.{gid_1}_1", "level": 1})
+            if gid_2:
+                geostore_filter.update({"id2": gid_2})
+                boundary_filter.update({"gid_2": f"{gid_0}.{gid_1}.{gid_2}_1", "level": 2})
 
         geostore = Geostore.objects.filter(**geostore_filter)
         should_save = False
 
         if not geostore.exists():
             should_save = True
-            geostore = CountryBoundary.objects.filter(**boundary_filter)
+            geostore = AdminBoundary.objects.filter(**boundary_filter)
 
         if not geostore.exists():
             raise NotFound(detail='Geostore not found')

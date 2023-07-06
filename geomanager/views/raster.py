@@ -9,6 +9,7 @@ from django.template.defaultfilters import filesizeformat
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django_large_image import tilesource
 from large_image.exceptions import TileSourceXYZRangeError
@@ -23,6 +24,7 @@ from wagtail.admin.auth import (
 from wagtail.contrib.modeladmin.helpers import AdminURLHelper
 from wagtail.models import Site
 from wagtail.snippets.permissions import get_permission_name
+from wagtailcache.cache import cache_page
 
 from geomanager.errors import RasterFileNotFound, QueryParamRequired, GeostoreNotFound
 from geomanager.forms import LayerRasterFileForm
@@ -432,6 +434,7 @@ class RasterDataMixin:
         return request.query_params.get(key, str(default))
 
 
+@method_decorator(cache_page, name='get')
 class RasterTileView(RasterDataMixin, APIView):
     # TODO: Validate style query param thoroughly. If not validated, the whole app just exits without warning.
     # TODO: Cache getting layer style. We should not be querying the database each time for style
@@ -487,6 +490,7 @@ class RasterTileView(RasterDataMixin, APIView):
         return HttpResponse(tile_binary, content_type=mime_type)
 
 
+@method_decorator(cache_page, name='get')
 class RasterDataPixelView(RasterDataMixin, APIView):
     def get(self, request):
         try:
@@ -499,6 +503,7 @@ class RasterDataPixelView(RasterDataMixin, APIView):
         return Response(pixel_data)
 
 
+@method_decorator(cache_page, name='get')
 class RasterDataPixelTimeseriesView(RasterDataMixin, APIView):
     def get(self, request):
         try:
@@ -518,6 +523,7 @@ class RasterDataPixelTimeseriesView(RasterDataMixin, APIView):
         return Response(timeseries_data)
 
 
+@method_decorator(cache_page, name='get')
 class RasterDataGeostoreView(RasterDataMixin, APIView):
     def get(self, request):
         try:
@@ -532,6 +538,7 @@ class RasterDataGeostoreView(RasterDataMixin, APIView):
         return Response(data)
 
 
+@method_decorator(cache_page, name='get')
 class RasterDataGeostoreTimeseriesView(RasterDataMixin, APIView):
     def get(self, request):
         try:

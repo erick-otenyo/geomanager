@@ -14,12 +14,10 @@ from .raster import (
 )
 from .tile_gl import tile_gl, tile_json_gl, style_json_gl
 from .vector import (
-    load_boundary,
     upload_vector_file,
     publish_vector,
     delete_vector_upload,
     preview_vector_layers,
     VectorTileView,
-    BoundaryVectorTileView,
     GeoJSONPgTableView
 )

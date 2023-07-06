@@ -1,6 +1,8 @@
-from django.urls import reverse
+from adminboundarymanager.models import AdminBoundarySettings
+from django.utils.decorators import method_decorator
 from rest_framework import mixins, viewsets
 from rest_framework.response import Response
+from wagtailcache.cache import cache_page
 
 from geomanager import serializers
 from geomanager.models import Dataset
@@ -16,6 +18,7 @@ class DatasetListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         context.update({'request': self.request})
         return context
 
+    @method_decorator(cache_page)
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         dataset_with_layers = []
@@ -45,12 +48,13 @@ class DatasetListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         serializer = self.get_serializer(dataset_with_layers, many=True)
 
         lm_settings = GeomanagerSettings.for_request(request)
+        abm_settings = AdminBoundarySettings.for_request(request)
         datasets = serializer.data
         config = {}
 
         # set boundaries url. This will be used to create base boundary layer
-        boundary_tiles_url = request.build_absolute_uri(reverse("boundary_tiles", args=(0, 0, 0)))
-        boundary_tiles_url = boundary_tiles_url.replace("/0/0/0", r"/{z}/{x}/{y}")
+        boundary_tiles_url = abm_settings.boundary_tiles_url
+        boundary_tiles_url = request.scheme + '://' + request.get_host() + boundary_tiles_url
         config.update({"boundaryTilesUrl": boundary_tiles_url})
 
         # set cap layer configuration. This will be used to create cap layer
@@ -68,6 +72,7 @@ class DatasetListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return Response({"datasets": datasets, "config": config, "icons": icons})
 
 
+@method_decorator(cache_page, name="retrieve")
 class MetadataViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Metadata.objects.all()
     serializer_class = serializers.MetadataSerialiazer

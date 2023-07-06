@@ -42,6 +42,9 @@ INSTALLED_APPS = [
     "search",
 
     "geomanager",
+
+    "wagtailcache",
+    "adminboundarymanager",
     "django_large_image",
     'django_json_widget',
     'django_nextjs',
@@ -87,6 +90,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "wagtailcache.cache.UpdateCacheMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -96,6 +100,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
+    "wagtailcache.cache.FetchFromCacheMiddleware",
 ]
 
 ROOT_URLCONF = "sandbox.urls"
@@ -213,4 +218,13 @@ SIMPLE_JWT = {
 
 NEXTJS_SETTINGS = {
     "nextjs_server_url": env.str('NEXTJS_SERVER_URL', None)
+}
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(BASE_DIR, 'cache'),
+        'KEY_PREFIX': 'wagtailcache',
+        'TIMEOUT': 3600,  # one hour (in seconds)
+    }
 }

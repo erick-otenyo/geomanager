@@ -10,7 +10,6 @@ from geomanager.views import (
     map_view,
     RegisterView,
     ResetPasswordView,
-    BoundaryVectorTileView,
     tile_gl,
     tile_json_gl,
     style_json_gl,
@@ -36,7 +35,7 @@ from geomanager.viewsets import (
     VectorTableFileDetailViewSet,
     DatasetListViewSet,
     GeostoreViewSet,
-    CountryBoundaryViewSet,
+    AdminBoundaryViewSet,
     MetadataViewSet
 )
 from geomanager.viewsets.aoi import AoiViewSet
@@ -82,11 +81,11 @@ urlpatterns = [
                   # path('api/aoi/', create_aoi, name='create_user_aoi'),
 
                   # Country
-                  path(r'api/country', CountryBoundaryViewSet.as_view({"get": "get"}), name="country_list"),
-                  path(r'api/country/<str:gid_0>', CountryBoundaryViewSet.as_view({"get": "get_regions"}),
+                  path(r'api/country', AdminBoundaryViewSet.as_view({"get": "get"}), name="country_list"),
+                  path(r'api/country/<str:gid_0>', AdminBoundaryViewSet.as_view({"get": "get_regions"}),
                        name="country_regions"),
                   path(r'api/country/<str:gid_0>/<str:gid_1>',
-                       CountryBoundaryViewSet.as_view({"get": "get_sub_regions"}),
+                       AdminBoundaryViewSet.as_view({"get": "get_sub_regions"}),
                        name="country_sub_regions"),
 
                   # Geostore
@@ -105,9 +104,6 @@ urlpatterns = [
                   path(r'api/raster-tiles/<int:z>/<int:x>/<int:y>', RasterTileView.as_view(), name="raster_tiles"),
                   path(r'api/vector-tiles/<int:z>/<int:x>/<int:y>', cache_page(3600)(VectorTileView.as_view()),
                        name="vector_tiles"),
-                  path(r'api/boundary-tiles/<int:z>/<int:x>/<int:y>',
-                       BoundaryVectorTileView.as_view(),
-                       name="boundary_tiles"),
 
                   # Data
                   path(r'api/raster-data/pixel', RasterDataPixelView.as_view(), name="raster_data_pixel"),
@@ -129,4 +125,5 @@ urlpatterns = [
 
                   # Additional, standalone URLs from django-large-image
                   path('', include('django_large_image.urls')),
+                  path('', include('adminboundarymanager.urls')),
               ] + router.urls

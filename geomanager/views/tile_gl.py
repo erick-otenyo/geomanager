@@ -1,6 +1,6 @@
 from django.http import HttpResponse, JsonResponse
 from django.urls import reverse
-from django.views.decorators.cache import cache_control
+from wagtailcache.cache import cache_page
 
 from geomanager.errors import MissingTileError
 from geomanager.models import MBTSource
@@ -11,10 +11,8 @@ DEFAULT_MINZOOM = 7
 DEFAULT_MAXZOOM = 15
 WORLD_BOUNDS = [-180, -85.05112877980659, 180, 85.0511287798066]
 
-MONTH_SECONDS = 60 * 60 * 24 * 30
 
-
-@cache_control(max_age=MONTH_SECONDS)
+@cache_page
 def tile_gl(request, source_slug, z, x, y):
     source = MBTSource.objects.get(slug=source_slug)
     with (open_mbtiles(source.file.path)) as mbtiles:
@@ -35,6 +33,7 @@ def tile_gl(request, source_slug, z, x, y):
             )
 
 
+@cache_page
 def tile_json_gl(request, source_slug):
     source = MBTSource.objects.get(slug=source_slug)
     with open_mbtiles(source.file.path) as mbtiles:
@@ -76,17 +75,18 @@ def tile_json_gl(request, source_slug):
             "center", center_from_bounds(spec["bounds"], DEFAULT_ZOOM)
         )
 
-        # Tile defintions
+        # Tile
         tile_url = request.build_absolute_uri(reverse("tile_gl", args=(source.slug, 0, 0, 0)))
         tile_url = tile_url.replace("/0/0/0.pbf", r"/{z}/{x}/{y}.pbf")
         spec["tiles"] = [tile_url]
 
-        # Version defintion
+        # Version
         spec["tilejson"] = "3.0.0"
 
         return JsonResponse(spec)
 
 
+@cache_page
 def style_json_gl(request, source_slug):
     source = MBTSource.objects.get(slug=source_slug)
     tilejson_url = request.build_absolute_uri(reverse("tile_json_gl", args=[source.slug]))

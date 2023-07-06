@@ -1,92 +1,30 @@
 import os
-import tempfile
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import connection, close_old_connections
 from django.http import JsonResponse, Http404, HttpResponse
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import get_object_or_404, render
 from django.template.defaultfilters import filesizeformat
 from django.template.loader import render_to_string
 from django.urls import reverse
+from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views import View
-from wagtail.admin import messages
 from wagtail.admin.auth import user_passes_test, user_has_any_page_permission, permission_denied
 from wagtail.contrib.modeladmin.helpers import AdminURLHelper
 from wagtail.models import Site
 from wagtail.snippets.permissions import get_permission_name
+from wagtailcache.cache import cache_page
 
-from geomanager.forms import VectorLayerFileForm, BoundaryUploadForm
+from geomanager.forms import VectorLayerFileForm
 from geomanager.models import Dataset
 from geomanager.models.core import GeomanagerSettings
-from geomanager.models.vector import VectorLayer, VectorUpload, PgVectorTable, CountryBoundary
+from geomanager.models.vector import VectorLayer, VectorUpload, PgVectorTable
 from geomanager.settings import geomanager_settings
-from geomanager.utils.boundary_loader import load_country_boundary
 from geomanager.utils.vector_utils import ogr_db_import
 
 ALLOWED_VECTOR_EXTENSIONS = ["zip", "geojson", "csv"]
-
-
-@user_passes_test(user_has_any_page_permission)
-def load_boundary(request):
-    template = "geomanager/boundary_loader.html"
-
-    lm_settings = GeomanagerSettings.for_request(request)
-    country = lm_settings.country
-    gadm_version = lm_settings.gadm_version
-    context = {"country": country}
-
-    settings_url = reverse(
-        "wagtailsettings:edit",
-        args=[GeomanagerSettings._meta.app_label, GeomanagerSettings._meta.model_name, ],
-    )
-
-    context.update({"settings_url": settings_url})
-
-    if request.POST:
-        form = BoundaryUploadForm(request.POST, request.FILES)
-
-        if form.is_valid():
-            geopackage = form.cleaned_data.get("geopackage")
-            remove_existing = form.cleaned_data.get("remove_existing")
-
-            if not country:
-                form.add_error(None, "Please select a country in layer manager settings and try again")
-
-            with tempfile.NamedTemporaryFile(delete=False, suffix=f"_{geopackage.name}") as temp_file:
-                for chunk in geopackage.chunks():
-                    temp_file.write(chunk)
-
-                try:
-                    load_country_boundary(geopackage_path=temp_file.name,
-                                          country_iso=country.alpha3,
-                                          gadm_version=gadm_version,
-                                          remove_existing=remove_existing)
-                except Exception as e:
-                    form.add_error(None, str(e))
-                    context.update({"form": form, "has_error": True})
-                    countries = CountryBoundary.objects.filter(level=0)
-
-                    if countries.exists():
-                        context.update({"existing_countries": countries})
-
-                    return render(request, template_name=template, context=context)
-
-            messages.success(request, "Boundary data loaded successfully")
-            return redirect(reverse("wagtailadmin_home"))
-        else:
-            context.update({"form": form})
-            return render(request, template_name=template, context=context)
-    else:
-        countries = CountryBoundary.objects.filter(level=0)
-        if countries.exists():
-            context["existing_countries"] = countries
-
-        form = BoundaryUploadForm()
-        context["form"] = form
-
-        return render(request, template_name=template, context=context)
 
 
 @user_passes_test(user_has_any_page_permission)
@@ -314,6 +252,7 @@ def preview_vector_layers(request, dataset_id, layer_id=None):
     return render(request, 'geomanager/vector_preview.html', context)
 
 
+@method_decorator(cache_page, name='get')
 class VectorTileView(View):
     def get(self, request, z, x, y):
         table_name = request.GET.get("table_name")
@@ -353,35 +292,7 @@ class VectorTileView(View):
         return HttpResponse(tile, content_type="application/x-protobuf")
 
 
-class BoundaryVectorTileView(View):
-    def get(self, request, z, x, y):
-        gid_0 = request.GET.get("gid_0")
-        boundary_filter = ""
-        if gid_0:
-            boundary_filter = f"AND t.gid_0='{gid_0}'"
-
-        sql = f"""WITH
-            bounds AS (
-              SELECT ST_TileEnvelope({z}, {x}, {y}) AS geom
-            ),
-            mvtgeom AS (
-              SELECT ST_AsMVTGeom(ST_Transform(t.geom, 3857), bounds.geom) AS geom,
-                *
-              FROM geomanager_countryboundary t, bounds
-              WHERE ST_Intersects(ST_Transform(t.geom, 4326), ST_Transform(bounds.geom, 4326)) {boundary_filter}
-            )
-            SELECT ST_AsMVT(mvtgeom, 'default') FROM mvtgeom;
-            """
-        close_old_connections()
-        with connection.cursor() as cursor:
-            cursor.execute(sql)
-            tile = cursor.fetchone()[0]
-            if not len(tile):
-                raise Http404()
-
-        return HttpResponse(tile, content_type="application/x-protobuf")
-
-
+@method_decorator(cache_page, name='get')
 class GeoJSONPgTableView(View):
     def get(self, request, table_name):
         try:

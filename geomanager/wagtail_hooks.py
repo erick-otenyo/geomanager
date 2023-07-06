@@ -1,3 +1,4 @@
+from adminboundarymanager.models import AdminBoundarySettings
 from django import forms
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import path, reverse
@@ -30,7 +31,7 @@ from .views import (
     publish_vector,
     delete_vector_upload,
     preview_vector_layers,
-    preview_wms_layers, load_boundary
+    preview_wms_layers
 )
 
 
@@ -49,9 +50,6 @@ def urlconf_geomanager():
              name='geomanager_preview_raster_dataset'),
         path('preview-raster-layers/<uuid:dataset_id>/<uuid:layer_id>/', preview_raster_layers,
              name='geomanager_preview_raster_layer'),
-
-        path('load-boundary/', load_boundary, name='geomanager_load_boundary'),
-
         path('upload-vector/', upload_vector_file, name='geomanager_upload_vector'),
         path('upload-vector/<uuid:dataset_id>/', upload_vector_file, name='geomanager_dataset_upload_vector'),
         path('upload-vector/<uuid:dataset_id>/<uuid:layer_id>/', upload_vector_file,
@@ -594,7 +592,18 @@ class GeoManagerAdminGroup(ModelAdminGroupWithHiddenItems):
     def get_submenu_items(self):
         menu_items = super().get_submenu_items()
 
-        boundary_loader = MenuItem(label=_("Boundary Data"), url=reverse("geomanager_load_boundary"), icon_name="map")
+        try:
+            settings_url = reverse(
+                "wagtailsettings:edit",
+                args=[AdminBoundarySettings._meta.app_label, AdminBoundarySettings._meta.model_name, ],
+            )
+            abm_settings_menu = MenuItem(label=_("Boundary Settings"), url=settings_url, icon_name="cog")
+            menu_items.append(abm_settings_menu)
+        except Exception:
+            pass
+
+        boundary_loader = MenuItem(label=_("Boundary Data"), url=reverse("adminboundarymanager_preview_boundary"),
+                                   icon_name="map")
         menu_items.append(boundary_loader)
 
         try:

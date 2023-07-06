@@ -2,8 +2,6 @@ import uuid
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from django_countries.fields import CountryField
-from django_countries.widgets import CountrySelectWidget
 from django_extensions.db.models import TimeStampedModel
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
@@ -371,7 +369,6 @@ class GeomanagerSettings(BaseSiteSetting):
                                                help_text=_("CAP Layer shown on map by default"))
     cap_metadata = models.ForeignKey(Metadata, on_delete=models.SET_NULL, blank=True, null=True,
                                      verbose_name=_("Metadata"))
-    country = CountryField(blank_label=_("Select Country"), verbose_name=_("country"))
     gadm_version = models.CharField(max_length=50, choices=GADM_VERSION, default="4.1",
                                     verbose_name=_("GADM Boundary Data Version"),
                                     help_text=_(
@@ -425,10 +422,6 @@ class GeomanagerSettings(BaseSiteSetting):
             FieldPanel("cap_shown_by_default"),
             FieldPanel("cap_metadata"),
         ], heading=_("CAP Layer Settings")),
-        ObjectList([
-            FieldPanel("country", widget=CountrySelectWidget()),
-            FieldPanel("gadm_version"),
-        ], heading=_("Region Settings")),
         ObjectList([
             FieldPanel("logo"),
             FieldPanel("navigation"),

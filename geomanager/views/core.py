@@ -1,15 +1,18 @@
+from adminboundarymanager.models import AdminBoundarySettings
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from wagtailcache.cache import cache_page
 
 from geomanager.models import Category
 from geomanager.models.core import GeomanagerSettings
 from geomanager.serializers import CategorySerializer
-from geomanager.utils.countries import get_country_info
 
 
 @api_view(['GET'])
+@cache_page
 def get_mapviewer_config(request):
-    settings = GeomanagerSettings.for_request(request)
+    gm_settings = GeomanagerSettings.for_request(request)
+    abm_settings = AdminBoundarySettings.for_request(request)
 
     categories = Category.objects.all()
     categories_data = CategorySerializer(categories, many=True).data
@@ -17,30 +20,23 @@ def get_mapviewer_config(request):
         "categories": categories_data,
     }
 
-    if settings.logo:
-        response.update({"logo": request.build_absolute_uri(settings.logo.file.url)})
+    if gm_settings.logo:
+        response.update({"logo": request.build_absolute_uri(gm_settings.logo.file.url)})
 
-    if settings.country:
-        country_iso = settings.country.alpha3
-        country_data = {
-            "iso": country_iso
-        }
-        country_info = get_country_info(country_iso)
-        if country_info:
-            country_data.update(**country_info)
-        country_data.update({"name": settings.country.name})
-
+    if abm_settings.countries_list:
         response.update({
-            "country": country_data
+            "countries": abm_settings.countries_list,
+            "bounds": abm_settings.combined_countries_bounds,
+            "boundaryDataSource": abm_settings.data_source
         })
 
     base_maps_data = []
 
-    tile_gl_source = settings.tile_gl_source
+    tile_gl_source = gm_settings.tile_gl_source
 
     if tile_gl_source:
         # get base maps
-        for base_map in settings.base_maps:
+        for base_map in gm_settings.base_maps:
             data = base_map.block.get_api_representation(base_map.value)
             for key, value in base_map.value.items():
                 if key == "image" and value:

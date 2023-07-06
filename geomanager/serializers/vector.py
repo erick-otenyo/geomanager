@@ -1,18 +1,19 @@
+from adminboundarymanager.models import AdminBoundary
 from rest_framework import serializers
 
 from geomanager.models.vector import (
     PgVectorTable,
     VectorLayer,
-    CountryBoundary, Geostore
+    Geostore
 )
 from geomanager.utils.vector_utils import create_feature_collection_from_geom
 
 
-class CountrySerializer(serializers.ModelSerializer):
+class AdminBoundarySerializer(serializers.ModelSerializer):
     bbox = serializers.ListField()
 
     class Meta:
-        model = CountryBoundary
+        model = AdminBoundary
         fields = ("level", "name_0", "name_1", "name_2", "gid_0", "gid_1", "gid_2", "size", "bbox")
 
 

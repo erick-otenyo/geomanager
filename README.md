@@ -80,7 +80,6 @@ The following packages will be automatically installed when installing `geomanag
 
 - wagtail>=4.2.2
 - django_extensions>=3.2.1
-- django-countries>=7.5.1
 - wagtail_color_panel>=1.4.1
 - wagtailfontawesomesvg>=0.0.3,
 - django_json_widget>=1.1.1
@@ -91,7 +90,6 @@ The following packages will be automatically installed when installing `geomanag
 - large-image-source-pil>=1.20.6
 - large-image-source-tiff>=1.20.6
 - django-filter>=22.1
-- geopandas>=0.12.2
 - cftime>=1.6.2
 - netCDF4>=1.6.3
 - rasterio>=1.3.6
@@ -103,6 +101,7 @@ The following packages will be automatically installed when installing `geomanag
 - wagtail-humanitarian-icons>=1.0.3
 - wagtail-icon-chooser>=0.0.1
 - matplotlib>=3.7.1
+- wagtail-cache>=2.2.0
 
 # Usage
 
@@ -121,11 +120,11 @@ INSTALLED_APPS = [
     "wagtail_adminsortable",
     "wagtailhumanitarianicons",
     "wagtailiconchooser",
-    "django_countries",
     "django_extensions",
     "wagtailfontawesomesvg"
     "allauth",
     "allauth.account",
+    "wagtailcache",
 
     "wagtail.contrib.modeladmin",
     "wagtail.contrib.settings",
@@ -152,6 +151,12 @@ urlpatterns = [
     ...
 ]
 ```
+
+# Wagtail Cache Setup
+
+Geomanager depends on the [wagtail-cache](https://github.com/coderedcorp/wagtail-cache) package for caching requests.
+Please have a look at the [wagtail-cache documentation](https://docs.coderedcorp.com/wagtail-cache/) for setup
+instructions
 
 # Including the Map Viewer
 

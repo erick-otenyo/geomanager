@@ -7,8 +7,6 @@ from geomanager.models import GeomanagerSettings
 def map_view(request, location_type=None, adm0=None, adm1=None, adm2=None):
     svg_sprite = str(home.sprite(None).content, "utf-8")
 
-    print(request.path, "HELLOOOOO")
-
     gm_settings = GeomanagerSettings.for_request(request)
     context = {
         "svg_sprite": svg_sprite,
