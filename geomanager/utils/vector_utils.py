@@ -6,9 +6,11 @@ from subprocess import Popen, PIPE
 from urllib.parse import unquote
 from zipfile import ZipFile
 
+import geopandas as gpd
 from django.db import connection
 
-from geomanager.errors import NoShpFound, NoShxFound, NoDbfFound, InvalidFile
+from geomanager.errors import NoShpFound, NoShxFound, NoDbfFound, InvalidFile, InvalidGeomType, \
+    GeomValidationNotImplemented
 
 GEOM_TYPES = {
     "POINT": "Point",
@@ -20,7 +22,7 @@ GEOM_TYPES = {
 }
 
 
-def ogr2pg(file_path, table_name, db_settings, srid=4326):
+def ogr2pg(file_path, table_name, db_settings, srid=4326, overwrite=False):
     # construct db connection options from uri
     db_host = db_settings.get("host")
     db_port = db_settings.get("port")
@@ -39,6 +41,11 @@ def ogr2pg(file_path, table_name, db_settings, srid=4326):
            "-nln", table_name, "-lco", f"FID=gid", "-lco", f"SCHEMA={pg_service_schema}", "-lco", "GEOMETRY_NAME=geom",
            "-nlt", "PROMOTE_TO_MULTI", "-lco", "PRECISION=NO"
            ]
+
+    # overwrite existing
+    if overwrite:
+        cmd.append("-lco")
+        cmd.append("OVERWRITE=YES")
 
     p1 = Popen(cmd, stdout=PIPE, stderr=PIPE)
 
@@ -92,25 +99,28 @@ def extract_zipped_shapefile(shp_zip_path, out_dir):
     return shp[0]
 
 
-def ogr_db_import(file_path, table_name, db_settings):
+def ogr_db_import(file_path, table_name, db_settings, overwrite=False, validate_geom_types=None):
     file_extension = os.path.splitext(file_path)[1]
 
     # handle shapefile
     if file_extension == ".zip":
         with tempfile.TemporaryDirectory() as tmpdir:
             shp = extract_zipped_shapefile(file_path, tmpdir)
-            table_info = ogr2pg(shp, table_name, db_settings)
+            if validate_geom_types and isinstance(validate_geom_types, list):
+                validate_vector_geom_type(shp, validate_geom_types, vector_format="shp")
+
+            table_info = ogr2pg(shp, table_name, db_settings, overwrite=overwrite)
 
             return table_info
 
     # handle geojson
     if file_extension == ".geojson":
-        table_info = ogr2pg(file_path, table_name, db_settings)
+        table_info = ogr2pg(file_path, table_name, db_settings, overwrite=overwrite)
         return table_info
 
     # handle geopackage
     if file_extension == ".gpkg":
-        table_info = ogr2pg(file_path, table_name, db_settings)
+        table_info = ogr2pg(file_path, table_name, db_settings, overwrite=overwrite)
         return table_info
 
     raise InvalidFile(message='Unsupported file type')
@@ -166,3 +176,16 @@ def create_feature_collection_from_geom(geom):
             }
         ]
     }
+
+
+def validate_vector_geom_type(file_path, valid_geom_types, vector_format):
+    if vector_format == "shp":
+        gdf = gpd.read_file(file_path, layer=0)
+        geom_types = gdf.geometry.geom_type.unique()
+
+        for geom_type in geom_types:
+            if geom_type not in valid_geom_types:
+                raise InvalidGeomType(
+                    f"Invalid geometry type. Expected one of {valid_geom_types}. Not {geom_type}")
+    else:
+        raise GeomValidationNotImplemented(f"Geometry Type validation not implemented for format {vector_format}")

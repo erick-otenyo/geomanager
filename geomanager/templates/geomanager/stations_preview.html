@@ -1,0 +1,109 @@
+{% extends "wagtailadmin/base.html" %}
+{% load i18n %}
+{% load l10n %}
+{% load wagtailadmin_tags wagtailimages_tags static %}
+{% block titletag %}{% blocktrans with title=page.get_admin_display_title %}Stations Data{{ title }}
+{% endblocktrans %}{% endblock %}
+{% block extra_css %}
+    {{ block.super }}
+    <link href="https://unpkg.com/maplibre-gl@3.1.0/dist/maplibre-gl.css" rel="stylesheet"/>
+{% endblock %}
+
+{% block content %}
+    {% trans "Stations Data" as header_str %}
+
+    {% include "wagtailadmin/shared/header.html" with title=header_str icon="map" action_url=load_stations_url action_text="Load Stations" %}
+
+    <div class="nice-padding">
+        <div style="margin-top: 40px;">
+            <div id="preview-map" style="height: 600px;width: 100%"></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    {{ block.super }}
+    <script src="https://unpkg.com/maplibre-gl@3.1.0/dist/maplibre-gl.js"></script>
+    <script>
+
+        const mapConfigObj = {{ mapConfig | safe }};
+        const {combinedBbox, columns, stationsVectorTilesUrl} = mapConfigObj
+
+        const bounds = [[combinedBbox[0], combinedBbox[1]], [combinedBbox[2], combinedBbox[3]]]
+
+        const defaultStyle = {
+            'version': 8,
+            'sources': {
+                'carto-dark': {
+                    'type': 'raster',
+                    'tiles': [
+                        "https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png",
+                        "https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png",
+                        "https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png",
+                        "https://d.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png"
+                    ]
+                },
+                'carto-light': {
+                    'type': 'raster',
+                    'tiles': [
+                        "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
+                        "https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
+                        "https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
+                        "https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png"
+                    ]
+                },
+                'wikimedia': {
+                    'type': 'raster',
+                    'tiles': [
+                        "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png"
+                    ]
+                }
+            },
+            'layers': [{
+                'id': 'carto-light-layer',
+                'source': 'carto-light',
+
+
+                'type': 'raster',
+                'minzoom': 0,
+                'maxzoom': 22
+            }]
+        }
+        $(document).ready(async function () {
+            const map = new maplibregl.Map({
+                container: "preview-map",
+                style: defaultStyle,
+                doubleClickZoom: false,
+            });
+
+            await new Promise((resolve) => map.on("load", resolve));
+
+            if (bounds) {
+                map.fitBounds(bounds, {padding: 20})
+            }
+
+
+            // add source
+            map.addSource("stations-source", {
+                    type: "vector",
+                    tiles: [stationsVectorTilesUrl],
+                }
+            )
+
+            // add layer
+            map.addLayer({
+                'id': 'stations-circle',
+                'type': 'circle',
+                'source': 'stations-source',
+                "source-layer": "default",
+                'paint': {
+                    'circle-color': "red",
+                    'circle-radius': 10,
+                }
+            });
+
+
+        })
+
+    </script>
+{% endblock %}

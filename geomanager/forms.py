@@ -132,3 +132,8 @@ class AoiForm(ModelForm):
     class Meta:
         model = AreaOfInterest
         fields = "__all__"
+
+
+class StationsUploadForm(forms.Form):
+    shp_zip = forms.FileField(required=True, label=_("Stations Shapefile ZIP"),
+                              widget=forms.FileInput(attrs={'accept': '.zip'}))

@@ -74,3 +74,11 @@ class GeostoreNotFound(Error):
 
 class QueryParamRequired(Error):
     pass
+
+
+class InvalidGeomType(Error):
+    pass
+
+
+class GeomValidationNotImplemented(Error):
+    pass

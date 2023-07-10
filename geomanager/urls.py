@@ -1,5 +1,4 @@
 from django.urls import include, path
-from django.views.decorators.cache import cache_page
 from rest_framework.routers import SimpleRouter
 from rest_framework_simplejwt.views import (
     TokenRefreshView, )
@@ -30,6 +29,7 @@ from geomanager.views.raster import (
     RasterDataGeostoreView,
     RasterDataGeostoreTimeseriesView
 )
+from geomanager.views.vector import StationsTileView
 from geomanager.viewsets import (
     FileImageLayerRasterFileDetailViewSet,
     VectorTableFileDetailViewSet,
@@ -102,8 +102,8 @@ urlpatterns = [
 
                   # Tiles
                   path(r'api/raster-tiles/<int:z>/<int:x>/<int:y>', RasterTileView.as_view(), name="raster_tiles"),
-                  path(r'api/vector-tiles/<int:z>/<int:x>/<int:y>', cache_page(3600)(VectorTileView.as_view()),
-                       name="vector_tiles"),
+                  path(r'api/vector-tiles/<int:z>/<int:x>/<int:y>', VectorTileView.as_view(), name="vector_tiles"),
+                  path(r'api/station-tiles/<int:z>/<int:x>/<int:y>', StationsTileView.as_view(), name="station_tiles"),
 
                   # Data
                   path(r'api/raster-data/pixel', RasterDataPixelView.as_view(), name="raster_data_pixel"),
@@ -115,7 +115,7 @@ urlpatterns = [
                        name="raster_data_geostore_timeseries"),
 
                   # FeatureServ
-                  path(r'api/feature-serv/<str:table_name>.geojson', cache_page(3600)(GeoJSONPgTableView.as_view()),
+                  path(r'api/feature-serv/<str:table_name>.geojson', GeoJSONPgTableView.as_view(),
                        name="feature_serv"),
 
                   # Tiles GL

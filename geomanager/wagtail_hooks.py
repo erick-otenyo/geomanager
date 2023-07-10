@@ -31,7 +31,9 @@ from .views import (
     publish_vector,
     delete_vector_upload,
     preview_vector_layers,
-    preview_wms_layers
+    preview_wms_layers,
+    load_stations,
+    preview_stations
 )
 
 
@@ -67,6 +69,9 @@ def urlconf_geomanager():
              name='geomanager_preview_wms_dataset'),
         path('preview-wms-layers/<uuid:dataset_id>/<uuid:layer_id>/', preview_wms_layers,
              name='geomanager_preview_wms_layer'),
+
+        path('load-stations/', load_stations, name='geomanager_load_stations'),
+        path('preview-stations/', preview_stations, name='geomanager_preview_stations'),
     ]
 
 
@@ -606,6 +611,10 @@ class GeoManagerAdminGroup(ModelAdminGroupWithHiddenItems):
                                    icon_name="map")
         menu_items.append(boundary_loader)
 
+        stations_data = MenuItem(label=_("Stations Data"), url=reverse("geomanager_preview_stations"),
+                                 icon_name="map")
+        menu_items.append(stations_data)
+
         try:
             settings_url = reverse(
                 "wagtailsettings:edit",
@@ -631,3 +640,9 @@ def register_icons(icons):
         'wagtailfontawesomesvg/solid/globe-africa.svg',
         'wagtailfontawesomesvg/solid/map.svg',
     ]
+
+
+@hooks.register('construct_settings_menu')
+def hide_settings_menu_item(request, menu_items):
+    hidden_settings = ["admin-boundary-settings", "geomanager-settings"]
+    menu_items[:] = [item for item in menu_items if item.name not in hidden_settings]
