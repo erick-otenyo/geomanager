@@ -54,6 +54,8 @@ INSTALLED_APPS = [
     "wagtailhumanitarianicons",
     "wagtailiconchooser",
     "django_countries",
+    "django_tables2",
+    "django_tables2_bulma_template",
     "django_extensions",
     "wagtailfontawesomesvg",
     "django_cleanup.apps.CleanupConfig",
@@ -228,3 +230,5 @@ CACHES = {
         'TIMEOUT': 3600,  # one hour (in seconds)
     }
 }
+
+DJANGO_TABLES2_TEMPLATE = "django-tables2/bulma.html"

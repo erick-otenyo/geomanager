@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% load static geomanager_tags %}
+
+{% block body_class %}station-detail-page{% endblock %}
+
+{% block extra_css %}
+    {{ block.super }}
+    <link href="https://unpkg.com/maplibre-gl@3.1.0/dist/maplibre-gl.css" rel="stylesheet"/>
+    <link href="{% static "css/stations_page.css" %}" rel="stylesheet"/>
+{% endblock %}
+
+{% block content %}
+    <main>
+        <section class="container" style="margin-top: 100px">
+            {% if station %}
+
+                <div style="padding: 20px 0;">
+                    <a href="{{ page.url }}" class="button">Back to all Stations</a>
+                </div>
+                <h3 class="title">Station Detail</h3>
+                {% if station_name_column %}
+                    {% get_object_attr station station_name_column as attr_val %}
+
+                    {% if attr_val %}
+                        <div style="margin-bottom: 20px;font-weight: 600">Station Name : {{ attr_val }}</div>
+                    {% endif %}
+                {% endif %}
+
+
+                <div class="columns">
+                    <div class="column is-full-mobile is-two-thirds-desktop">
+                        <table class="table is-bordered is-striped is-narrow is-fullwidth">
+                            <tbody>
+                            {% for column in columns %}
+                                <tr>
+                                    <th>{{ column.label }}</th>
+                                    {% get_object_attr station column.name as attr_val %}
+                                    <td> {% if attr_val %} {{ attr_val }} {% else %}--{% endif %} </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="column is-full-mobile is-one-third-desktop">
+                        <div id="station-map" style="height: 400px;width: 100%"></div>
+                    </div>
+                </div>
+
+            {% else %}
+                <article class="message is-danger">
+                    <div class="message-header">
+                        <p>Station Not Found</p>
+                    </div>
+                    <div class="message-body">Station with provided ID can not be found
+                    </div>
+                </article>
+            {% endif %}
+        </section>
+    </main>
+
+{% endblock content %}
+
+{% block extra_js %}
+    {{ block.super }}
+    {% if station and station.geom %}
+        <script src="https://unpkg.com/maplibre-gl@3.1.0/dist/maplibre-gl.js"></script>
+        <script>
+
+
+            const stationJson = {{ station.geom.json|safe}};
+            const stationBounds = {{ bounds|safe|default_if_none:""}};
+            const centroid = {{ station.geom.centroid.json|safe }};
+
+            const defaultStyle = {
+                'version': 8,
+                'sources': {
+                    'carto-dark': {
+                        'type': 'raster',
+                        'tiles': [
+                            "https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png",
+                            "https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png",
+                            "https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png",
+                            "https://d.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png"
+                        ]
+                    },
+                    'carto-light': {
+                        'type': 'raster',
+                        'tiles': [
+                            "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
+                            "https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
+                            "https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
+                            "https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png"
+                        ]
+                    },
+                    'wikimedia': {
+                        'type': 'raster',
+                        'tiles': [
+                            "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png"
+                        ]
+                    }
+                },
+                'layers': [{
+                    'id': 'carto-light-layer',
+                    'source': 'carto-light',
+                    'type': 'raster',
+                    'minzoom': 0,
+                    'maxzoom': 22
+                }]
+            }
+
+            $(document).ready(async function () {
+                const map = new maplibregl.Map({
+                    container: "station-map",
+                    style: defaultStyle,
+                    doubleClickZoom: false,
+                });
+
+                map.addControl(
+                    new maplibregl.NavigationControl({
+                        visualizePitch: true,
+                        showZoom: true,
+                        showCompass: true,
+                    })
+                );
+
+
+                await new Promise((resolve) => map.on("load", resolve));
+
+                if (stationBounds) {
+                    const bounds = [[stationBounds[0], stationBounds[1]], [stationBounds[2], stationBounds[3]]]
+
+                    map.fitBounds(bounds, {padding: 20})
+                }
+
+
+                // add source
+                map.addSource("station-source", {
+                        'type': 'geojson',
+                        data: stationJson
+                    }
+                )
+
+                // add layer
+                map.addLayer({
+                    'id': 'station-circle',
+                    'type': 'circle',
+                    'source': 'station-source',
+                    'paint': {
+                        'circle-color': "red",
+                        'circle-radius': 10,
+                    }
+                });
+
+
+                map.once("idle", () => {
+                    const coords = centroid.coordinates
+                    map.flyTo({
+                        center: coords
+                    });
+                })
+            })
+
+        </script>
+    {% endif %}
+{% endblock %}
+
+
+
+
+

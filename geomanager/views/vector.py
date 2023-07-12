@@ -18,7 +18,7 @@ from wagtail.snippets.permissions import get_permission_name
 from wagtailcache.cache import cache_page
 
 from geomanager.forms import VectorLayerFileForm
-from geomanager.models import Dataset, StationSettings
+from geomanager.models import Dataset
 from geomanager.models.core import GeomanagerSettings
 from geomanager.models.vector import VectorLayer, VectorUpload, PgVectorTable
 from geomanager.settings import geomanager_settings
@@ -292,32 +292,7 @@ class VectorTileView(View):
         return HttpResponse(tile, content_type="application/x-protobuf")
 
 
-@method_decorator(cache_page, name='get')
-class StationsTileView(View):
-    def get(self, request, z, x, y):
-        station_settings = StationSettings.for_request(request)
 
-        sql = f"""WITH
-            bounds AS (
-              SELECT ST_TileEnvelope({z}, {x}, {y}) AS geom
-            ),
-            mvtgeom AS (
-              SELECT ST_AsMVTGeom(ST_Transform(t.geom, 3857), bounds.geom) AS geom,
-                *
-              FROM {station_settings.full_table_name} t, bounds
-              WHERE ST_Intersects(ST_Transform(t.geom, 4326), ST_Transform(bounds.geom, 4326))
-            )
-            SELECT ST_AsMVT(mvtgeom, 'default') FROM mvtgeom;
-            """
-
-        close_old_connections()
-        with connection.cursor() as cursor:
-            cursor.execute(sql)
-            tile = cursor.fetchone()[0]
-            if not len(tile):
-                raise Http404()
-
-        return HttpResponse(tile, content_type="application/x-protobuf")
 
 
 @method_decorator(cache_page, name='get')

@@ -20,5 +20,4 @@ class AoiViewSet(viewsets.ModelViewSet):
         return super().create(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
-        print(kwargs)
         return super().update(request, *args, **kwargs)

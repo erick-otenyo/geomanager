@@ -29,7 +29,7 @@ from geomanager.views.raster import (
     RasterDataGeostoreView,
     RasterDataGeostoreTimeseriesView
 )
-from geomanager.views.vector import StationsTileView
+from geomanager.views.stations import StationsTileView
 from geomanager.viewsets import (
     FileImageLayerRasterFileDetailViewSet,
     VectorTableFileDetailViewSet,

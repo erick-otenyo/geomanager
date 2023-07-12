@@ -7,10 +7,32 @@ from urllib.parse import unquote
 from zipfile import ZipFile
 
 import geopandas as gpd
+from django.contrib.gis.db import models
 from django.db import connection
 
 from geomanager.errors import NoShpFound, NoShxFound, NoDbfFound, InvalidFile, InvalidGeomType, \
     GeomValidationNotImplemented
+
+POSTGRES_DATA_TYPES_DJANGO_FIELDS_MAPPING = {
+    'smallint': models.SmallIntegerField,
+    'integer': models.IntegerField,
+    'bigint': models.BigIntegerField,
+    'decimal': models.DecimalField,
+    'numeric': models.DecimalField,
+    'real': models.FloatField,
+    'double precision': models.FloatField,
+    'character varying': models.CharField,
+    'character': models.CharField,
+    'text': models.TextField,
+    'date': models.DateField,
+    'time': models.TimeField,
+    'timestamp': models.DateTimeField,
+    'timestamp with time zone': models.DateTimeField,
+    'interval': models.DurationField,
+    'boolean': models.BooleanField,
+    "Point": models.PointField,
+    "MultiPoint": models.MultiPointField,
+}
 
 GEOM_TYPES = {
     "POINT": "Point",
@@ -189,3 +211,7 @@ def validate_vector_geom_type(file_path, valid_geom_types, vector_format):
                     f"Invalid geometry type. Expected one of {valid_geom_types}. Not {geom_type}")
     else:
         raise GeomValidationNotImplemented(f"Geometry Type validation not implemented for format {vector_format}")
+
+
+def get_model_field(pg_data_type):
+    return POSTGRES_DATA_TYPES_DJANGO_FIELDS_MAPPING.get(pg_data_type)
