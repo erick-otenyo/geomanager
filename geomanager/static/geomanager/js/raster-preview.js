@@ -164,10 +164,8 @@ $((async function () {
             } else {
                 style = {"bands": [{"band": 1, "palette": selectedColorScale}]}
                 style = JSON.stringify(style)
-                console.log(style)
-
             }
-            const params = {style: JSON.stringify(style)}
+            const params = {style: style}
             updateSourceTileUrl(map, sourceId, params)
         }
     };

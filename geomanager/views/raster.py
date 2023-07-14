@@ -457,6 +457,8 @@ class RasterTileView(RasterDataMixin, APIView):
                 layer_style = raster_file.layer.style
                 if layer_style:
                     style = layer_style.get_style_as_json()
+                else:
+                    style = None
             else:
                 # try validating style
                 # TODO: do more thorough validation
