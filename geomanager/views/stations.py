@@ -95,14 +95,13 @@ def load_stations(request):
 def preview_stations(request):
     template = "geomanager/stations_preview.html"
 
-    abm_settings = AdminBoundarySettings.for_request(request)
     stations_settings = StationSettings.for_request(request)
     stations_vector_tiles_url = request.scheme + '://' + request.get_host() + \
                                 stations_settings.stations_vector_tiles_url
 
     context = {
         "mapConfig": {
-            "combinedBbox": abm_settings.combined_countries_bounds,
+            "stationBounds": stations_settings.bounds,
             "stationsVectorTilesUrl": stations_vector_tiles_url,
         },
         "load_stations_url": reverse("geomanager_load_stations"),

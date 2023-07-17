@@ -2,7 +2,7 @@ from django.contrib.gis.db import models
 from django.urls import reverse
 from django.utils.functional import cached_property
 from django.utils.html import format_html
-from django_tables2 import tables, LazyPaginator, Column, columns, TemplateColumn
+from django_tables2 import tables, LazyPaginator, TemplateColumn
 from wagtail.contrib.routable_page.models import RoutablePageMixin, path
 from wagtail.contrib.settings.models import BaseSiteSetting
 from wagtail.models import Page

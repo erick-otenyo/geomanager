@@ -15,11 +15,11 @@
     {% include "wagtailadmin/shared/header.html" with title=header_str icon="map" action_url=load_stations_url action_text="Load Stations" %}
 
     <div class="nice-padding">
-        <div style="margin-top: 40px;">
-            <div id="preview-map" style="height: 600px;width: 100%"></div>
-        </div>
-        <div style="margin-top: 20px;">
-            {% if station_columns %}
+        {% if station_columns %}
+            <div style="margin-top: 40px;">
+                <div id="preview-map" style="height: 600px;width: 100%"></div>
+            </div>
+            <div style="margin-top: 20px;">
                 <h2 class="title">Data Fields</h2>
                 <table class="listing">
                     <thead>
@@ -80,188 +80,201 @@
                         </li>
                     </ul>
                 </form>
-            {% endif %}
-        </div>
-    </div>
+            </div>
+            </div>
+        {% else %}
+
+            <div class="help-block help-info">
+                <svg class="icon icon-help icon" aria-hidden="true">
+                    <use href="#icon-help"></use>
+                </svg>
+                <p>
+                    No station data loaded. Please <a href="{{ load_stations_url }}">load station data</a> to preview
+                </p>
+
+            </div>
+        {% endif %}
 {% endblock %}
 
 {% block extra_js %}
     {{ block.super }}
-    <script src="https://unpkg.com/maplibre-gl@3.1.0/dist/maplibre-gl.js"></script>
-    <script>
+    {% if station_columns %}
+        <script src="https://unpkg.com/maplibre-gl@3.1.0/dist/maplibre-gl.js"></script>
+        <script>
 
-        const mapConfigObj = {{ mapConfig | safe }};
-        const {combinedBbox, stationsVectorTilesUrl} = mapConfigObj
+            const mapConfigObj = {{ mapConfig | safe }};
+            const {stationBounds, stationsVectorTilesUrl} = mapConfigObj
 
-        const bounds = [[combinedBbox[0], combinedBbox[1]], [combinedBbox[2], combinedBbox[3]]]
+            const bounds = [[stationBounds[0], stationBounds[1]], [stationBounds[2], stationBounds[3]]]
 
-        const defaultStyle = {
-            'version': 8,
-            'sources': {
-                'carto-dark': {
-                    'type': 'raster',
-                    'tiles': [
-                        "https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png",
-                        "https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png",
-                        "https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png",
-                        "https://d.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png"
-                    ]
+            const defaultStyle = {
+                'version': 8,
+                'sources': {
+                    'carto-dark': {
+                        'type': 'raster',
+                        'tiles': [
+                            "https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png",
+                            "https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png",
+                            "https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png",
+                            "https://d.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png"
+                        ]
+                    },
+                    'carto-light': {
+                        'type': 'raster',
+                        'tiles': [
+                            "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
+                            "https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
+                            "https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
+                            "https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png"
+                        ]
+                    },
+                    'wikimedia': {
+                        'type': 'raster',
+                        'tiles': [
+                            "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png"
+                        ]
+                    }
                 },
-                'carto-light': {
+                'layers': [{
+                    'id': 'carto-light-layer',
+                    'source': 'carto-light',
                     'type': 'raster',
-                    'tiles': [
-                        "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
-                        "https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
-                        "https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
-                        "https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png"
-                    ]
-                },
-                'wikimedia': {
-                    'type': 'raster',
-                    'tiles': [
-                        "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png"
-                    ]
-                }
-            },
-            'layers': [{
-                'id': 'carto-light-layer',
-                'source': 'carto-light',
-                'type': 'raster',
-                'minzoom': 0,
-                'maxzoom': 22
-            }]
-        }
-
-
-        $(document).ready(async function () {
-            const $columnsInput = $("#id_columns")
-
-            const map = new maplibregl.Map({
-                container: "preview-map",
-                style: defaultStyle,
-                doubleClickZoom: false,
-            });
-
-            await new Promise((resolve) => map.on("load", resolve));
-
-            if (bounds) {
-                map.fitBounds(bounds, {padding: 20})
+                    'minzoom': 0,
+                    'maxzoom': 22
+                }]
             }
 
 
-            // add source
-            map.addSource("stations-source", {
-                    type: "vector",
-                    tiles: [stationsVectorTilesUrl],
+            $(document).ready(async function () {
+                const $columnsInput = $("#id_columns")
+
+                const map = new maplibregl.Map({
+                    container: "preview-map",
+                    style: defaultStyle,
+                    doubleClickZoom: false,
+                });
+
+                await new Promise((resolve) => map.on("load", resolve));
+
+                if (bounds) {
+                    map.fitBounds(bounds, {padding: 20})
                 }
-            )
-
-            // add layer
-            map.addLayer({
-                'id': 'stations-circle',
-                'type': 'circle',
-                'source': 'stations-source',
-                "source-layer": "default",
-                'paint': {
-                    'circle-color': "red",
-                    'circle-radius': 10,
-                }
-            });
 
 
-            const $stationLabelInput = $(".station_input")
-
-            $stationLabelInput.on("change", function () {
-                const $this = $(this)
-                const inputType = $this.attr('type')
-
-                const columnName = $this.data("column")
-                const updateType = $this.data("updatetype")
-
-                if (columnName && updateType) {
-                    let inputValue = $this.val()
-
-                    if (inputType === "checkbox") {
-                        inputValue = $this.is(':checked')
+                // add source
+                map.addSource("stations-source", {
+                        type: "vector",
+                        tiles: [stationsVectorTilesUrl],
                     }
-                    updateColumnsData(columnName, updateType, inputValue)
+                )
+
+                // add layer
+                map.addLayer({
+                    'id': 'stations-circle',
+                    'type': 'circle',
+                    'source': 'stations-source',
+                    "source-layer": "default",
+                    'paint': {
+                        'circle-color': "red",
+                        'circle-radius': 10,
+                    }
+                });
+
+
+                const $stationLabelInput = $(".station_input")
+
+                $stationLabelInput.on("change", function () {
+                    const $this = $(this)
+                    const inputType = $this.attr('type')
+
+                    const columnName = $this.data("column")
+                    const updateType = $this.data("updatetype")
+
+                    if (columnName && updateType) {
+                        let inputValue = $this.val()
+
+                        if (inputType === "checkbox") {
+                            inputValue = $this.is(':checked')
+                        }
+                        updateColumnsData(columnName, updateType, inputValue)
+                    }
+                })
+
+                const getColumnsData = () => {
+                    let columnsData = $columnsInput.val()
+
+                    if (columnsData) {
+                        columnsData = JSON.parse(columnsData)
+
+                        return columnsData
+                    }
+
+                    return []
                 }
+
+                const getPopupFields = () => {
+                    const allFields = getColumnsData()
+                    return allFields.filter(c => c && c.popup)
+                }
+
+                const updateColumnsData = (columnName, updateType, value) => {
+                    let columnsData = getColumnsData()
+
+
+                    columnsData = columnsData.reduce((all, item) => {
+                        if (item.name && item.name === columnName) {
+                            item[updateType] = value
+                        }
+
+                        all.push(item)
+
+                        return all
+                    }, [])
+
+                    if (columnsData) {
+                        $columnsInput.val(JSON.stringify(columnsData))
+                    }
+                }
+
+                function featureHtml(f) {
+                    const p = f.properties;
+                    const popupFields = getPopupFields()
+
+
+                    const popupProps = Object.keys(p).reduce((all, key) => {
+                        if (popupFields.find(f => f.name === key)) {
+                            all[key] = p[key]
+                        }
+                        return all
+                    }, {})
+
+
+                    if (popupProps && !!Object.keys(popupProps).length) {
+                        let h = "<p>";
+                        for (let k in popupProps) {
+                            const column = popupFields.find(f => f.name === k)
+                            h += "<b>" + `${column.label ? column.label : k}` + ":</b> " + popupProps[k] + "<br/>"
+                        }
+                        h += "</p>";
+                        return h
+                    }
+                    return null
+                }
+
+
+                map.on('click', "stations-circle", function (e) {
+                    const popContent = featureHtml(e.features[0])
+                    if (popContent) {
+                        new maplibregl.Popup()
+                            .setLngLat(e.lngLat)
+                            .setHTML(popContent)
+                            .addTo(map);
+                    }
+                });
+
+
             })
 
-            const getColumnsData = () => {
-                let columnsData = $columnsInput.val()
-
-                if (columnsData) {
-                    columnsData = JSON.parse(columnsData)
-
-                    return columnsData
-                }
-
-                return []
-            }
-
-            const getPopupFields = () => {
-                const allFields = getColumnsData()
-                return allFields.filter(c => c && c.popup)
-            }
-
-            const updateColumnsData = (columnName, updateType, value) => {
-                let columnsData = getColumnsData()
-
-
-                columnsData = columnsData.reduce((all, item) => {
-                    if (item.name && item.name === columnName) {
-                        item[updateType] = value
-                    }
-
-                    all.push(item)
-
-                    return all
-                }, [])
-
-                if (columnsData) {
-                    $columnsInput.val(JSON.stringify(columnsData))
-                }
-            }
-
-            function featureHtml(f) {
-                const p = f.properties;
-                const popupFields = getPopupFields()
-
-
-                const popupProps = Object.keys(p).reduce((all, key) => {
-                    if (popupFields.find(f => f.name === key)) {
-                        all[key] = p[key]
-                    }
-                    return all
-                }, {})
-
-
-                if (popupProps && !!Object.keys(popupProps).length) {
-                    let h = "<p>";
-                    for (let k in popupProps) {
-                        const column = popupFields.find(f => f.name === k)
-                        h += "<b>" + `${column.label ? column.label : k}` + ":</b> " + popupProps[k] + "<br/>"
-                    }
-                    h += "</p>";
-                    return h
-                }
-                return null
-            }
-
-
-            map.on('click', "stations-circle", function (e) {
-                const popContent = featureHtml(e.features[0])
-                if (popContent) {
-                    new maplibregl.Popup()
-                        .setLngLat(e.lngLat)
-                        .setHTML(popContent)
-                        .addTo(map);
-                }
-            });
-
-
-        })
-
-    </script>
+        </script>
+    {% endif %}
 {% endblock %}
