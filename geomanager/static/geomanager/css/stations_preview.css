@@ -1,0 +1,11 @@
+.station-popup-content {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+}
+
+.station-popup-content p {
+    word-break: break-all;
+    white-space: normal;
+    margin: 0;
+}

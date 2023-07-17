@@ -7,6 +7,7 @@
 {% block extra_css %}
     {{ block.super }}
     <link href="https://unpkg.com/maplibre-gl@3.1.0/dist/maplibre-gl.css" rel="stylesheet"/>
+    <link href="{% static "geomanager/css/stations_preview.css" %}" rel="stylesheet"/>
 {% endblock %}
 
 {% block content %}
@@ -248,16 +249,16 @@
                         return all
                     }, {})
 
-
                     if (popupProps && !!Object.keys(popupProps).length) {
-                        let h = "<p>";
+                        let h = "<div class='station-popup-content'>";
                         for (let k in popupProps) {
                             const column = popupFields.find(f => f.name === k)
-                            h += "<b>" + `${column.label ? column.label : k}` + ":</b> " + popupProps[k] + "<br/>"
+                            h += "<p><b>" + `${column.label ? column.label : k}` + ":</b> " + popupProps[k] + "<br/></p>"
                         }
-                        h += "</p>";
+                        h += "</div>";
                         return h
                     }
+
                     return null
                 }
 
