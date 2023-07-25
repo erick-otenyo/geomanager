@@ -1,11 +1,13 @@
 from django_nextjs.render import render_nextjs_page_sync
-from wagtail.admin.views import home
 
-from geomanager.models import GeomanagerSettings
+from geomanager.models import GeomanagerSettings, Category
+from geomanager.utils.svg import get_svg_sprite_for_icons
 
 
 def map_view(request, location_type=None, adm0=None, adm1=None, adm2=None):
-    svg_sprite = str(home.sprite(None).content, "utf-8")
+    # get svg sprite for categories icon
+    category_icons = [category.icon for category in Category.objects.all()]
+    svg_sprite = get_svg_sprite_for_icons(category_icons)
 
     gm_settings = GeomanagerSettings.for_request(request)
     context = {
