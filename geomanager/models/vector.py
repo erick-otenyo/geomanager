@@ -2,11 +2,14 @@ import uuid
 
 from django.contrib.admin.utils import quote
 from django.contrib.gis.db import models
+from django.core.files.base import ContentFile
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django_extensions.db.models import TimeStampedModel
+from modelcluster.fields import ParentalKey
+from modelcluster.models import ClusterableModel
 from wagtail.admin.panels import FieldPanel
 from wagtail.fields import StreamField
 from wagtail.images.blocks import ImageChooserBlock
@@ -19,6 +22,7 @@ from geomanager.helpers import get_vector_layer_files_url
 from geomanager.models import Dataset
 from geomanager.models.core import BaseLayer
 from geomanager.panels import ReadOnlyFieldPanel
+from geomanager.utils.svg import rasterize_svg_to_png
 from geomanager.utils.vector_utils import drop_vector_table
 
 
@@ -66,7 +70,7 @@ class Geostore(TimeStampedModel):
         return info
 
 
-class VectorLayer(TimeStampedModel, BaseLayer):
+class VectorLayer(TimeStampedModel, ClusterableModel, BaseLayer):
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, related_name="vector_layers", verbose_name="dataset")
     render_layers = StreamField([
         ("fill", FillVectorLayerBlock(label=_("Polygon Layer"))),
@@ -247,6 +251,34 @@ class VectorLayer(TimeStampedModel, BaseLayer):
                 })
 
         return config
+
+    def save(self, *args, **kwargs):
+        # remove existing icons for this layer.
+        # TODO: Find efficient way to update exising icons, while deleting absolute ones
+        VectorLayerIcon.objects.filter(layer=self).delete()
+
+        for render_layer in self.render_layers:
+            if render_layer.block_type == "icon":
+                icon_image = render_layer.value.get("layout").get("icon_image")
+                icon_color = render_layer.value.get("paint").get("icon_color")
+                png_bytes = rasterize_svg_to_png(icon_image, fill_color=icon_color)
+
+                if png_bytes:
+                    layer_icon = VectorLayerIcon(name=icon_image, color=icon_color)
+                    layer_icon.file = ContentFile(png_bytes.getvalue(), f"{icon_image}.{icon_color}.png")
+                    self.icons.add(layer_icon)
+
+        super().save(*args, **kwargs)
+
+
+class VectorLayerIcon(models.Model):
+    layer = ParentalKey(VectorLayer, on_delete=models.CASCADE, related_name="icons")
+    name = models.CharField(max_length=255)
+    color = models.CharField(max_length=100, null=True)
+    file = models.FileField(upload_to="vector_icons/")
+
+    def __str__(self):
+        return f"{self.layer.title}-{self.name}-{self.color}"
 
 
 class VectorUpload(TimeStampedModel):

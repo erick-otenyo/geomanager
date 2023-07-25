@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from wagtailcache.cache import cache_page
 
-from geomanager.models import Category
+from geomanager.models import Category, VectorLayerIcon
 from geomanager.models.core import GeomanagerSettings
 from geomanager.serializers import CategorySerializer
 
@@ -19,6 +19,12 @@ def get_mapviewer_config(request):
     response = {
         "categories": categories_data,
     }
+
+    icon_images = []
+    for icon in VectorLayerIcon.objects.all():
+        icon_images.append({"name": icon.name, "url": request.build_absolute_uri(icon.file.url)})
+
+    response.update({"vectorLayerIcons": icon_images})
 
     if gm_settings.logo:
         response.update({"logo": request.build_absolute_uri(gm_settings.logo.file.url)})

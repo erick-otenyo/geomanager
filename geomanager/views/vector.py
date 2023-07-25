@@ -240,6 +240,9 @@ def preview_vector_layers(request, dataset_id, layer_id=None):
     vector_layer_admin_helper = AdminURLHelper(VectorLayer)
     vector_layer_list_url = vector_layer_admin_helper.get_action_url("index")
 
+    geojson_url = request.build_absolute_uri(
+        reverse("feature_serv", args=("table_name",)).replace("table_name.geojson", ""))
+
     context = {
         "dataset": dataset,
         "selected_layer": layer_id,
@@ -247,6 +250,7 @@ def preview_vector_layers(request, dataset_id, layer_id=None):
         "vector_layer_list_url": vector_layer_list_url,
         "data_vector_api_base_url": request.build_absolute_uri("/api/vector-data"),
         "vector_tiles_url": base_absolute_url + "/api/vector-tiles/{z}/{x}/{y}",
+        "geojson_url": geojson_url
     }
 
     return render(request, 'geomanager/vector_preview.html', context)
@@ -290,9 +294,6 @@ class VectorTileView(View):
                 raise Http404()
 
         return HttpResponse(tile, content_type="application/x-protobuf")
-
-
-
 
 
 @method_decorator(cache_page, name='get')

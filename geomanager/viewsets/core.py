@@ -23,26 +23,9 @@ class DatasetListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         queryset = self.get_queryset()
         dataset_with_layers = []
 
-        icons = []
-
         # get only datasets with layers defined
         for dataset in queryset:
             if dataset.has_layers():
-                if dataset.layer_type == "vector":
-                    vector_layers = dataset.vector_layers.all()
-                    for layer in vector_layers:
-                        layer_config = layer.layer_config()
-                        render_layers = layer_config.get("render", {}).get("layers", [])
-                        for render_layer in render_layers:
-                            if render_layer.get("type", None) == "symbol":
-                                icon_image = render_layer.get("layout", {}).get("icon-image")
-                                icon_color = render_layer.get("paint", {}).get("icon-color")
-                                if icon_image:
-                                    icon = {"icon": icon_image, "type": "sprite"}
-                                    if icon_color:
-                                        icon.update({"icon-color": icon_color})
-                                    icons.append(icon)
-
                 dataset_with_layers.append(dataset)
 
         serializer = self.get_serializer(dataset_with_layers, many=True)
@@ -69,7 +52,7 @@ class DatasetListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                     "metadata": lm_settings.cap_metadata.pk if lm_settings.cap_metadata else None
                 }})
 
-        return Response({"datasets": datasets, "config": config, "icons": icons})
+        return Response({"datasets": datasets, "config": config})
 
 
 @method_decorator(cache_page, name="retrieve")
