@@ -93,6 +93,10 @@ class VectorLayer(TimeStampedModel, ClusterableModel, BaseLayer):
         return url
 
     @property
+    def has_data_table(self):
+        return self.vector_tables.all().exists()
+
+    @property
     def upload_url(self):
         upload_url = reverse(
             f"geomanager_dataset_layer_upload_vector",
@@ -249,6 +253,24 @@ class VectorLayer(TimeStampedModel, ClusterableModel, BaseLayer):
                     "name": item.get("value"),
                     "color": item.get("color")
                 })
+
+        return config
+
+    @property
+    def interaction_config(self):
+        config = {}
+
+        # TODO: What happens if we have multiple tables ?
+        vector_table = self.vector_tables.first()
+
+        if vector_table and vector_table.properties:
+            for column in vector_table.properties:
+                if column.get("popup"):
+                    if not config.get("output"):
+                        config["output"] = []
+                    name = column.get("name")
+                    label = column.get("label")
+                    config["output"].append({"column": name, "property": label or name}, )
 
         return config
 

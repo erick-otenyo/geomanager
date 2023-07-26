@@ -43,11 +43,13 @@ class VectorLayerSerializer(serializers.ModelSerializer):
     autoUpdateInterval = serializers.SerializerMethodField()
     isMultiLayer = serializers.SerializerMethodField()
     nestedLegend = serializers.SerializerMethodField()
+    interactionConfig = serializers.SerializerMethodField()
 
     class Meta:
         model = VectorLayer
         fields = ["id", "dataset", "name", "layerType", "multiTemporal", "isMultiLayer", "legendConfig", "nestedLegend",
-                  "layerConfig", "params", "paramsSelectorConfig", "currentTimeMethod", "autoUpdateInterval"]
+                  "layerConfig", "params", "paramsSelectorConfig", "currentTimeMethod", "autoUpdateInterval",
+                  "interactionConfig"]
 
     def get_isMultiLayer(self, obj):
         return obj.dataset.multi_layer
@@ -93,6 +95,9 @@ class VectorLayerSerializer(serializers.ModelSerializer):
 
     def get_layerName(self, obj):
         return obj.layer_name
+
+    def get_interactionConfig(self, obj):
+        return obj.interaction_config
 
 
 class GeostoreSerializer(serializers.ModelSerializer):

@@ -30,7 +30,7 @@
                 </span>{% if selected_layer %}Back to Layers{% else %}Back to Datasets{% endif %}
             </a>
         </div>
-        <div class="w-field__input" data-field-input="">
+        <div class="w-field__input" data-field-input="" style="display: none">
             <label class="w-field__label" for="layer_select" id="layer_select-label">
                 Select Layer
             </label>
@@ -42,7 +42,7 @@
             </select>
         </div>
         <div id="preview-map">
-            <div class="layer-timestamps-wrapper">
+            <div class="layer-timestamps-wrapper" style="display: none">
                 <div class="w-field__input">
                     <label class="w-field__label" for="vector_table_select" id="vector_table_select-label">
                         Datasets
@@ -52,7 +52,66 @@
                 </div>
             </div>
         </div>
+
+        {% if data_table and data_table.properties %}
+            <div style="margin-top: 20px;">
+                <h2 class="title">Data Fields</h2>
+                <table class="listing">
+                    <thead>
+                    <tr>
+                        <th style="font-weight: 700">Field</th>
+                        <th style="font-weight: 700">Label</th>
+                        <th style="font-weight: 700">Show in Popup</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for column in data_table.properties %}
+                        <tr>
+                            <td>{{ column.name }}</td>
+                            <td>
+                                <input class="table_input" style="max-width: 300px;" type="text"
+                                       name="{{ column.name }}_label"
+                                       data-column="{{ column.name }}"
+                                       data-updatetype="label"
+                                       value="{{ column.label }}"
+                                       id="{{ column.name }}_label">
+                            </td>
+                            <td>
+                                <input class="table_input" type="checkbox" name="{{ column.name }}_popup"
+                                       id="{{ column.name }}_popup" data-column="{{ column.name }}"
+                                        {% if column.popup %} checked{% endif %}
+                                       data-updatetype="popup">
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <form method="POST"
+                      enctype="multipart/form-data">
+                    {% if form.non_field_errors %}
+                        <div class="non-field_errors" style="margin-bottom: 20px">
+                            {% include "wagtailadmin/shared/non_field_errors.html" with form=form %}
+                        </div>
+                    {% endif %}
+                    <ul class="fields">
+                        {% csrf_token %}
+                        {% for field in form %}
+                            {% if field.is_hidden %}
+                                {{ field }}
+                            {% else %}
+                                {% include "wagtailadmin/shared/field_as_li.html" %}
+                            {% endif %}
+                        {% endfor %}
+                        <li>
+                            <button type="submit" class="button"> {% trans 'Save' %}</button>
+                        </li>
+                    </ul>
+                </form>
+            </div>
+        {% endif %}
     </div>
+
+
 
 {% endblock %}
 
@@ -71,4 +130,94 @@
 
     <!-- Main script -->
     <script src="{% static 'geomanager/js/vector-preview.js' %}"></script>
+
+    <script>
+        $(document).ready(function () {
+
+            const $columnsInput = $("#id_columns")
+
+            const getColumnsData = () => {
+                let columnsData = $columnsInput.val()
+                if (columnsData) {
+                    columnsData = JSON.parse(columnsData)
+
+                    return columnsData
+                }
+                return []
+            }
+
+            const getPopupFields = () => {
+                const allFields = getColumnsData()
+                return allFields.filter(c => c && c.popup)
+            }
+
+            const updateColumnsData = (columnName, updateType, value) => {
+                let columnsData = getColumnsData()
+
+
+                columnsData = columnsData.reduce((all, item) => {
+                    if (item.name && item.name === columnName) {
+                        item[updateType] = value
+                    }
+
+                    all.push(item)
+
+                    return all
+                }, [])
+
+                if (columnsData) {
+                    $columnsInput.val(JSON.stringify(columnsData))
+                }
+            }
+
+            function featureHtml(f) {
+                const p = f.properties;
+                const popupFields = getPopupFields()
+
+
+                const popupProps = Object.keys(p).reduce((all, key) => {
+                    if (popupFields.find(f => f.name === key)) {
+                        all[key] = p[key]
+                    }
+                    return all
+                }, {})
+
+                if (popupProps && !!Object.keys(popupProps).length) {
+                    let h = "<div class='station-popup-content'>";
+                    for (let k in popupProps) {
+                        const column = popupFields.find(f => f.name === k)
+                        h += "<p><b>" + `${column.label ? column.label : k}` + ":</b> " + popupProps[k] + "<br/></p>"
+                    }
+                    h += "</div>";
+                    return h
+                }
+
+                return null
+            }
+
+            const $tableInput = $(".table_input")
+            $tableInput.on("change", function () {
+                const $this = $(this)
+                const inputType = $this.attr('type')
+
+                const columnName = $this.data("column")
+                const updateType = $this.data("updatetype")
+
+                if (columnName && updateType) {
+                    let inputValue = $this.val()
+
+                    if (inputType === "checkbox") {
+                        inputValue = $this.is(':checked')
+                    }
+                    updateColumnsData(columnName, updateType, inputValue)
+                }
+            })
+
+
+        })
+
+    </script>
+
+
+
 {% endblock %}

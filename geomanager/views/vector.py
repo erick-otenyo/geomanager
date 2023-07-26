@@ -4,20 +4,21 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import connection, close_old_connections
 from django.http import JsonResponse, Http404, HttpResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.template.defaultfilters import filesizeformat
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views import View
+from wagtail.admin import messages
 from wagtail.admin.auth import user_passes_test, user_has_any_page_permission, permission_denied
 from wagtail.contrib.modeladmin.helpers import AdminURLHelper
 from wagtail.models import Site
 from wagtail.snippets.permissions import get_permission_name
-from wagtailcache.cache import cache_page
+from wagtailcache.cache import cache_page, clear_cache
 
-from geomanager.forms import VectorLayerFileForm
+from geomanager.forms import VectorLayerFileForm, VectorTableForm
 from geomanager.models import Dataset
 from geomanager.models.core import GeomanagerSettings
 from geomanager.models.vector import VectorLayer, VectorUpload, PgVectorTable
@@ -230,6 +231,7 @@ def delete_vector_upload(request, upload_id):
 
 @user_passes_test(user_has_any_page_permission)
 def preview_vector_layers(request, dataset_id, layer_id=None):
+    template_name = 'geomanager/vector_preview.html'
     dataset = get_object_or_404(Dataset, pk=dataset_id)
 
     base_absolute_url = request.scheme + '://' + request.get_host()
@@ -243,6 +245,17 @@ def preview_vector_layers(request, dataset_id, layer_id=None):
     geojson_url = request.build_absolute_uri(
         reverse("feature_serv", args=("table_name",)).replace("table_name.geojson", ""))
 
+    data_table = PgVectorTable.objects.filter(layer__id=layer_id)
+
+    if data_table.exists():
+        data_table = data_table.first()
+    else:
+        data_table = None
+
+    initial_data = {
+        "columns": data_table.properties if data_table else [],
+    }
+
     context = {
         "dataset": dataset,
         "selected_layer": layer_id,
@@ -250,10 +263,31 @@ def preview_vector_layers(request, dataset_id, layer_id=None):
         "vector_layer_list_url": vector_layer_list_url,
         "data_vector_api_base_url": request.build_absolute_uri("/api/vector-data"),
         "vector_tiles_url": base_absolute_url + "/api/vector-tiles/{z}/{x}/{y}",
-        "geojson_url": geojson_url
+        "geojson_url": geojson_url,
+        "data_table": data_table,
     }
 
-    return render(request, 'geomanager/vector_preview.html', context)
+    if request.POST:
+        form = VectorTableForm(request.POST, initial=initial_data)
+        if form.is_valid():
+            columns = form.cleaned_data.get("columns")
+
+            if columns and data_table:
+                data_table.properties = columns
+                data_table.save()
+                # clear wagtail cache
+                clear_cache()
+            messages.success(request, "Data fields updated successfully")
+            # redirect
+            return redirect(reverse("geomanager_preview_vector_layer", args=(dataset_id, layer_id)))
+        else:
+            context.update({"form": form})
+            return render(request, template_name=template_name, context=context)
+    else:
+        form = VectorTableForm(initial=initial_data)
+        context.update({"form": form})
+
+    return render(request, template_name=template_name, context=context)
 
 
 @method_decorator(cache_page, name='get')

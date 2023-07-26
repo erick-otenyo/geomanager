@@ -1,6 +1,5 @@
 import tempfile
 
-from adminboundarymanager.models import AdminBoundarySettings
 from django.conf import settings
 from django.db import connection, close_old_connections
 from django.http import Http404, HttpResponse

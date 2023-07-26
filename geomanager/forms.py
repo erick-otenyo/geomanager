@@ -157,3 +157,7 @@ class StationColumnsForm(forms.Form):
             self.fields['name_column'].choices = choices
         else:
             self.fields['name_column'].widget = forms.HiddenInput()
+
+
+class VectorTableForm(forms.Form):
+    columns = forms.JSONField(required=False, widget=forms.HiddenInput)

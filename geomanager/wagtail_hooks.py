@@ -198,6 +198,10 @@ class DatasetModelAdmin(ModelAdminCanHide):
     def preview_dataset(self, obj):
         if not obj.preview_url:
             return None
+
+        if obj.layer_type == "vector":
+            return None
+
         disabled = "" if obj.can_preview() else "disabled"
         label = _("Preview Dataset")
         button_html = f"""
@@ -213,8 +217,6 @@ class DatasetModelAdmin(ModelAdminCanHide):
         return mark_safe(button_html)
 
     def upload_files(self, obj):
-        if not obj.upload_url:
-            return None
         disabled = "" if obj.has_layers() else "disabled"
         label = _("Upload Files")
         button_html = f"""
@@ -518,9 +520,11 @@ class VectorLayerModelAdmin(ModelAdminCanHide):
         return mark_safe(button_html)
 
     def upload_files(self, obj):
+        disabled = "" if not obj.has_data_table else "disabled"
+
         label = _("Upload Files")
         button_html = f"""
-            <a href="{obj.upload_url}" class="button button-small bicolor button--icon">
+            <a href="{obj.upload_url}" class="button button-small bicolor button--icon" {disabled}>
                 <span class="icon-wrapper">
                     <svg class="icon icon-plus icon" aria-hidden="true">
                         <use href="#icon-upload"></use>
