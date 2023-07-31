@@ -356,6 +356,8 @@ class GeomanagerSettings(BaseSiteSetting):
                                              help_text=_(
                                                  "Maximum raster file size that can be uploaded in MegaBytes. "
                                                  "Default is 10Mbs."))
+    crop_raster_to_country = models.BooleanField(default=True, verbose_name=_("Crop raster to country"),
+                                                 help_text=_("Crop the uploaded raster file to the country boundaries"))
 
     cap_base_url = models.URLField(max_length=256, null=True, blank=True, verbose_name=_("cap base url"))
     cap_sub_category = models.ForeignKey(SubCategory, null=True, blank=True, verbose_name=_("cap layer sub category"),
@@ -409,6 +411,7 @@ class GeomanagerSettings(BaseSiteSetting):
     edit_handler = TabbedInterface([
         ObjectList([
             FieldPanel("max_upload_size_mb"),
+            FieldPanel("crop_raster_to_country"),
         ], heading=_("Upload Settings")),
         ObjectList([
             FieldPanel("tile_gl_fonts_url"),

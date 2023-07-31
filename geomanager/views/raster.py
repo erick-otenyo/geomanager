@@ -1,8 +1,11 @@
 import datetime
 import json
+import tempfile
 from typing import Optional, Any
 
+from adminboundarymanager.models import AdminBoundarySettings, AdminBoundary
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.core.files.base import File
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.template.defaultfilters import filesizeformat
@@ -16,6 +19,7 @@ from large_image.exceptions import TileSourceXYZRangeError
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from shapely import wkb
 from wagtail.admin.auth import (
     user_passes_test,
     user_has_any_page_permission,
@@ -42,7 +46,10 @@ from geomanager.utils.raster_utils import (
     get_tile_source,
     read_raster_info,
     create_layer_raster_file,
-    get_raster_pixel_data, get_geostore_data
+    get_raster_pixel_data, get_geostore_data,
+    check_raster_bounds_with_boundary,
+    clip_netcdf, clip_geotiff,
+    bounds_to_polygon
 )
 
 ALLOWED_RASTER_EXTENSIONS = ["tif", "tiff", "geotiff", "nc"]
@@ -101,14 +108,71 @@ def upload_raster_file(request, dataset_id=None, layer_id=None):
         "layer_preview_url": layer_preview_url
     })
 
+    gm_settings = GeomanagerSettings.for_request(request)
+
+    crop_raster = gm_settings.crop_raster_to_country
+
     # Check if user is submitting
     if request.method == 'POST':
         files = request.FILES.getlist('files[]', None)
-        file = files[0]
+        upload_file = files[0]
 
-        upload = RasterUpload.objects.create(file=file, dataset=dataset)
+        upload = RasterUpload.objects.create(file=upload_file, dataset=dataset)
 
         raster_metadata = read_raster_info(upload.file.path)
+
+        if crop_raster and raster_metadata.get("bounds"):
+            abm_settings = AdminBoundarySettings.for_request(request)
+            abm_extents = abm_settings.combined_countries_bounds
+            abm_countries = abm_settings.countries_list
+
+            intersects_with_boundary, within_boundary = check_raster_bounds_with_boundary(raster_metadata.get("bounds"),
+                                                                                          abm_extents)
+
+            # clipping raster to boundaries
+            if intersects_with_boundary and not within_boundary:
+                raster_driver = raster_metadata.get("driver")
+
+                country_geoms = []
+                for country in abm_countries:
+                    code = country.get("code")
+                    alpha3 = country.get("alpha3")
+
+                    # query using code (2-letter code)
+                    country_boundary = AdminBoundary.objects.filter(level=0, gid_0=code).first()
+
+                    # query using alpha 3 (3-letter code)
+                    if not country_boundary:
+                        country_boundary = AdminBoundary.objects.filter(level=0, gid_0=alpha3).first()
+
+                    if country_boundary:
+                        shapely_geom = wkb.loads(country_boundary.geom.hex)
+                        country_geoms.append(shapely_geom)
+                    else:
+                        # use bbox instead
+                        bbox = country.get("bbox")
+                        if bbox:
+                            bounds_geom = bounds_to_polygon(bbox)
+                            country_geoms.append(bounds_geom)
+
+                union_polygon = country_geoms[0]
+                for polygon in country_geoms[1:]:
+                    union_polygon = union_polygon.union(polygon)
+
+                if raster_driver == "netCDF":
+                    clip_fn = clip_netcdf
+                    suffix = ".nc"
+                else:
+                    clip_fn = clip_geotiff
+                    suffix = ".tif"
+
+                with tempfile.NamedTemporaryFile(suffix=suffix) as f:
+                    clipped_raster = clip_fn(upload.file.path, union_polygon, f.name)
+                    raster_metadata = read_raster_info(clipped_raster)
+
+                    with open(clipped_raster, 'rb') as clipped_file:
+                        file_obj = File(clipped_file, name=f.name)
+                        upload.file.save(upload.file.name, file_obj, save=True)
 
         upload.raster_metadata = raster_metadata
         upload.save()

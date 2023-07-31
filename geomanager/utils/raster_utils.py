@@ -21,7 +21,7 @@ from rasterio.mask import mask
 from rest_framework.exceptions import APIException
 from rio_cogeo.cogeo import cog_translate
 from rio_cogeo.profiles import cog_profiles
-from shapely import wkb
+from shapely import wkb, Polygon
 
 from geomanager.errors import UnsupportedRasterFormat
 from geomanager.models import LayerRasterFile, Geostore
@@ -280,6 +280,23 @@ def clip_geotiff(geotiff_path, geom, out_file):
     return out_file
 
 
+def clip_netcdf(nc_path, geom, out_file):
+    rds = xr.open_dataset(nc_path, engine="rasterio")
+
+    # write crs
+    rds.rio.write_crs("epsg:4326", inplace=True)
+
+    # clip
+    rds = rds.rio.clip([geom], "epsg:4326", drop=True)
+
+    # write clipped data to file
+    rds.to_netcdf(out_file)
+
+    rds.close()
+
+    return out_file
+
+
 def field_file_to_local_path_for_geostore(path, geostore):
     field_file_basename = pathlib.PurePath(path.name).name
     directory = get_cache_dir() / f"{type(path.instance).__name__}-{path.instance.pk}" / "geostore"
@@ -293,3 +310,18 @@ def field_file_to_local_path_for_geostore(path, geostore):
             clip_geotiff(path.file.name, geostore.geom, dest_path)
 
     return dest_path
+
+
+def bounds_to_polygon(bounds):
+    polygon_coords = ((bounds[0], bounds[1]), (bounds[2], bounds[1]), (bounds[2], bounds[3]), (bounds[0], bounds[3]))
+    return Polygon(polygon_coords)
+
+
+def check_raster_bounds_with_boundary(raster_bounds, boundary_bounds):
+    boundary_poly = bounds_to_polygon(boundary_bounds)
+    raster_poly = bounds_to_polygon(raster_bounds)
+
+    intersects = boundary_poly.intersects(raster_poly)
+    contains = boundary_poly.contains(raster_poly)
+
+    return intersects, contains
