@@ -61,14 +61,16 @@
                     </a>
                 {% endif %}
             </div>
-
             {% if menu_items %}
                 <div class="navbar-menu" style="display: flex">
                     {% for menu_item in menu_items %}
-                        <a class="navbar-item" href="{{ menu_item.page.url }}" target="_blank"
-                           rel="noopener noreferrer">
-                            {{ menu_item.label }}
-                        </a>
+                        {% if menu_item.page.url or menu_item.external_link %}
+                            <a class="navbar-item" href="{% if menu_item.page.url %}{{ menu_item.page.url }}
+                                {% else %}{{ menu_item.external_link }}{% endif %}"
+                               target="_blank"
+                               rel="noopener noreferrer">{{ menu_item.label }}
+                            </a>
+                        {% endif %}
                     {% endfor %}
                 </div>
             {% endif %}
