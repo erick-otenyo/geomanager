@@ -18,6 +18,7 @@ def get_mapviewer_config(request):
     categories_data = CategorySerializer(categories, many=True).data
     response = {
         "categories": categories_data,
+        "mapViewerBaseUrl": request.build_absolute_uri("/mapviewer")
     }
 
     icon_images = []
@@ -27,7 +28,17 @@ def get_mapviewer_config(request):
     response.update({"vectorLayerIcons": icon_images})
 
     if gm_settings.logo:
-        response.update({"logo": request.build_absolute_uri(gm_settings.logo.file.url)})
+        logo = {
+            "imageUrl": request.build_absolute_uri(gm_settings.logo.file.url)
+        }
+
+        if gm_settings.logo_page:
+            logo.update({"linkUrl": request.build_absolute_uri(gm_settings.logo_page.url)})
+
+        if not gm_settings.logo_page and gm_settings.logo_external_link:
+            logo.update({"linkUrl": gm_settings.logo_external_link, "external": True})
+
+        response.update({"logo": logo})
 
     if abm_settings.countries_list:
         response.update({

@@ -14,7 +14,7 @@ class AdminBoundarySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AdminBoundary
-        fields = ("level", "name_0", "name_1", "name_2", "gid_0", "gid_1", "gid_2", "size", "bbox")
+        fields = ("level", "name_0", "name_1", "name_2", "gid_0", "gid_1", "gid_2", "bbox")
 
 
 class BoundsFieldSerializer(serializers.Field):

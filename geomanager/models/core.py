@@ -17,7 +17,7 @@ from wagtail.contrib.settings.models import BaseSiteSetting
 from wagtail.contrib.settings.registry import register_setting
 from wagtail.fields import StreamField, RichTextField
 from wagtail.images.blocks import ImageChooserBlock
-from wagtail.models import Orderable
+from wagtail.models import Orderable, Page
 from wagtail_adminsortable.models import AdminSortable
 from wagtailiconchooser.widgets import IconChooserWidget
 
@@ -390,6 +390,19 @@ class GeomanagerSettings(BaseSiteSetting):
         related_name='+',
         verbose_name=_("Logo")
     )
+    logo_page = models.ForeignKey(
+        Page,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        verbose_name=_("Logo page"),
+        help_text=_("Internal page to navigate to on clicking the logo")
+    )
+    logo_external_link = models.URLField(max_length=255, null=True, blank=True,
+                                         verbose_name=_("Logo external link"),
+                                         help_text=_("Used if internal logo page not provided"))
+
     navigation = StreamField([
         ('menu_items', blocks.ListBlock(NavigationItemsBlock(max_num=8))),
     ], block_counts={
@@ -427,8 +440,10 @@ class GeomanagerSettings(BaseSiteSetting):
         ], heading=_("CAP Layer Settings")),
         ObjectList([
             FieldPanel("logo"),
+            FieldPanel("logo_page"),
+            FieldPanel("logo_external_link"),
             FieldPanel("navigation"),
-        ], heading=_("Branding Settings")),
+        ], heading=_("Navigation Settings")),
     ])
 
     @property

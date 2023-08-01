@@ -7,7 +7,9 @@ from wagtailiconchooser.blocks import IconChooserBlock
 
 class NavigationItemsBlock(blocks.StructBlock):
     label = blocks.CharBlock(label=_("Label"))
-    page = blocks.PageChooserBlock(label=_("Page"))
+    page = blocks.PageChooserBlock(required=False, label=_("Page"), help_text=_("Internal page to navigate"))
+    external_link = blocks.URLBlock(required=False, label=_("External Link"),
+                                    help_text=_("External link to navigate to. Used if internal page not provided"))
 
 
 class WmsRequestParamSelectableBlock(blocks.StructBlock):

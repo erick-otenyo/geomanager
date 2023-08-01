@@ -46,7 +46,9 @@
              style="height: 100%;width: 100%;display: flex;align-items: center">
             <div class="navbar-brand">
                 {% if logo %}
-                    <a class="navbar-item navbar-logo" href="/" style="height: 100%;width: 100%;margin-left: 10px">
+                    <a class="navbar-item navbar-logo" href="{{ logo_url }}" {% if logo_url_external %}
+                       target="_blank" rel="noopener noreferrer"{% endif %}
+                       style="height: 100%;width: 100%;margin-left: 10px">
                         {% image logo original as logo_img %}
                         <img src="{{ logo_img.url }}" style="padding:4px;height: 100%;max-width: 200px"
                              alt="Brand Logo">
