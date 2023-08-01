@@ -402,6 +402,24 @@ class GeomanagerSettings(BaseSiteSetting):
     logo_external_link = models.URLField(max_length=255, null=True, blank=True,
                                          verbose_name=_("Logo external link"),
                                          help_text=_("Used if internal logo page not provided"))
+    terms_of_service_page = models.ForeignKey(
+        Page,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        verbose_name=_("Terms of Service Page"),
+        help_text=_("MapViewer Terms of Service page")
+    )
+    privacy_policy_page = models.ForeignKey(
+        Page,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        verbose_name=_("Privacy Policy Page"),
+        help_text=_("MapViewer Privacy Policy Page")
+    )
 
     navigation = StreamField([
         ('menu_items', blocks.ListBlock(NavigationItemsBlock(max_num=8))),
@@ -442,6 +460,8 @@ class GeomanagerSettings(BaseSiteSetting):
             FieldPanel("logo"),
             FieldPanel("logo_page"),
             FieldPanel("logo_external_link"),
+            FieldPanel("terms_of_service_page"),
+            FieldPanel("privacy_policy_page"),
             FieldPanel("navigation"),
         ], heading=_("Navigation Settings")),
     ])

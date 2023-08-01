@@ -18,8 +18,19 @@ def get_mapviewer_config(request):
     categories_data = CategorySerializer(categories, many=True).data
     response = {
         "categories": categories_data,
-        "mapViewerBaseUrl": request.build_absolute_uri("/mapviewer")
     }
+
+    links = {
+        "mapViewerBaseUrl": request.build_absolute_uri("/mapviewer"),
+    }
+
+    if gm_settings.terms_of_service_page:
+        links.update({"termsOfServicePageUrl": request.build_absolute_uri(gm_settings.terms_of_service_page.url)})
+
+    if gm_settings.privacy_policy_page:
+        links.update({"privacyPolicyPageUrl": request.build_absolute_uri(gm_settings.privacy_policy_page.url)})
+
+    response.update({"links": links})
 
     icon_images = []
     for icon in VectorLayerIcon.objects.all():

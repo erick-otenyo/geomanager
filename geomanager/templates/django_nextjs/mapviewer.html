@@ -4,20 +4,56 @@
 {% block head %}
     {{ block.super }}
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+
     <style>
-        .navbar {
+
+        nav.navbar {
+            height: 49px;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            z-index: 9999;
+            background: #fff;
             border-bottom: 1px solid rgb(229, 229, 223);
         }
 
+        .navbar-brand {
+            display: flex;
+            justify-content: space-between;
+        }
+
         .navbar-logo {
+            display: block;
             height: 100%;
             max-width: 300px;
             min-width: 200px;
         }
 
-        .navbar-brand {
+        .navbar-logo img {
             height: 100%;
-            max-width: 300px;
+            max-height: 100% !important;
+            width: 100%;
+            margin-left: 10px;
+            padding: 4px;
+            max-width: 200px;
+            object-fit: contain;
+        }
+
+        @media (max-width: 767px) {
+            .navbar-logo img {
+                padding: 4px 0;
+                margin-left: 0;
+            }
+        }
+
+        .navbar-menu.is-active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar-menu.is-active .navbar-item {
+            padding: 10px;
         }
 
         .navbar-item {
@@ -41,40 +77,76 @@
     <div id="django-svg-data-sprite">
         {{ svg_sprite|safe }}
     </div>
-    <div style="height: 50px;position: absolute;top:0;z-index: 9999;background: #fff;width: 100%;">
-        <nav class="navbar" role="navigation" aria-label="main navigation"
-             style="height: 100%;width: 100%;display: flex;align-items: center">
-            <div class="navbar-brand">
-                {% if logo %}
-                    <a class="navbar-item navbar-logo" href="{{ logo_url }}" {% if logo_url_external %}
-                       target="_blank" rel="noopener noreferrer"{% endif %}
-                       style="height: 100%;width: 100%;margin-left: 10px">
-                        {% image logo original as logo_img %}
-                        <img src="{{ logo_img.url }}" style="padding:4px;height: 100%;max-width: 200px"
-                             alt="Brand Logo">
-                    </a>
-                {% else %}
-                    <a class="navbar-item" href="/" style="height: 100%;width: 100%;margin-left: 10px">
-                        <img src="{% static 'geomanager/images/geomapviewer-logo.png' %}"
-                             style="padding:4px;height: 100%;max-width: 200px"
-                             alt="Brand Logo">
-                    </a>
-                {% endif %}
-            </div>
-            {% if menu_items %}
-                <div class="navbar-menu" style="display: flex">
-                    {% for menu_item in menu_items %}
-                        {% if menu_item.page.url or menu_item.external_link %}
-                            <a class="navbar-item" href="{% if menu_item.page.url %}{{ menu_item.page.url }}
-                                {% else %}{{ menu_item.external_link }}{% endif %}"
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            {% if logo %}
+                <a class="navbar-item navbar-logo" href="{{ logo_url }}" {% if logo_url_external %}
+                   target="_blank" rel="noopener noreferrer"{% endif %} >
+                    {% image logo original as logo_img %}
+                    <img src="{{ logo_img.url }}"
+                         alt="Brand Logo">
+                </a>
+            {% else %}
+                <a class="navbar-item navbar-logo" href="{{ logo_url }}" target="_blank" rel="noopener noreferrer">
+                    <img src="{% static 'geomanager/images/geomapviewer-logo.png' %}"
+                         alt="Brand Logo">
+                </a>
+            {% endif %}
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false"
+               data-target="mainNavbar">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+
+        {% if menu_items %}
+            <div id="mainNavbar" class="navbar-menu">
+                {% for menu_item in menu_items %}
+                    {% if menu_item.page.url or menu_item.external_link %}
+                        {% if menu_item.page.url %}
+                            <a class="navbar-item"
+                               href="{{ menu_item.page.url }}"
+                               target="_blank"
+                               rel="noopener noreferrer">{{ menu_item.label }}
+                            </a>
+                        {% else %}
+                            <a class="navbar-item"
+                               href="{{ menu_item.external_link }}"
                                target="_blank"
                                rel="noopener noreferrer">{{ menu_item.label }}
                             </a>
                         {% endif %}
-                    {% endfor %}
-                </div>
-            {% endif %}
-        </nav>
-    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+    </nav>
     {{ block.super }}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // Get all "navbar-burger" elements
+            const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+
+            // Add a click event on each of them
+            $navbarBurgers.forEach(el => {
+                el.addEventListener('click', () => {
+
+                    // Get the target from the "data-target" attribute
+                    const target = el.dataset.target;
+                    const $target = document.getElementById(target);
+
+                    console.log(target)
+
+                    // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+                    el.classList.toggle('is-active');
+                    $target.classList.toggle('is-active');
+                });
+            });
+
+        });
+    </script>
 {% endblock %}
