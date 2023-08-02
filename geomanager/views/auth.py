@@ -1,13 +1,13 @@
 from allauth.account.forms import ResetPasswordForm
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.utils.module_loading import import_string
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from rest_framework_simplejwt.settings import api_settings
 from rest_framework_simplejwt.tokens import AccessToken
-from django.utils.module_loading import import_string
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenVerifyView
 
 from geomanager.serializers import RegisterSerializer, ResetPasswordSerializer

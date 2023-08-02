@@ -16,6 +16,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django_large_image import tilesource
 from large_image.exceptions import TileSourceXYZRangeError
+from rest_framework.renderers import JSONRenderer
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -558,6 +559,8 @@ class RasterTileView(RasterDataMixin, APIView):
 
 @method_decorator(cache_page, name='get')
 class RasterDataPixelView(RasterDataMixin, APIView):
+    renderer_classes = [JSONRenderer]
+
     def get(self, request):
         try:
             pixel_data = self.get_pixel_data(request)
@@ -571,6 +574,8 @@ class RasterDataPixelView(RasterDataMixin, APIView):
 
 @method_decorator(cache_page, name='get')
 class RasterDataPixelTimeseriesView(RasterDataMixin, APIView):
+    renderer_classes = [JSONRenderer]
+
     def get(self, request):
         try:
             raster_files = self.get_multiple_raster_files(request)
@@ -591,6 +596,8 @@ class RasterDataPixelTimeseriesView(RasterDataMixin, APIView):
 
 @method_decorator(cache_page, name='get')
 class RasterDataGeostoreView(RasterDataMixin, APIView):
+    renderer_classes = [JSONRenderer]
+
     def get(self, request):
         try:
             value_type = self.get_query_param(request, "value_type")
@@ -606,6 +613,8 @@ class RasterDataGeostoreView(RasterDataMixin, APIView):
 
 @method_decorator(cache_page, name='get')
 class RasterDataGeostoreTimeseriesView(RasterDataMixin, APIView):
+    renderer_classes = [JSONRenderer]
+
     def get(self, request):
         try:
             value_type = self.get_query_param(request, "value_type")

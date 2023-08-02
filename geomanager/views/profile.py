@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 
 from geomanager.forms import GeoManagerUserProfileForm
@@ -9,6 +10,7 @@ from geomanager.serializers.profile import GeoManagerUserProfileSerializer
 
 
 @api_view(['GET'])
+@renderer_classes([JSONRenderer])
 def get_geomanager_user_profile(request, user_id):
     try:
         profile = GeoManagerUserProfile.objects.get(user=user_id)
@@ -21,6 +23,7 @@ def get_geomanager_user_profile(request, user_id):
 
 
 @api_view(['PATCH'])
+@renderer_classes([JSONRenderer])
 def create_or_update_geomanager_user_profile(request, user_id):
     try:
         profile = GeoManagerUserProfile.objects.get(user=user_id)

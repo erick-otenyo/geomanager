@@ -9,6 +9,7 @@ from rest_framework import mixins
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound
+from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from wagtailcache.cache import cache_page
 
@@ -19,6 +20,7 @@ from geomanager.serializers.vector import AdminBoundarySerializer, GeostoreSeria
 
 
 class VectorTableFileDetailViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    renderer_classes = [JSONRenderer]
     queryset = PgVectorTable.objects.all()
     serializer_class = serializers.PgVectorTableSerializer
     filter_backends = [DjangoFilterBackend]
@@ -26,6 +28,8 @@ class VectorTableFileDetailViewSet(mixins.ListModelMixin, viewsets.GenericViewSe
 
 
 class AdminBoundaryViewSet(viewsets.ViewSet):
+    renderer_classes = [JSONRenderer]
+
     @action(detail=True, methods=['get'])
     @method_decorator(cache_page)
     def get(self, request):
@@ -49,6 +53,8 @@ class AdminBoundaryViewSet(viewsets.ViewSet):
 
 
 class GeostoreViewSet(viewsets.ViewSet):
+    renderer_classes = [JSONRenderer]
+
     @action(detail=True, methods=['post'])
     def post(self, request):
         # parse the GeoJSON from the POST data

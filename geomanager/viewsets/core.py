@@ -1,6 +1,7 @@
 from adminboundarymanager.models import AdminBoundarySettings
 from django.utils.decorators import method_decorator
 from rest_framework import mixins, viewsets
+from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from wagtailcache.cache import cache_page
 
@@ -12,6 +13,8 @@ from geomanager.models.core import GeomanagerSettings, Metadata
 class DatasetListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Dataset.objects.filter(published=True)
     serializer_class = serializers.DatasetSerializer
+
+    renderer_classes = [JSONRenderer]
 
     def get_serializer_context(self):
         context = super().get_serializer_context()

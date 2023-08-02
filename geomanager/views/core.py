@@ -1,5 +1,6 @@
 from adminboundarymanager.models import AdminBoundarySettings
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from wagtailcache.cache import cache_page
 
@@ -10,6 +11,7 @@ from geomanager.serializers import CategorySerializer
 
 @api_view(['GET'])
 @cache_page
+@renderer_classes([JSONRenderer])
 def get_mapviewer_config(request):
     gm_settings = GeomanagerSettings.for_request(request)
     abm_settings = AdminBoundarySettings.for_request(request)
