@@ -1,9 +1,11 @@
 from django_nextjs.render import render_nextjs_page_sync
+from wagtailcache.cache import nocache_page
 from wagtailiconchooser.utils import get_svg_sprite_for_icons
 
 from geomanager.models import GeomanagerSettings, Category
 
 
+@nocache_page
 def map_view(request, location_type=None, adm0=None, adm1=None, adm2=None):
     # get svg sprite for categories icon
     category_icons = [category.icon for category in Category.objects.all()]
