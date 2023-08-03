@@ -2,6 +2,7 @@ from django.urls import include, path
 from rest_framework.routers import SimpleRouter
 from rest_framework_simplejwt.views import (
     TokenRefreshView, )
+from wagtailcache.cache import nocache_page
 
 from geomanager.views import (
     RasterTileView,
@@ -66,8 +67,8 @@ urlpatterns = [
                   path('api/auth/register/', RegisterView.as_view(), name='auth_register'),
                   path('api/auth/reset-password/', ResetPasswordView.as_view(), name='auth_password_reset'),
                   path('api/auth/token/', EmailTokenObtainPairView.as_view(), name='token_obtain_pair'),
-                  path('api/auth/token/verify/', UserTokenVerifyView.as_view(), name='token_verify'),
-                  path('api/auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+                  path('api/auth/token/verify/', nocache_page(UserTokenVerifyView.as_view()), name='token_verify'),
+                  path('api/auth/token/refresh/', nocache_page(TokenRefreshView.as_view()), name='token_refresh'),
 
                   # User Profile
                   path('api/geomanager-profile/<int:user_id>', get_geomanager_user_profile,
