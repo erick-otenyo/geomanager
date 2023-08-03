@@ -122,6 +122,9 @@ class VectorLayer(TimeStampedModel, ClusterableModel, BaseLayer):
 
         tile_url = f"{base_tiles_url}?table_name={{table_name}}"
 
+        if self.dataset.can_clip:
+            tile_url = tile_url + "&geostore_id={geostore_id}"
+
         layer_config = {
             "type": "vector",
             "source": {
@@ -198,9 +201,15 @@ class VectorLayer(TimeStampedModel, ClusterableModel, BaseLayer):
     @property
     def params(self):
         recent = self.vector_tables.first()
-        return {
+
+        params = {
             "table_name": recent.table_name if recent else ""
         }
+
+        if self.dataset.can_clip:
+            params.update({"geostore_id": ""})
+
+        return params
 
     @property
     def param_selector_config(self):
@@ -346,6 +355,13 @@ class PgVectorTable(TimeStampedModel):
 
     def __str__(self):
         return f"{self.layer}  - {self.geometry_type}"
+
+    @property
+    def columns(self):
+        if not self.properties:
+            return []
+        if self.properties:
+            return [c.get("name") for c in self.properties]
 
 
 @receiver(pre_delete, sender=PgVectorTable)

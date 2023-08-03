@@ -3,7 +3,7 @@ import os
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import connection, close_old_connections
-from django.http import JsonResponse, Http404, HttpResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.template.defaultfilters import filesizeformat
 from django.template.loader import render_to_string
@@ -21,7 +21,7 @@ from wagtailcache.cache import cache_page, clear_cache
 from geomanager.forms import VectorLayerFileForm, VectorTableForm
 from geomanager.models import Dataset
 from geomanager.models.core import GeomanagerSettings
-from geomanager.models.vector import VectorLayer, VectorUpload, PgVectorTable
+from geomanager.models.vector import VectorLayer, VectorUpload, PgVectorTable, Geostore
 from geomanager.settings import geomanager_settings
 from geomanager.utils.vector_utils import ogr_db_import
 
@@ -294,40 +294,70 @@ def preview_vector_layers(request, dataset_id, layer_id=None):
 class VectorTileView(View):
     def get(self, request, z, x, y):
         table_name = request.GET.get("table_name")
+        geostore_id = request.GET.get("geostore_id")
+        geostore = None
 
-        if table_name is None:
-            return HttpResponse("Missing table_name query parameter", status=400)
+        if not table_name:
+            return HttpResponse("Missing 'table_name' query parameter", status=400)
 
-        vector_table = PgVectorTable.objects.filter(table_name=table_name)
+        try:
+            vector_table = PgVectorTable.objects.get(table_name=table_name)
+            # create list of columns to include in the vector tiles
+            columns_sql = ", ".join(vector_table.columns) if vector_table.columns else "*"
+        except ObjectDoesNotExist:
+            return HttpResponse(f"Table matching 'table_name': {table_name} not found", status=404)
 
-        if not vector_table.exists():
-            return HttpResponse(f"Table not found matching 'name': {table_name}",
-                                status=404)
+        if geostore_id:
+            try:
+                geostore = Geostore.objects.get(pk=geostore_id)
+            except ObjectDoesNotExist:
+                return HttpResponse(f"Geostore matching 'id': {geostore_id} not found", status=404)
 
-        if vector_table.exists():
-            vector_table = vector_table.first()
-
-        sql = f"""WITH
-            bounds AS (
-              SELECT ST_TileEnvelope({z}, {x}, {y}) AS geom
-            ),
-            mvtgeom AS (
-              SELECT ST_AsMVTGeom(ST_Transform(t.geom, 3857), bounds.geom) AS geom,
-                *
-              FROM {vector_table.full_table_name} t, bounds
-              WHERE ST_Intersects(ST_Transform(t.geom, 4326), ST_Transform(bounds.geom, 4326))
-            )
-            SELECT ST_AsMVT(mvtgeom, 'default') FROM mvtgeom;
-            """
+            sql = f"""WITH
+                        bounds AS (
+                          SELECT ST_TileEnvelope(%s, %s, %s) AS geom
+                        ),
+                        clip_feature AS (
+                            SELECT ST_GeomFromText(%s, 4326) AS geom
+                        ),
+                        mvtgeom AS (
+                          SELECT ST_AsMVTGeom(ST_Transform(t.geom, 3857), bounds.geom) AS geom,
+                            {columns_sql}
+                          FROM {vector_table.full_table_name} t, bounds, clip_feature
+                          WHERE ST_Intersects(ST_Transform(t.geom, 4326), ST_Transform(bounds.geom, 4326))
+                          AND ST_Intersects(t.geom, clip_feature.geom) 
+                        )
+                        SELECT ST_AsMVT(mvtgeom, 'default') FROM mvtgeom;
+                        """
+        else:
+            sql = f"""WITH
+                        bounds AS (
+                          SELECT ST_TileEnvelope(%s, %s, %s) AS geom
+                        ),
+                        mvtgeom AS (
+                          SELECT ST_AsMVTGeom(ST_Transform(t.geom, 3857), bounds.geom) AS geom,
+                            {columns_sql}
+                          FROM {vector_table.full_table_name} t, bounds
+                          WHERE ST_Intersects(ST_Transform(t.geom, 4326), ST_Transform(bounds.geom, 4326))
+                        )
+                        SELECT ST_AsMVT(mvtgeom, 'default') FROM mvtgeom;
+                        """
 
         close_old_connections()
         with connection.cursor() as cursor:
-            cursor.execute(sql)
-            tile = cursor.fetchone()[0]
-            if not len(tile):
-                raise Http404()
+            try:
+                if geostore:
+                    cursor.execute(sql, (z, x, y, geostore.geom.wkt))
+                else:
+                    cursor.execute(sql, (z, x, y))
 
-        return HttpResponse(tile, content_type="application/x-protobuf")
+                tile = cursor.fetchone()[0]
+                if not tile:
+                    return HttpResponse("Tile not found", status=404)
+                return HttpResponse(tile, content_type="application/x-protobuf")
+            except Exception as e:
+                print("Error", e)
+                return HttpResponse(f"Error while fetching tile: {e}", status=500)
 
 
 @method_decorator(cache_page, name='get')
@@ -338,8 +368,7 @@ class GeoJSONPgTableView(View):
         except ObjectDoesNotExist:
             return JsonResponse({"message": f"Table with name: '{table_name}' does not exist"}, status=404)
 
-        table_columns = [prop.get("name") for prop in vector_table.properties]
-        property_fields = ", ".join(table_columns) if table_columns else "*"
+        property_fields = ", ".join(vector_table.columns) if vector_table.columns else "*"
 
         close_old_connections()
 
