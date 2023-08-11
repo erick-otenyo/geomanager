@@ -61,12 +61,6 @@ To install GDAL using KitWare GDAL wheel, use:
 Other required packages that you will need to install, if not installed already in your Wagtail Project
 
 - psycopg2 - for postgres/postgis database connection
-- wagtail_adminsortable - is also required, but the latest pip version is not compatible with the latest Wagtail
-  versions. You can install the updated version that is compatible from Github using:
-
-```shell
-pip install https://github.com/Lh4cKg/wagtail-admin-sortable/archive/baa0d1f13a6bca4cc60e0d7dcd0522ecafcf5d67.zip
-```
 
 ### Installation
 
@@ -102,7 +96,11 @@ The following packages will be automatically installed when installing `geomanag
 - wagtail-humanitarian-icons>=1.0.3
 - wagtail-icon-chooser>=0.0.1
 - matplotlib>=3.7.1
-- wagtail-cache>=2.2.0
+- django-tables2>=2.6.0
+- django-tables2-bulma-template>=0.2.0
+- CairoSVG>=2.7.0
+- wagtail-cache>=2.3.0
+- wagtail_adminsortable=0.1
 
 # Usage
 
