@@ -7,7 +7,7 @@ from django_extensions.db.models import TimeStampedModel
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, MultiFieldPanel, InlinePanel
-from wagtail.contrib.modeladmin.helpers import AdminURLHelper
+from wagtail_modeladmin.helpers import AdminURLHelper
 from wagtail.fields import StreamField
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.images.models import Image

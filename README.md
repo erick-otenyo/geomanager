@@ -73,6 +73,7 @@ pip install geomanager
 The following packages will be automatically installed when installing `geomanager`, if not already installed.
 
 - wagtail>=4.2.2
+- wagtail-modeladmin>=1.0.0
 - adm-boundary-manager>=0.0.1
 - django_extensions>=3.2.1
 - wagtail_color_panel>=1.4.1
@@ -125,8 +126,8 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "wagtailcache",
+    "wagtail_modeladmin"
 
-    "wagtail.contrib.modeladmin",
     "wagtail.contrib.settings",
     "rest_framework",
     "django.contrib.gis",

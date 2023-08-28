@@ -10,7 +10,7 @@ from geomanager.models import Dataset
 from geomanager.models.core import GeomanagerSettings, Metadata
 
 
-class DatasetListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+class DatasetViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Dataset.objects.filter(published=True)
     serializer_class = serializers.DatasetSerializer
 

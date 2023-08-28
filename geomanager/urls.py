@@ -4,7 +4,8 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView, )
 from wagtailcache.cache import nocache_page
 
-from geomanager.views import (
+from geomanager.viewsets.aoi import AoiViewSet
+from .views import (
     RasterTileView,
     VectorTileView,
     map_view,
@@ -16,34 +17,33 @@ from geomanager.views import (
     get_mapviewer_config,
     GeoJSONPgTableView
 )
-from geomanager.views.auth import (
+from .views.auth import (
     EmailTokenObtainPairView,
     UserTokenVerifyView
 )
-from geomanager.views.profile import (
+from .views.profile import (
     get_geomanager_user_profile,
     create_or_update_geomanager_user_profile
 )
-from geomanager.views.raster import (
+from .views.raster import (
     RasterDataPixelView,
     RasterDataPixelTimeseriesView,
     RasterDataGeostoreView,
     RasterDataGeostoreTimeseriesView
 )
-from geomanager.views.stations import StationsTileView
-from geomanager.viewsets import (
+from .views.stations import StationsTileView
+from .viewsets import (
     FileImageLayerRasterFileDetailViewSet,
     VectorTableFileDetailViewSet,
-    DatasetListViewSet,
+    DatasetViewSet,
     GeostoreViewSet,
     AdminBoundaryViewSet,
     MetadataViewSet
 )
-from geomanager.viewsets.aoi import AoiViewSet
 
-router = SimpleRouter(trailing_slash=False)
+router = SimpleRouter(trailing_slash=True)
 
-router.register(r'api/datasets', DatasetListViewSet)
+router.register(r'api/datasets', DatasetViewSet)
 router.register(r'api/metadata', MetadataViewSet)
 
 router.register(r'api/file-raster', FileImageLayerRasterFileDetailViewSet)

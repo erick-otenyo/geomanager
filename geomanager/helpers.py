@@ -1,7 +1,7 @@
 from django.contrib.admin.utils import quote
 from django.urls import reverse
 from django.utils.translation import gettext as _
-from wagtail.contrib.modeladmin.helpers import ButtonHelper, AdminURLHelper
+from wagtail_modeladmin.helpers import ButtonHelper, AdminURLHelper
 
 
 class CategoryButtonHelper(ButtonHelper):
