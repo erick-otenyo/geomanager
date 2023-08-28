@@ -6,12 +6,12 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from wagtail import hooks
 from wagtail.admin.menu import MenuItem
-from wagtail.contrib.modeladmin.helpers import AdminURLHelper
-from wagtail.contrib.modeladmin.options import ModelAdminGroup, ModelAdmin, modeladmin_register
-from wagtail.contrib.modeladmin.views import CreateView, EditView, IndexView
+from wagtail_modeladmin.helpers import AdminURLHelper
+from wagtail_modeladmin.options import ModelAdminGroup, ModelAdmin, modeladmin_register
+from wagtail_modeladmin.views import CreateView, EditView, IndexView
 from wagtail_adminsortable.admin import SortableAdminMixin
 
-from geomanager.helpers import (DatasetButtonHelper, CategoryButtonHelper, FileLayerButtonHelper)
+from .helpers import (DatasetButtonHelper, CategoryButtonHelper, FileLayerButtonHelper)
 from .models import (
     Category,
     Dataset,

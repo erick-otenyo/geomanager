@@ -12,7 +12,7 @@ from wagtail.admin.panels import (
     ObjectList,
     InlinePanel
 )
-from wagtail.contrib.modeladmin.helpers import AdminURLHelper
+from wagtail_modeladmin.helpers import AdminURLHelper
 from wagtail.contrib.settings.models import BaseSiteSetting
 from wagtail.contrib.settings.registry import register_setting
 from wagtail.fields import StreamField, RichTextField

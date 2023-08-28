@@ -62,7 +62,6 @@ INSTALLED_APPS = [
 
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
-    "wagtail.contrib.modeladmin",
     "wagtail.contrib.settings",
     "wagtail.contrib.styleguide",
     "wagtail.embeds",
@@ -81,6 +80,7 @@ INSTALLED_APPS = [
     "allauth.account",
     "rest_framework",
     "corsheaders",
+    "wagtail_modeladmin",
 
     "django.contrib.admin",
     "django.contrib.gis",
