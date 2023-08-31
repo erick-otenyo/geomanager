@@ -28,4 +28,9 @@ def map_view(request, location_type=None, adm0=None, adm1=None, adm2=None):
         if block.block_type == "menu_items":
             context.update({"menu_items": block.value})
 
+    # remove trailing slash before sending to next js.
+    #  trailingSlash and assetPrefix do not seem to work together as expected for now
+    #  see https://github.com/vercel/next.js/issues/16992
+    request.path_info = request.path_info.rstrip("/")
+
     return render_nextjs_page_sync(request, template_name="django_nextjs/mapviewer.html", context=context)
