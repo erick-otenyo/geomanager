@@ -70,10 +70,12 @@ def upload_raster_file(request, dataset_id=None, layer_id=None):
             "Not a supported raster format. Supported formats: %(supported_formats)s."
         ) % {"supported_formats": ALLOWED_RASTER_EXTENSIONS},
         "file_too_large": _(
-            "This file is too big (%(file_size)s). Maximum filesize %(max_filesize)s."
+            "This file is too big (%(file_size)s). Maximum filesize %(max_filesize)s. "
+            "You can adjust the Maximum upload file size under Geomanager settings"
         ),
         "file_too_large_unknown_size": _(
-            "This file is too big. Maximum filesize %(max_filesize)s."
+            "This file is too big. Maximum filesize %(max_filesize)s. "
+            "You can adjust the Maximum upload file size under Geomanager settings."
         ) % {"max_filesize": filesizeformat(layer_manager_settings.max_upload_size_bytes)}}
 
     layer = None
@@ -127,11 +129,21 @@ def upload_raster_file(request, dataset_id=None, layer_id=None):
             abm_extents = abm_settings.combined_countries_bounds
             abm_countries = abm_settings.countries_list
 
-            intersects_with_boundary, within_boundary = check_raster_bounds_with_boundary(raster_metadata.get("bounds"),
-                                                                                          abm_extents)
+            intersects_with_boundary, completely_inside_boundary = check_raster_bounds_with_boundary(
+                raster_metadata.get("bounds"), abm_extents)
 
             # clipping raster to boundaries
-            if intersects_with_boundary and not within_boundary:
+            if not intersects_with_boundary:
+                # no intersection. The raster is not within the set countries of interest
+                return JsonResponse({
+                    "success": False,
+                    "error_message": _("You have set to clip uploaded raster files to the country(s) boundary but the"
+                                       " uploaded file is not within the set countries. Make sure the uploaded file "
+                                       "is within your country/countries or disable 'Crop raster to country' option "
+                                       "in Geomanager settings")
+                })
+
+            elif not completely_inside_boundary:
                 raster_driver = raster_metadata.get("driver")
 
                 country_geoms = []

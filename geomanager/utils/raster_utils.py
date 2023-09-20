@@ -262,7 +262,10 @@ def create_layer_raster_file(layer, upload, time, band_index=None, data_variable
 
 
 def clip_geotiff(geotiff_path, geom, out_file):
-    geom = wkb.loads(geom.hex)
+    if geom.geom_type == "Polygon":
+        geom = wkb.loads(geom.hex)
+    else:
+        geom = wkb.loads(geom.wkb_hex)
     data = rio.open(geotiff_path)
     out_img, out_transform = mask(data, shapes=[geom], crop=True)
     out_meta = data.meta.copy()
