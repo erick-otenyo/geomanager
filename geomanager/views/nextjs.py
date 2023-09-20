@@ -28,4 +28,5 @@ def map_view(request, location_type=None, adm0=None, adm1=None, adm2=None):
         if block.block_type == "menu_items":
             context.update({"menu_items": block.value})
 
-    return render_nextjs_page_sync(request, template_name="django_nextjs/mapviewer.html", context=context)
+    return render_nextjs_page_sync(request, template_name="django_nextjs/mapviewer.html", context=context,
+                                   allow_redirects=True)

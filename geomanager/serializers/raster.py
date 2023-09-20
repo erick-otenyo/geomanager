@@ -96,12 +96,15 @@ class WmsLayerSerializer(serializers.ModelSerializer):
     isMultiLayer = serializers.SerializerMethodField()
     nestedLegend = serializers.SerializerMethodField()
     analysisConfig = serializers.SerializerMethodField()
+    moreInfo = serializers.SerializerMethodField()
+    getCapabilitiesLayerName = serializers.SerializerMethodField()
 
     class Meta:
         model = WmsLayer
         fields = ["id", "dataset", "name", "isMultiLayer", "nestedLegend", "layerType", "layerConfig", "params",
                   "paramsSelectorConfig", "paramsSelectorColumnView", "legendConfig", "getCapabilitiesUrl", "layerName",
-                  "multiTemporal", "currentTimeMethod", "autoUpdateInterval", "analysisConfig"]
+                  "multiTemporal", "currentTimeMethod", "autoUpdateInterval", "analysisConfig", "moreInfo",
+                  "getCapabilitiesLayerName"]
 
     def get_isMultiLayer(self, obj):
         return obj.dataset.multi_layer
@@ -150,3 +153,14 @@ class WmsLayerSerializer(serializers.ModelSerializer):
 
     def get_analysisConfig(self, obj):
         return obj.get_analysis_config()
+
+    def get_moreInfo(self, obj):
+        info = None
+        for info in obj.more_info:
+            info = info.value.as_dict
+        return info
+
+    def get_getCapabilitiesLayerName(self, obj):
+        if obj.get_capabilities_layer_name:
+            return obj.get_capabilities_layer_name
+        return None
