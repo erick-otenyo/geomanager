@@ -2,8 +2,10 @@ from rest_framework import serializers
 
 from geomanager.models import Category
 from geomanager.models.core import SubCategory, Dataset, Metadata
-from geomanager.serializers.raster import FileLayerSerializer, WmsLayerSerializer
+from geomanager.serializers.raster import FileLayerSerializer
+from geomanager.serializers.tms import TmsLayerSerializer
 from geomanager.serializers.vector import VectorLayerSerializer
+from geomanager.serializers.wms import WmsLayerSerializer
 
 
 class DatasetSerializer(serializers.ModelSerializer):
@@ -40,6 +42,9 @@ class DatasetSerializer(serializers.ModelSerializer):
 
         if obj.layer_type == "wms":
             return WmsLayerSerializer(obj.wms_layers, many=True, context={"request": request}).data
+
+        if obj.layer_type == "tms":
+            return TmsLayerSerializer(obj.tms_layers, many=True, context={"request": request}).data
 
         return None
 

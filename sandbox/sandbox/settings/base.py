@@ -232,3 +232,5 @@ CACHES = {
 }
 
 DJANGO_TABLES2_TEMPLATE = "django-tables2/bulma.html"
+
+APPEND_SLASH = True

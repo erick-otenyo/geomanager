@@ -262,7 +262,6 @@ def create_layer_raster_file(layer, upload, time, band_index=None, data_variable
 
 
 def clip_geotiff(geotiff_path, geom, out_file):
-    geom = wkb.loads(geom.hex)
     data = rio.open(geotiff_path)
     out_img, out_transform = mask(data, shapes=[geom], crop=True)
     out_meta = data.meta.copy()
@@ -307,7 +306,9 @@ def field_file_to_local_path_for_geostore(path, geostore):
     with lock.acquire():
         if not safe.exists():
             dest_path.parent.mkdir(parents=True, exist_ok=True)
-            clip_geotiff(path.file.name, geostore.geom, dest_path)
+            # convert OGRGeometry to Shapely geometry for consistency in clipping
+            shapely_geom = wkb.loads(geostore.geom.hex)
+            clip_geotiff(path.file.name, shapely_geom, dest_path)
 
     return dest_path
 

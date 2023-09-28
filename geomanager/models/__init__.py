@@ -10,6 +10,8 @@ from .vector import *
 from .profile import *
 from .aoi import *
 from .stations import *
+from .wms import *
+from .tms import *
 
 logger = logging.getLogger(__name__)
 

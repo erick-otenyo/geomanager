@@ -6,22 +6,21 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from wagtail import hooks
 from wagtail.admin.menu import MenuItem
+from wagtail_adminsortable.admin import SortableAdminMixin
 from wagtail_modeladmin.helpers import AdminURLHelper
 from wagtail_modeladmin.options import ModelAdminGroup, ModelAdmin, modeladmin_register
 from wagtail_modeladmin.views import CreateView, EditView, IndexView
-from wagtail_adminsortable.admin import SortableAdminMixin
 
 from .helpers import (DatasetButtonHelper, CategoryButtonHelper, FileLayerButtonHelper)
 from .models import (
+    SubCategory, GeomanagerSettings,
     Category,
     Dataset,
     Metadata,
     FileImageLayer,
-    MBTSource
+    MBTSource, WmsLayer, RasterStyle, LayerRasterFile,
+    VectorLayer, PgVectorTable, TmsLayer
 )
-from .models.core import SubCategory, GeomanagerSettings
-from .models.raster import (RasterStyle, WmsLayer, LayerRasterFile)
-from .models.vector import VectorLayer, PgVectorTable
 from .views import (
     upload_raster_file,
     publish_raster,
@@ -470,6 +469,56 @@ class WmsLayerModelAdmin(ModelAdminCanHide):
         return mark_safe(button_html)
 
 
+class TmsLayerCreateView(CreateView):
+    def get_form(self):
+        form = super().get_form()
+        form.fields["dataset"].queryset = Dataset.objects.filter(layer_type="tms")
+
+        dataset_id = self.request.GET.get("dataset_id")
+        if dataset_id:
+            initial = {**form.initial}
+            initial.update({"dataset": dataset_id})
+            form.initial = initial
+        return form
+
+
+class TmsLayerModelAdmin(ModelAdminCanHide):
+    model = TmsLayer
+    exclude_from_explorer = True
+    create_view_class = TmsLayerCreateView
+    hidden = True
+    index_template_name = "modeladmin/index_without_custom_create.html"
+    index_view_class = LayerIndexView
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.list_display = (list(self.list_display) or []) + ['dataset_link', 'preview_layer']
+        self.dataset_link.__func__.short_description = _('Dataset')
+        self.preview_layer.__func__.short_description = _('Preview on Map')
+
+    def dataset_link(self, obj):
+        button_html = f"""
+            <a href="{obj.dataset.dataset_url()}">
+                {obj.dataset.title}
+            </a>
+        """
+        return mark_safe(button_html)
+
+    def preview_layer(self, obj):
+        label = _("Preview Layer")
+        button_html = f"""
+            <a href="{obj.preview_url}" class="button button-small button--icon button-secondary">
+                <span class="icon-wrapper">
+                    <svg class="icon icon-plus icon" aria-hidden="true">
+                        <use href="#icon-view"></use>
+                    </svg>
+                </span>
+                {label}
+            </a>
+        """
+        return mark_safe(button_html)
+
+
 class VectorLayerCreateView(CreateView):
     def get_form(self):
         form = super().get_form()
@@ -595,7 +644,7 @@ class GeoManagerAdminGroup(ModelAdminGroupWithHiddenItems):
     menu_order = 700
     items = (
         CategoryModelAdmin, DatasetModelAdmin, MetadataModelAdmin, FileImageLayerModelAdmin,
-        RasterStyleModelAdmin, VectorLayerModelAdmin, WmsLayerModelAdmin, MBTSourceModelAdmin,
+        RasterStyleModelAdmin, VectorLayerModelAdmin, WmsLayerModelAdmin, TmsLayerModelAdmin, MBTSourceModelAdmin,
         LayerRasterFileModelAdmin, PgVectorTableModelAdmin)
 
     def get_submenu_items(self):

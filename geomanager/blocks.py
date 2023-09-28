@@ -1,6 +1,9 @@
+from functools import cached_property
+
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.translation import gettext_lazy as _
 from wagtail import blocks
+from wagtail.blocks import StructValue
 from wagtail_color_panel.blocks import NativeColorBlock
 from wagtailiconchooser.blocks import IconChooserBlock
 
@@ -12,7 +15,12 @@ class NavigationItemsBlock(blocks.StructBlock):
                                     help_text=_("External link to navigate to. Used if internal page not provided"))
 
 
-class WmsRequestParamSelectableBlock(blocks.StructBlock):
+class QueryParamStaticBlock(blocks.StructBlock):
+    key = blocks.CharBlock(label=_("Key"))
+    value = blocks.CharBlock(label=_("Value"))
+
+
+class QueryParamSelectableBlock(blocks.StructBlock):
     SELECTOR_TYPE_CHOICES = (
         ("radio", "Radio"),
         ("dropdown", "Dropdown"),
@@ -352,3 +360,28 @@ class FileLayerAreaAnalysisBlock(blocks.StructBlock):
 
     timeseries_chart_type = blocks.ChoiceBlock(choices=TIMESERIES_CHART_TYPES, default="bars", label=_("Chart Type"))
     timeseries_chart_color = NativeColorBlock(required=True, default="#367DA4", label=_("circle stroke color"))
+
+
+class LayerMoreInfoStructValue(StructValue):
+    @cached_property
+    def as_dict(self):
+        info = {
+            "linkText": self.get("link_text"),
+            "linkUrl": self.get("link_url"),
+            "text": self.get("text"),
+            "isButton": self.get("is_button"),
+            "showArrow": self.get("show_arrow"),
+        }
+
+        return info
+
+
+class LayerMoreInfoBlock(blocks.StructBlock):
+    link_text = blocks.CharBlock(required=True, label=_("Link text"))
+    link_url = blocks.URLBlock(required=True, label=_("Link Url"))
+    text = blocks.TextBlock(required=False, label=_("Short description text"))
+    is_button = blocks.BooleanBlock(required=False, default=True, label=_("Format link as action button"))
+    show_arrow = blocks.BooleanBlock(required=False, default=True, label=_("Show arrow in button"))
+
+    class Meta:
+        value_class = LayerMoreInfoStructValue
