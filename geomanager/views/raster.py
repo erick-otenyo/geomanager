@@ -26,9 +26,9 @@ from wagtail.admin.auth import (
     user_has_any_page_permission,
     permission_denied
 )
-from wagtail_modeladmin.helpers import AdminURLHelper
 from wagtail.models import Site
 from wagtail.snippets.permissions import get_permission_name
+from wagtail_modeladmin.helpers import AdminURLHelper
 from wagtailcache.cache import cache_page
 
 from geomanager.errors import RasterFileNotFound, QueryParamRequired, GeostoreNotFound
@@ -40,8 +40,8 @@ from geomanager.models import (
     LayerRasterFile, Geostore
 )
 from geomanager.models.core import GeomanagerSettings
-from geomanager.models.raster import WmsLayer
-from geomanager.serializers.raster import WmsLayerSerializer
+from geomanager.models.wms import WmsLayer
+from geomanager.serializers.wms import WmsLayerSerializer
 from geomanager.utils import UUIDEncoder
 from geomanager.utils.raster_utils import (
     get_tile_source,

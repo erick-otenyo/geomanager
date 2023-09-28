@@ -84,6 +84,7 @@ class Dataset(TimeStampedModel):
     DATASET_TYPE_CHOICES = (
         ("file", "Raster"),
         ("wms", "WMS"),
+        ("tms", "TMS"),
         ("vector", "Vector"),
     )
 
@@ -193,6 +194,9 @@ class Dataset(TimeStampedModel):
         if layer_type == "wms":
             return self.wms_layers
 
+        if layer_type == "tms":
+            return self.tms_layers
+
         return None
 
     @property
@@ -237,7 +241,7 @@ class Dataset(TimeStampedModel):
         return False
 
     def can_preview(self):
-        return self.has_raster_files() or self.has_vector_tables() or self.has_wms_layers()
+        return self.has_raster_files() or self.has_vector_tables() or self.has_wms_layers() or self.has_tms_layers()
 
     def has_raster_files(self):
         layers = self.file_layers.all()
@@ -261,6 +265,9 @@ class Dataset(TimeStampedModel):
 
     def has_wms_layers(self):
         return self.wms_layers.exists()
+
+    def has_tms_layers(self):
+        return self.tms_layers.exists()
 
     def get_default_layer(self):
         layers = self.get_layers_rel()

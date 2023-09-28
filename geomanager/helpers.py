@@ -77,9 +77,13 @@ def get_layer_action_url(layer_type, action, action_args=None):
         file_layer_admin_helper = AdminURLHelper(FileImageLayer)
         url = file_layer_admin_helper.get_action_url(action, action_args)
     elif layer_type == "wms":
-        from geomanager.models.raster import WmsLayer
+        from geomanager.models.wms import WmsLayer
         wms_layer_admin_helper = AdminURLHelper(WmsLayer)
         url = wms_layer_admin_helper.get_action_url(action, action_args)
+    elif layer_type == "tms":
+        from geomanager.models.tms import TmsLayer
+        tms_layer_admin_helper = AdminURLHelper(TmsLayer)
+        url = tms_layer_admin_helper.get_action_url(action, action_args)
     elif layer_type == "vector":
         from geomanager.models.vector import VectorLayer
         vector_layer_admin_helper = AdminURLHelper(VectorLayer)

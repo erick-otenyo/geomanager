@@ -15,7 +15,12 @@ class NavigationItemsBlock(blocks.StructBlock):
                                     help_text=_("External link to navigate to. Used if internal page not provided"))
 
 
-class WmsRequestParamSelectableBlock(blocks.StructBlock):
+class QueryParamStaticBlock(blocks.StructBlock):
+    key = blocks.CharBlock(label=_("Key"))
+    value = blocks.CharBlock(label=_("Value"))
+
+
+class QueryParamSelectableBlock(blocks.StructBlock):
     SELECTOR_TYPE_CHOICES = (
         ("radio", "Radio"),
         ("dropdown", "Dropdown"),

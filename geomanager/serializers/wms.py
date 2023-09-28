@@ -1,29 +1,33 @@
 from rest_framework import serializers
 
-from geomanager.models import LayerRasterFile, FileImageLayer
 from geomanager.models.wms import WmsLayer
 
 
-class FileLayerSerializer(serializers.ModelSerializer):
+class WmsLayerSerializer(serializers.ModelSerializer):
     layerConfig = serializers.SerializerMethodField()
     params = serializers.SerializerMethodField()
     paramsSelectorConfig = serializers.SerializerMethodField()
     legendConfig = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
+    getCapabilitiesUrl = serializers.SerializerMethodField()
+    layerName = serializers.SerializerMethodField()
     layerType = serializers.SerializerMethodField()
     multiTemporal = serializers.SerializerMethodField()
     currentTimeMethod = serializers.SerializerMethodField()
+    paramsSelectorColumnView = serializers.SerializerMethodField()
     autoUpdateInterval = serializers.SerializerMethodField()
     isMultiLayer = serializers.SerializerMethodField()
     nestedLegend = serializers.SerializerMethodField()
-    canClip = serializers.SerializerMethodField()
     analysisConfig = serializers.SerializerMethodField()
+    moreInfo = serializers.SerializerMethodField()
+    getCapabilitiesLayerName = serializers.SerializerMethodField()
 
     class Meta:
-        model = FileImageLayer
-        fields = ["id", "dataset", "name", "layerType", "multiTemporal", "isMultiLayer", "legendConfig", "nestedLegend",
-                  "layerConfig", "params", "paramsSelectorConfig", "currentTimeMethod", "autoUpdateInterval", "canClip",
-                  "analysisConfig"]
+        model = WmsLayer
+        fields = ["id", "dataset", "name", "isMultiLayer", "nestedLegend", "layerType", "layerConfig", "params",
+                  "paramsSelectorConfig", "paramsSelectorColumnView", "legendConfig", "getCapabilitiesUrl", "layerName",
+                  "multiTemporal", "currentTimeMethod", "autoUpdateInterval", "analysisConfig", "moreInfo",
+                  "getCapabilitiesLayerName"]
 
     def get_isMultiLayer(self, obj):
         return obj.dataset.multi_layer
@@ -37,6 +41,9 @@ class FileLayerSerializer(serializers.ModelSerializer):
     def get_multiTemporal(self, obj):
         return obj.dataset.multi_temporal
 
+    def get_currentTimeMethod(self, obj):
+        return obj.dataset.current_time_method
+
     def get_layerType(self, obj):
         return obj.dataset.layer_type
 
@@ -44,9 +51,7 @@ class FileLayerSerializer(serializers.ModelSerializer):
         return obj.title
 
     def get_layerConfig(self, obj):
-        request = self.context.get('request')
-
-        layer_config = obj.layer_config(request)
+        layer_config = obj.layer_config
 
         return layer_config
 
@@ -56,25 +61,29 @@ class FileLayerSerializer(serializers.ModelSerializer):
     def get_paramsSelectorConfig(self, obj):
         return obj.param_selector_config
 
+    def get_paramsSelectorColumnView(self, obj):
+        return not obj.params_selectors_side_by_side
+
     def get_legendConfig(self, obj):
-        return obj.get_legend_config()
+        request = self.context.get('request')
+        return obj.get_legend_config(request)
 
-    def get_currentTimeMethod(self, obj):
-        return obj.dataset.current_time_method
+    def get_getCapabilitiesUrl(self, obj):
+        return obj.get_capabilities_url
 
-    def get_canClip(self, obj):
-        return obj.dataset.can_clip
+    def get_layerName(self, obj):
+        return obj.layer_name
 
     def get_analysisConfig(self, obj):
         return obj.get_analysis_config()
 
+    def get_moreInfo(self, obj):
+        info = None
+        for info in obj.more_info:
+            info = info.value.as_dict
+        return info
 
-class FileImageLayerRasterFileSerializer(serializers.ModelSerializer):
-    time = serializers.SerializerMethodField()
-
-    class Meta:
-        model = LayerRasterFile
-        fields = ["time", "id"]
-
-    def get_time(self, obj):
-        return obj.time.strftime("%Y-%m-%dT%H:%M:%S.000Z")
+    def get_getCapabilitiesLayerName(self, obj):
+        if obj.get_capabilities_layer_name:
+            return obj.get_capabilities_layer_name
+        return None
