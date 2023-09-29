@@ -98,14 +98,14 @@ class Dataset(TimeStampedModel):
     title = models.CharField(max_length=255, verbose_name=_("title"),
                              help_text=_("The Dataset title as will appear to the public"))
     category = models.ForeignKey(Category, verbose_name=_("category"), on_delete=models.PROTECT)
-    sub_category = models.ForeignKey(SubCategory, verbose_name=_("sub_category"), on_delete=models.PROTECT)
+    sub_category = models.ForeignKey(SubCategory, verbose_name=_("Sub category"), on_delete=models.PROTECT)
     summary = models.CharField(max_length=100, null=True, blank=True,
                                verbose_name=_("summary"),
                                help_text=_("Short summary of less than 100 characters"))
     metadata = models.ForeignKey("Metadata", verbose_name=_("metadata"), null=True, blank=True,
                                  on_delete=models.SET_NULL)
     layer_type = models.CharField(max_length=100, choices=DATASET_TYPE_CHOICES, default="file",
-                                  verbose_name=_("layer_type"))
+                                  verbose_name=_("Layer type"))
     published = models.BooleanField(default=True, verbose_name=_("published"),
                                     help_text=_("Should the dataset be available for visualization ?"
                                                 " If unchecked, the dataset is assumed to be in draft mode "
@@ -116,13 +116,13 @@ class Dataset(TimeStampedModel):
     initial_visible = models.BooleanField(default=False, verbose_name=_("Initially visible on Map by default"),
                                           help_text=_("Make the dataset visible on the map by default"))
 
-    multi_temporal = models.BooleanField(default=True, verbose_name=_("multi-temporal"),
+    multi_temporal = models.BooleanField(default=True, verbose_name=_("Multi-temporal"),
                                          help_text=_("The dataset is multi-temporal"), )
 
-    multi_layer = models.BooleanField(default=False, verbose_name=_("multi-layer"),
+    multi_layer = models.BooleanField(default=False, verbose_name=_("Multi-layer"),
                                       help_text=_("The dataset has more than one layer, to be displayed together"), )
 
-    near_realtime = models.BooleanField(default=False, verbose_name=_("near realtime"),
+    near_realtime = models.BooleanField(default=False, verbose_name=_("Near realtime"),
                                         help_text=_(
                                             "Is the layer near realtime?, for example updates every 10 minutes"))
 
