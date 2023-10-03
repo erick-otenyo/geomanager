@@ -185,7 +185,7 @@ class RasterFileLayer(TimeStampedModel, BaseLayer):
             "minzoom": 0,
             "maxzoom": 20,
             "time_parameter": "time",
-            "timestamps": timestamps
+            "timestamps": [t.strftime("%Y-%m-%dT%H:%M:%S.000Z") for t in timestamps]
         }
 
         return tile_json
