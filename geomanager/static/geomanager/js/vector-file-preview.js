@@ -152,6 +152,20 @@ $((async function () {
     // wait for map to load
     await new Promise((resolve) => map.on("load", resolve));
 
+    // load icon images
+    const iconImages = window.geomanager_opts.iconImages
+
+
+    if (iconImages) {
+        iconImages.forEach(iconImage => {
+            map.loadImage(iconImage.url, (error, image) => {
+                if (error) throw error;
+                // Add the image to the map style.
+                map.addImage(iconImage.name, image);
+            })
+        })
+    }
+
     // map layer id. Also used as source id
     const mapVectorLayerId = "vectorLayer"
 
@@ -207,42 +221,62 @@ $((async function () {
     };
 
     const setLayer = async (layerId) => {
-
         const selectedVectorTable = $vectorTableSelect.val()
-
         const vectorTable = vectorTables.find(v => v.table_name === selectedVectorTable) || {}
-
         let {geometry_type, bounds} = vectorTable
 
 
-        const {layers} = map.getStyle();
+        if (layerId) {
 
-        layers.forEach(l => {
-            if (l.id.startsWith(mapVectorLayerId)) {
-                // Check if the layer exists and remove it if it does
-                map.removeLayer(l.id);
+
+            const selectedLayer = window.geomanager_opts.datasetLayers.find(l => l.id === layerId)
+
+
+            if (selectedLayer) {
+                const {id, layerConfig: {source: {tiles}, render}} = selectedLayer
+
+                if (render && render.layers && !!render.layers.length) {
+
+                    render.layers.forEach((layer, index) => {
+
+                        const layerId = `${id}-${layer.type}-${index}`
+
+                        // Check if the layer exists and remove it if it does
+                        if (map.getLayer(layerId)) {
+                            map.removeLayer(layerId);
+                        }
+
+                        // Check if the source exists and remove it if it does
+                        if (map.getSource(layerId)) {
+                            map.removeSource(layerId);
+                        }
+                        const url_params = {
+                            layer: layerId,
+                            table_name: selectedVectorTable,
+                        }
+
+                        const tileUrl = updateTileUrl(window.geomanager_opts.vectorTilesUrl, url_params)
+
+                        map.addSource(layerId, {
+                            type: "vector",
+                            tiles: [tileUrl],
+                        });
+
+                        map.addLayer({
+                            id: layerId,
+                            source: layerId,
+                            "source-layer": "default",
+                            ...layer
+                        });
+
+                        if (geometry_type && selectedVectorTable) {
+                            if (bounds) {
+                                map.fitBounds(bounds, {padding: 20})
+                            }
+                        }
+                    })
+                }
             }
-        })
-
-        // Check if the source exists and remove it if it does
-        if (map.getSource(mapVectorLayerId)) {
-            map.removeSource(mapVectorLayerId);
-        }
-
-        if (geometry_type && selectedVectorTable) {
-
-            if (bounds) {
-                map.fitBounds(bounds, {padding: 20})
-            }
-
-
-            const url_params = {
-                layer: layerId,
-                table_name: selectedVectorTable,
-            }
-            const tileUrl = updateTileUrl(window.geomanager_opts.vectorTilesUrl, url_params)
-
-            addLayers(mapVectorLayerId, geometry_type, tileUrl);
         }
     }
 
@@ -254,6 +288,7 @@ $((async function () {
             const optionEl = new Option(rasterFile.table_name, rasterFile.table_name)
             $vectorTableSelect.append(optionEl);
         });
+
 
         await setLayer(layerId)
     }

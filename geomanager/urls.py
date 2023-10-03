@@ -25,15 +25,15 @@ from .views.profile import (
     get_geomanager_user_profile,
     create_or_update_geomanager_user_profile
 )
-from .views.raster import (
+from .views.raster_file import (
     RasterDataPixelView,
     RasterDataPixelTimeseriesView,
     RasterDataGeostoreView,
-    RasterDataGeostoreTimeseriesView
+    RasterDataGeostoreTimeseriesView, raster_file_as_tile_json
 )
 from .views.stations import StationsTileView
 from .viewsets import (
-    FileImageLayerRasterFileDetailViewSet,
+    RasterLayerRasterFileDetailViewSet,
     VectorTableFileDetailViewSet,
     DatasetViewSet,
     GeostoreViewSet,
@@ -46,7 +46,7 @@ router = SimpleRouter(trailing_slash=True)
 router.register(r'api/datasets', DatasetViewSet)
 router.register(r'api/metadata', MetadataViewSet)
 
-router.register(r'api/file-raster', FileImageLayerRasterFileDetailViewSet)
+router.register(r'api/file-raster', RasterLayerRasterFileDetailViewSet)
 router.register(r'api/vector-data', VectorTableFileDetailViewSet)
 
 router.register(r'api/aoi', AoiViewSet)
@@ -101,18 +101,26 @@ urlpatterns = [
                        GeostoreViewSet.as_view({"get": "get_by_admin"}),
                        name="get_by_gid2"),
 
+                  # Tile JSON
+                  path(r'api/raster/<uuid:layer_id>/tiles.json', raster_file_as_tile_json,
+                       name="raster_file_tile_json"),
+
                   # Tiles
-                  path(r'api/raster-tiles/<int:z>/<int:x>/<int:y>', RasterTileView.as_view(), name="raster_tiles"),
+                  path(r'api/raster-tiles/<uuid:layer_id>/<int:z>/<int:x>/<int:y>', RasterTileView.as_view(),
+                       name="raster_tiles"),
                   path(r'api/vector-tiles/<int:z>/<int:x>/<int:y>', VectorTileView.as_view(), name="vector_tiles"),
                   path(r'api/station-tiles/<int:z>/<int:x>/<int:y>', StationsTileView.as_view(), name="station_tiles"),
 
                   # Data
-                  path(r'api/raster-data/pixel', RasterDataPixelView.as_view(), name="raster_data_pixel"),
-                  path(r'api/raster-data/pixel/timeseries', RasterDataPixelTimeseriesView.as_view(),
+                  path(r'api/raster-data/pixel/<uuid:layer_id>', RasterDataPixelView.as_view(),
+                       name="raster_data_pixel"),
+                  path(r'api/raster-data/pixel/timeseries/<uuid:layer_id>', RasterDataPixelTimeseriesView.as_view(),
                        name="raster_data_pixel_timeseries"),
 
-                  path(r'api/raster-data/geostore', RasterDataGeostoreView.as_view(), name="raster_data_geostore"),
-                  path(r'api/raster-data/geostore/timeseries', RasterDataGeostoreTimeseriesView.as_view(),
+                  path(r'api/raster-data/geostore/<uuid:layer_id>', RasterDataGeostoreView.as_view(),
+                       name="raster_data_geostore"),
+                  path(r'api/raster-data/geostore/timeseries/<uuid:layer_id>',
+                       RasterDataGeostoreTimeseriesView.as_view(),
                        name="raster_data_geostore_timeseries"),
 
                   # FeatureServ

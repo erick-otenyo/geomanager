@@ -22,8 +22,8 @@
 
     <div class="nice-padding">
         <div class="go-to-datasets">
-            <a href="
-                    {% if selected_layer %}{{ image_file_layer_list_url }}{% else %}{{ datasets_index_url }}{% endif %}"
+            <a href="{% if selected_layer %}{{ vector_tile_layer_list_url }}{% else %}
+                        {{ datasets_index_url }}{% endif %}"
                class="button bicolor button--icon">
                 <span class="icon-wrapper">
                     <svg class="icon icon-plus icon" aria-hidden="true">
@@ -38,31 +38,13 @@
                 Select Layer
             </label>
             <select name="select" id="layer_select">
-                {% for layer in dataset.file_layers.all %}
-                    <option value="{{ layer.pk }}" {% if layer.style %}data-hasstyle="1"{% endif %}
-                            {% if selected_layer and selected_layer == layer.pk %}selected{% endif %}>{{ layer.title }}</option>
+                {% for layer in dataset.vector_tile_layers.all %}
+                    <option value="{{ layer.pk }}"
+                            {% if selected_layer and selected_layer.pk == layer.pk %}selected{% endif %}>{{ layer.title }}</option>
                 {% endfor %}
             </select>
         </div>
         <div id="preview-map" style="position: relative">
-            <div class="layer-timestamps-wrapper">
-                <div class="w-field__input">
-                    <label class="w-field__label" for="timestamps_select" id="timestamps_select-label">
-                        Time
-                    </label>
-                    <select name="select" id="timestamps_select">
-                    </select>
-                </div>
-            </div>
-            <div class="colorscale-control-wrapper">
-                <div class="w-field__input">
-                    <label class="w-field__label" for="colorscale_select" id="colorscale_select-label">
-                        Color Scale
-                    </label>
-                    <select name="select" id="colorscale_select">
-                    </select>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -75,13 +57,20 @@
     <script src="{% static 'geomanager/js/vendor/maplibre-gl.js' %}"></script>
 
     <script>
+        let dataLayers = '{{ dataset_layers|escapejs }}';
+        if (dataLayers) {
+            dataLayers = JSON.parse(dataLayers)
+        }
+
+        let iconImages = {{ icon_images|safe }};
+
         window.geomanager_opts = {
-            layerTilesUrl: "{{ layer_tiles_url }}",
-            fileRasterApiBaseUrl: "{{ file_raster_api_base_url }}",
-            layerImageApiBaseUrl: "{{ large_image_api_base_url }}"
+            dataLayers: dataLayers,
+            iconImages: iconImages
         }
     </script>
 
     <!-- Main script -->
-    <script src="{% static 'geomanager/js/raster-preview.js' %}"></script>
+    <script src="{% static 'geomanager/js/vector-tile-preview.js' %}"></script>
+
 {% endblock %}

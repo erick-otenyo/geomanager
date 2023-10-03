@@ -11,14 +11,16 @@ from geomanager.blocks import (
     InlineLegendBlock,
     LayerMoreInfoBlock,
     QueryParamSelectableBlock,
-    QueryParamStaticBlock
+    QueryParamStaticBlock, InlineIconLegendBlock
 )
-from geomanager.models.core import Dataset, BaseLayer
+from geomanager.models.core import BaseLayer
 
 
-class TmsLayer(TimeStampedModel, ClusterableModel, BaseLayer):
-    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, related_name="tms_layers", verbose_name=_("dataset"))
-    base_url = models.CharField(max_length=500, verbose_name=_("Base url for TMS"), )
+class BaseTileLayer(TimeStampedModel, ClusterableModel, BaseLayer):
+    class Meta:
+        abstract = True
+
+    base_url = models.CharField(max_length=500, verbose_name=_("Base Tile url"), )
 
     query_params_static = StreamField([
         ('param', QueryParamStaticBlock(label=_("Query Parameter")))
@@ -37,6 +39,7 @@ class TmsLayer(TimeStampedModel, ClusterableModel, BaseLayer):
     legend = StreamField([
         ('legend', InlineLegendBlock(label=_("Custom Legend")),),
         ('legend_image', ImageChooserBlock(label=_("Custom Image")),),
+        ('legend_icon', InlineIconLegendBlock(label=_("Legend Icon")),),
     ], use_json_field=True, null=True, blank=True, max_num=1, verbose_name=_("Legend"), )
 
     more_info = StreamField([
@@ -46,7 +49,6 @@ class TmsLayer(TimeStampedModel, ClusterableModel, BaseLayer):
     }, use_json_field=True, null=True, blank=True, max_num=1, verbose_name=_("More Info"), )
 
     panels = [
-        FieldPanel("dataset"),
         FieldPanel("title"),
         FieldPanel("default"),
         FieldPanel("base_url"),
@@ -57,12 +59,9 @@ class TmsLayer(TimeStampedModel, ClusterableModel, BaseLayer):
         FieldPanel("more_info"),
     ]
 
-    def __str__(self):
-        return self.title
-
     @property
-    def layer_config(self):
-        tms_url = self.base_url
+    def tile_url(self):
+        tile_url = self.base_url
 
         query_params = {}
 
@@ -78,17 +77,9 @@ class TmsLayer(TimeStampedModel, ClusterableModel, BaseLayer):
         query_str = '&'.join([f"{key}={value}" for key, value in query_params.items()])
 
         if query_str:
-            tms_url = f"{tms_url}?{query_str}"
+            tile_url = f"{tile_url}?{query_str}"
 
-        layer_config = {
-            "type": "raster",
-            "source": {
-                "type": "raster",
-                "tiles": [tms_url]
-            }
-        }
-
-        return layer_config
+        return tile_url
 
     def get_selectable_params(self):
         params = {}
@@ -192,6 +183,16 @@ class TmsLayer(TimeStampedModel, ClusterableModel, BaseLayer):
                 return config
 
             data = legend_block.block.get_api_representation(legend_block.value)
+
+            if legend_block.block_type == "legend_icon":
+                for item in data.get("items", []):
+                    config["items"].append({
+                        "icon": item.get("icon_image"),
+                        "name": item.get("icon_label"),
+                        "color": item.get("icon_color"),
+                        "iconSource": "sprite",
+                    })
+                return config
 
             config.update({"type": data.get("type")})
 

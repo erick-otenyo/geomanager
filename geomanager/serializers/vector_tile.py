@@ -1,9 +1,9 @@
 from rest_framework import serializers
 
-from geomanager.models import TmsLayer
+from geomanager.models import VectorTileLayer
 
 
-class TmsLayerSerializer(serializers.ModelSerializer):
+class VectorTileLayerSerializer(serializers.ModelSerializer):
     layerConfig = serializers.SerializerMethodField()
     params = serializers.SerializerMethodField()
     paramsSelectorConfig = serializers.SerializerMethodField()
@@ -19,7 +19,7 @@ class TmsLayerSerializer(serializers.ModelSerializer):
     moreInfo = serializers.SerializerMethodField()
 
     class Meta:
-        model = TmsLayer
+        model = VectorTileLayer
         fields = ["id", "dataset", "name", "isMultiLayer", "nestedLegend", "layerType", "layerConfig", "params",
                   "paramsSelectorConfig", "paramsSelectorColumnView", "legendConfig", "multiTemporal",
                   "currentTimeMethod", "autoUpdateInterval", "moreInfo", ]

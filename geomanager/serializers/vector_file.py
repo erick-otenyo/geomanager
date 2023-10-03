@@ -1,12 +1,10 @@
 from adminboundarymanager.models import AdminBoundary
 from rest_framework import serializers
 
-from geomanager.models.vector import (
+from geomanager.models.vector_file import (
     PgVectorTable,
-    VectorLayer,
-    Geostore
+    VectorFileLayer,
 )
-from geomanager.utils.vector_utils import create_feature_collection_from_geom
 
 
 class AdminBoundarySerializer(serializers.ModelSerializer):
@@ -31,7 +29,7 @@ class PgVectorTableSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class VectorLayerSerializer(serializers.ModelSerializer):
+class VectorFileLayerSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
     layerConfig = serializers.SerializerMethodField()
     layerType = serializers.SerializerMethodField()
@@ -47,7 +45,7 @@ class VectorLayerSerializer(serializers.ModelSerializer):
     canClip = serializers.SerializerMethodField()
 
     class Meta:
-        model = VectorLayer
+        model = VectorFileLayer
         fields = ["id", "dataset", "name", "layerType", "multiTemporal", "isMultiLayer", "legendConfig", "nestedLegend",
                   "layerConfig", "params", "paramsSelectorConfig", "currentTimeMethod", "autoUpdateInterval",
                   "interactionConfig", "canClip"]
@@ -69,6 +67,7 @@ class VectorLayerSerializer(serializers.ModelSerializer):
 
     def get_layerConfig(self, obj):
         request = self.context.get('request')
+
         layer_config = obj.layer_config(request)
         return layer_config
 
@@ -102,21 +101,3 @@ class VectorLayerSerializer(serializers.ModelSerializer):
 
     def get_canClip(self, obj):
         return obj.dataset.can_clip
-
-
-class GeostoreSerializer(serializers.ModelSerializer):
-    attributes = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Geostore
-        fields = ["id", "attributes"]
-
-    def get_attributes(self, obj):
-        geostore = {
-            'info': obj.info,
-            'geojson': create_feature_collection_from_geom(obj.geom),
-            'bbox': obj.bbox,
-            'hash': obj.pk
-        }
-
-        return geostore

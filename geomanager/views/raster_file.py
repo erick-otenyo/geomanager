@@ -36,11 +36,12 @@ from geomanager.forms import LayerRasterFileForm
 from geomanager.models import (
     Dataset,
     RasterUpload,
-    FileImageLayer,
+    RasterFileLayer,
     LayerRasterFile, Geostore
 )
 from geomanager.models.core import GeomanagerSettings
 from geomanager.models.wms import WmsLayer
+from geomanager.serializers import RasterFileLayerSerializer
 from geomanager.serializers.wms import WmsLayerSerializer
 from geomanager.utils import UUIDEncoder
 from geomanager.utils.raster_utils import (
@@ -97,7 +98,7 @@ def upload_raster_file(request, dataset_id=None, layer_id=None):
     layer_preview_url = None
 
     if layer_id:
-        layer = get_object_or_404(FileImageLayer, pk=layer_id)
+        layer = get_object_or_404(RasterFileLayer, pk=layer_id)
         layer_admin_url_helper = AdminURLHelper(layer)
         layer_list_url = layer_admin_url_helper.get_action_url("index") + f"?dataset__id__exact={dataset.pk}"
         layer_preview_url = layer.preview_url
@@ -124,11 +125,11 @@ def upload_raster_file(request, dataset_id=None, layer_id=None):
 
         raster_metadata = read_raster_info(upload.file.path)
 
-        if crop_raster and raster_metadata.get("bounds"):
-            abm_settings = AdminBoundarySettings.for_request(request)
-            abm_extents = abm_settings.combined_countries_bounds
-            abm_countries = abm_settings.countries_list
+        abm_settings = AdminBoundarySettings.for_request(request)
+        abm_extents = abm_settings.combined_countries_bounds
+        abm_countries = abm_settings.countries_list
 
+        if abm_extents and crop_raster and raster_metadata.get("bounds"):
             intersects_with_boundary, completely_inside_boundary = check_raster_bounds_with_boundary(
                 raster_metadata.get("bounds"), abm_extents)
 
@@ -190,7 +191,7 @@ def upload_raster_file(request, dataset_id=None, layer_id=None):
         upload.raster_metadata = raster_metadata
         upload.save()
 
-        query_set = FileImageLayer.objects.filter(dataset=dataset)
+        query_set = RasterFileLayer.objects.filter(dataset=dataset)
 
         initial_data = {
             "layer": layer_id if layer_id else query_set.first()
@@ -231,7 +232,7 @@ def upload_raster_file(request, dataset_id=None, layer_id=None):
             for form in layer_forms:
                 ctx.update({**form})
                 forms.append(render_to_string(
-                    "geomanager/raster_edit_form.html",
+                    "geomanager/raster_file_edit_form.html",
                     ctx,
                     request=request,
                 ))
@@ -239,7 +240,7 @@ def upload_raster_file(request, dataset_id=None, layer_id=None):
         else:
             ctx.update({"form": layer_form})
             form = render_to_string(
-                "geomanager/raster_edit_form.html",
+                "geomanager/raster_file_edit_form.html",
                 ctx,
                 request=request,
             )
@@ -247,7 +248,7 @@ def upload_raster_file(request, dataset_id=None, layer_id=None):
 
         return JsonResponse(response)
 
-    return render(request, 'geomanager/raster_upload.html', context)
+    return render(request, 'geomanager/raster_file_upload.html', context)
 
 
 @user_passes_test(user_has_any_page_permission)
@@ -260,7 +261,7 @@ def publish_raster(request, upload_id):
     if not upload:
         return JsonResponse({"message": "upload not found"}, status=404)
 
-    db_layer = get_object_or_404(FileImageLayer, pk=request.POST.get('layer'))
+    db_layer = get_object_or_404(RasterFileLayer, pk=request.POST.get('layer'))
 
     raster_metadata = upload.raster_metadata
 
@@ -279,7 +280,7 @@ def publish_raster(request, upload_id):
     if timestamps:
         form_kwargs.update({"nc_dates_choices": timestamps})
 
-    queryset = FileImageLayer.objects.filter(dataset=upload.dataset)
+    queryset = RasterFileLayer.objects.filter(dataset=upload.dataset)
     layer_form = LayerRasterFileForm(data=data, queryset=queryset, **form_kwargs)
 
     ctx = {
@@ -293,7 +294,7 @@ def publish_raster(request, upload_id):
         return {
             "success": False,
             "form": render_to_string(
-                "geomanager/raster_edit_form.html",
+                "geomanager/raster_file_edit_form.html",
                 ctx,
                 request=request,
             ),
@@ -384,56 +385,34 @@ def preview_raster_layers(request, dataset_id, layer_id=None):
     dataset_admin_helper = AdminURLHelper(Dataset)
     dataset_list_url = dataset_admin_helper.get_action_url("index")
 
-    image_file_layer_admin_helper = AdminURLHelper(FileImageLayer)
+    image_file_layer_admin_helper = AdminURLHelper(RasterFileLayer)
     image_file_layer_list_url = image_file_layer_admin_helper.get_action_url("index")
+
+    dataset_layers = RasterFileLayerSerializer(dataset.raster_file_layers, many=True, context={"request": request}).data
+
+    selected_layer = None
+
+    if layer_id:
+        selected_layer = dataset.raster_file_layers.get(pk=layer_id)
 
     context = {
         "dataset": dataset,
-        "selected_layer": layer_id,
+        "dataset_layers": json.dumps(dataset_layers, cls=UUIDEncoder),
+        "selected_layer": selected_layer,
         "datasets_index_url": dataset_list_url,
         "image_file_layer_list_url": image_file_layer_list_url,
         "file_raster_api_base_url": request.build_absolute_uri("/api/file-raster"),
         "large_image_api_base_url": request.build_absolute_uri("/api/large-image"),
-        "layer_tiles_url": base_absolute_url + "/api/raster-tiles/{z}/{x}/{y}",
+        "base_absolute_url": base_absolute_url
     }
 
-    return render(request, 'geomanager/raster_preview.html', context)
-
-
-@user_passes_test(user_has_any_page_permission)
-def preview_wms_layers(request, dataset_id, layer_id=None):
-    dataset = get_object_or_404(Dataset, pk=dataset_id)
-
-    dataset_admin_helper = AdminURLHelper(Dataset)
-    dataset_list_url = dataset_admin_helper.get_action_url("index")
-
-    wms_layer_admin_helper = AdminURLHelper(WmsLayer)
-    wms_layer_list_url = wms_layer_admin_helper.get_action_url("index")
-
-    layer = None
-    if layer_id:
-        layer = WmsLayer.objects.get(pk=layer_id)
-
-    dataset_layers = WmsLayerSerializer(dataset.wms_layers, many=True).data
-
-    context = {
-        "dataset": dataset,
-        "selected_layer": layer,
-        "datasets_index_url": dataset_list_url,
-        "wms_layer_list_url": wms_layer_list_url,
-        "dataset_layers": json.dumps(dataset_layers, cls=UUIDEncoder)
-    }
-
-    return render(request, 'geomanager/wms_preview.html', context)
+    return render(request, 'geomanager/raster_file_layer_preview.html', context)
 
 
 class RasterDataMixin:
-    def get_single_raster_file(self, request: Request) -> LayerRasterFile:
-        layer_id = self.get_query_param(request, "layer")
+    def get_single_raster_file(self, request: Request, layer_id) -> LayerRasterFile:
         time = self.get_query_param(request, "time")
 
-        if not layer_id:
-            raise QueryParamRequired("layer param required")
         if not time:
             raise QueryParamRequired("time param required")
 
@@ -444,13 +423,9 @@ class RasterDataMixin:
 
         raise RasterFileNotFound(f"File not found matching 'layer': {layer_id} and 'time': {time}")
 
-    def get_multiple_raster_files(self, request: Request) -> [LayerRasterFile]:
-        layer_id = self.get_query_param(request, "layer")
+    def get_multiple_raster_files(self, request: Request, layer_id) -> [LayerRasterFile]:
         time_from = self.get_query_param(request, "time_from")
         time_to = self.get_query_param(request, "time_to")
-
-        if not layer_id:
-            raise QueryParamRequired("layer param required")
 
         if not time_from and not time_to:
             raise QueryParamRequired("time_from or time_to param required")
@@ -483,8 +458,8 @@ class RasterDataMixin:
 
         return x_coord, y_coord
 
-    def get_pixel_data(self, request: Request):
-        raster_file = self.get_single_raster_file(request)
+    def get_pixel_data(self, request: Request, layer_id):
+        raster_file = self.get_single_raster_file(request, layer_id)
         x_coord, y_coord = self.get_coords(request)
 
         pixel_data = get_raster_pixel_data(raster_file.file, x_coord, y_coord)
@@ -515,9 +490,9 @@ class RasterDataMixin:
 class RasterTileView(RasterDataMixin, APIView):
     # TODO: Validate style query param thoroughly. If not validated, the whole app just exits without warning.
     # TODO: Cache getting layer style. We should not be querying the database each time for style
-    def get(self, request, z, x, y):
+    def get(self, request, layer_id, z, x, y):
         try:
-            raster_file = self.get_single_raster_file(request)
+            raster_file = self.get_single_raster_file(request, layer_id)
         except QueryParamRequired as e:
             return HttpResponse(e.message, status=400)
         except RasterFileNotFound as e:
@@ -573,9 +548,9 @@ class RasterTileView(RasterDataMixin, APIView):
 class RasterDataPixelView(RasterDataMixin, APIView):
     renderer_classes = [JSONRenderer]
 
-    def get(self, request):
+    def get(self, request, layer_id):
         try:
-            pixel_data = self.get_pixel_data(request)
+            pixel_data = self.get_pixel_data(request, layer_id)
         except QueryParamRequired as e:
             return JsonResponse(e.serialize, status=400)
         except RasterFileNotFound as e:
@@ -588,9 +563,9 @@ class RasterDataPixelView(RasterDataMixin, APIView):
 class RasterDataPixelTimeseriesView(RasterDataMixin, APIView):
     renderer_classes = [JSONRenderer]
 
-    def get(self, request):
+    def get(self, request, layer_id):
         try:
-            raster_files = self.get_multiple_raster_files(request)
+            raster_files = self.get_multiple_raster_files(request, layer_id)
             x_coord, y_coord = self.get_coords(request)
         except QueryParamRequired as e:
             return JsonResponse(e.serialize, status=400)
@@ -610,11 +585,11 @@ class RasterDataPixelTimeseriesView(RasterDataMixin, APIView):
 class RasterDataGeostoreView(RasterDataMixin, APIView):
     renderer_classes = [JSONRenderer]
 
-    def get(self, request):
+    def get(self, request, layer_id):
         try:
             value_type = self.get_query_param(request, "value_type")
             geostore = self.get_geostore(request)
-            raster_file = self.get_single_raster_file(request)
+            raster_file = self.get_single_raster_file(request, layer_id)
             data = get_geostore_data(raster_file.file, geostore, value_type)
         except QueryParamRequired as e:
             return JsonResponse(e.serialize, status=400)
@@ -627,10 +602,10 @@ class RasterDataGeostoreView(RasterDataMixin, APIView):
 class RasterDataGeostoreTimeseriesView(RasterDataMixin, APIView):
     renderer_classes = [JSONRenderer]
 
-    def get(self, request):
+    def get(self, request, layer_id):
         try:
             value_type = self.get_query_param(request, "value_type")
-            raster_files = self.get_multiple_raster_files(request)
+            raster_files = self.get_multiple_raster_files(request, layer_id)
             geostore = self.get_geostore(request)
         except QueryParamRequired as e:
             return JsonResponse(e.serialize, status=400)
@@ -650,3 +625,9 @@ class RasterDataGeostoreTimeseriesView(RasterDataMixin, APIView):
             timeseries_data.append({"date": raster_file.time, "value": data})
 
         return Response(timeseries_data)
+
+
+def raster_file_as_tile_json(request, layer_id):
+    layer = get_object_or_404(RasterFileLayer, pk=layer_id)
+    tile_json = layer.get_tile_json(request)
+    return JsonResponse(tile_json)

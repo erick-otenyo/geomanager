@@ -17,9 +17,9 @@ from .models import (
     Category,
     Dataset,
     Metadata,
-    FileImageLayer,
+    RasterFileLayer,
     MBTSource, WmsLayer, RasterStyle, LayerRasterFile,
-    VectorLayer, PgVectorTable, TmsLayer
+    VectorFileLayer, PgVectorTable, RasterTileLayer, VectorTileLayer
 )
 from .views import (
     upload_raster_file,
@@ -34,6 +34,8 @@ from .views import (
     load_stations,
     preview_stations
 )
+from .views.raster_tile import preview_raster_tile_layers
+from .views.vector_tile import preview_vector_tile_layers
 
 
 @hooks.register('register_admin_urls')
@@ -68,6 +70,16 @@ def urlconf_geomanager():
              name='geomanager_preview_wms_dataset'),
         path('preview-wms-layers/<uuid:dataset_id>/<uuid:layer_id>/', preview_wms_layers,
              name='geomanager_preview_wms_layer'),
+
+        path('preview-vector-tile-layers/<uuid:dataset_id>/', preview_vector_tile_layers,
+             name='geomanager_preview_vector_tile_dataset'),
+        path('preview-vector-tile-layers/<uuid:dataset_id>/<uuid:layer_id>/', preview_vector_tile_layers,
+             name='geomanager_preview_vector_tile_layer'),
+
+        path('preview-raster-tile-layers/<uuid:dataset_id>/', preview_raster_tile_layers,
+             name='geomanager_preview_raster_tile_dataset'),
+        path('preview-raster-tile-layers/<uuid:dataset_id>/<uuid:layer_id>/', preview_raster_tile_layers,
+             name='geomanager_preview_raster_tile_layer'),
 
         path('load-stations/', load_stations, name='geomanager_load_stations'),
         path('preview-stations/', preview_stations, name='geomanager_preview_stations'),
@@ -164,12 +176,10 @@ class DatasetModelAdmin(ModelAdminCanHide):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.list_display = (list(self.list_display) or []) + ['category_link', 'view_layers', 'upload_files',
-                                                               'preview_dataset', ]
+        self.list_display = (list(self.list_display) or []) + ['category_link', 'view_layers', 'upload_files']
         self.category_link.__func__.short_description = _('Category')
         self.view_layers.__func__.short_description = _('View Layers')
         self.upload_files.__func__.short_description = _('Upload Files')
-        self.preview_dataset.__func__.short_description = _('Preview on Map')
 
     def category_link(self, obj):
         label = _("Edit Category")
@@ -198,7 +208,7 @@ class DatasetModelAdmin(ModelAdminCanHide):
         if not obj.preview_url:
             return None
 
-        if obj.layer_type == "vector":
+        if obj.layer_type == "vector_file":
             return None
 
         disabled = "" if obj.can_preview() else "disabled"
@@ -216,6 +226,9 @@ class DatasetModelAdmin(ModelAdminCanHide):
         return mark_safe(button_html)
 
     def upload_files(self, obj):
+        if not obj.upload_url:
+            return None
+
         disabled = "" if obj.has_layers() else "disabled"
         label = _("Upload Files")
         button_html = f"""
@@ -248,10 +261,10 @@ class LayerIndexView(IndexView):
         return context_data
 
 
-class FileImageLayerCreateView(CreateView):
+class RasterFileLayerCreateView(CreateView):
     def get_form(self):
         form = super().get_form()
-        form.fields["dataset"].queryset = Dataset.objects.filter(layer_type="file")
+        form.fields["dataset"].queryset = Dataset.objects.filter(layer_type="raster_file")
 
         dataset_id = self.request.GET.get("dataset_id")
         if dataset_id:
@@ -261,22 +274,22 @@ class FileImageLayerCreateView(CreateView):
         return form
 
 
-class FileImageLayerEditView(EditView):
+class RasterFileLayerEditView(EditView):
     def get_form(self):
         form = super().get_form()
-        form.fields["dataset"].queryset = Dataset.objects.filter(layer_type="file")
+        form.fields["dataset"].queryset = Dataset.objects.filter(layer_type="raster_file")
         return form
 
 
-class FileImageLayerModelAdmin(ModelAdminCanHide):
-    model = FileImageLayer
+class RasterFileLayerModelAdmin(ModelAdminCanHide):
+    model = RasterFileLayer
     hidden = True
     exclude_from_explorer = True
     menu_label = _("File Layers")
     button_helper_class = FileLayerButtonHelper
     index_view_class = LayerIndexView
-    create_view_class = FileImageLayerCreateView
-    edit_view_class = FileImageLayerEditView
+    create_view_class = RasterFileLayerCreateView
+    edit_view_class = RasterFileLayerEditView
     list_display = ("title",)
     list_filter = ("dataset",)
     index_template_name = "modeladmin/index_without_custom_create.html"
@@ -367,7 +380,7 @@ class RasterStyleCreateView(CreateView):
         # add hidden layer_id field to form. We will use it later to update the layer style
         if layer_id:
             try:
-                layer = FileImageLayer.objects.get(pk=layer_id)
+                layer = RasterFileLayer.objects.get(pk=layer_id)
                 form.fields["layer_id"] = forms.CharField(required=False, widget=forms.HiddenInput())
                 form.initial.update({"layer_id": layer.pk})
             except ObjectDoesNotExist:
@@ -384,7 +397,7 @@ class RasterStyleCreateView(CreateView):
         if layer_id:
             try:
                 # assign this layer the just created style
-                layer = FileImageLayer.objects.get(pk=layer_id)
+                layer = RasterFileLayer.objects.get(pk=layer_id)
                 layer.style = self.instance
                 layer.save()
             except ObjectDoesNotExist:
@@ -469,10 +482,10 @@ class WmsLayerModelAdmin(ModelAdminCanHide):
         return mark_safe(button_html)
 
 
-class TmsLayerCreateView(CreateView):
+class RasterTileLayerCreateView(CreateView):
     def get_form(self):
         form = super().get_form()
-        form.fields["dataset"].queryset = Dataset.objects.filter(layer_type="tms")
+        form.fields["dataset"].queryset = Dataset.objects.filter(layer_type="raster_tile")
 
         dataset_id = self.request.GET.get("dataset_id")
         if dataset_id:
@@ -482,10 +495,10 @@ class TmsLayerCreateView(CreateView):
         return form
 
 
-class TmsLayerModelAdmin(ModelAdminCanHide):
-    model = TmsLayer
+class RasterTileLayerModelAdmin(ModelAdminCanHide):
+    model = RasterTileLayer
     exclude_from_explorer = True
-    create_view_class = TmsLayerCreateView
+    create_view_class = RasterTileLayerCreateView
     hidden = True
     index_template_name = "modeladmin/index_without_custom_create.html"
     index_view_class = LayerIndexView
@@ -519,10 +532,10 @@ class TmsLayerModelAdmin(ModelAdminCanHide):
         return mark_safe(button_html)
 
 
-class VectorLayerCreateView(CreateView):
+class VectorTileLayerCreateView(CreateView):
     def get_form(self):
         form = super().get_form()
-        form.fields["dataset"].queryset = Dataset.objects.filter(layer_type="vector")
+        form.fields["dataset"].queryset = Dataset.objects.filter(layer_type="vector_tile")
 
         dataset_id = self.request.GET.get("dataset_id")
         if dataset_id:
@@ -532,21 +545,71 @@ class VectorLayerCreateView(CreateView):
         return form
 
 
-class VectorLayerEditView(EditView):
+class VectorTileLayerModelAdmin(ModelAdminCanHide):
+    model = VectorTileLayer
+    exclude_from_explorer = True
+    create_view_class = VectorTileLayerCreateView
+    hidden = True
+    index_template_name = "modeladmin/index_without_custom_create.html"
+    index_view_class = LayerIndexView
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.list_display = (list(self.list_display) or []) + ['dataset_link', 'preview_layer']
+        self.dataset_link.__func__.short_description = _('Dataset')
+        self.preview_layer.__func__.short_description = _('Preview on Map')
+
+    def dataset_link(self, obj):
+        button_html = f"""
+            <a href="{obj.dataset.dataset_url()}">
+                {obj.dataset.title}
+            </a>
+        """
+        return mark_safe(button_html)
+
+    def preview_layer(self, obj):
+        label = _("Preview Layer")
+        button_html = f"""
+            <a href="{obj.preview_url}" class="button button-small button--icon button-secondary">
+                <span class="icon-wrapper">
+                    <svg class="icon icon-plus icon" aria-hidden="true">
+                        <use href="#icon-view"></use>
+                    </svg>
+                </span>
+                {label}
+            </a>
+        """
+        return mark_safe(button_html)
+
+
+class VectorFileLayerCreateView(CreateView):
     def get_form(self):
         form = super().get_form()
-        form.fields["dataset"].queryset = Dataset.objects.filter(layer_type="vector")
+        form.fields["dataset"].queryset = Dataset.objects.filter(layer_type="vector_file")
+
+        dataset_id = self.request.GET.get("dataset_id")
+        if dataset_id:
+            initial = {**form.initial}
+            initial.update({"dataset": dataset_id})
+            form.initial = initial
         return form
 
 
-class VectorLayerModelAdmin(ModelAdminCanHide):
-    model = VectorLayer
+class VectorFileLayerEditView(EditView):
+    def get_form(self):
+        form = super().get_form()
+        form.fields["dataset"].queryset = Dataset.objects.filter(layer_type="vector_file")
+        return form
+
+
+class VectorFileLayerModelAdmin(ModelAdminCanHide):
+    model = VectorFileLayer
     hidden = True
     exclude_from_explorer = True
     menu_label = _("Vector Layers")
     index_view_class = LayerIndexView
-    create_view_class = VectorLayerCreateView
-    edit_view_class = VectorLayerEditView
+    create_view_class = VectorFileLayerCreateView
+    edit_view_class = VectorFileLayerEditView
     list_display = ("title",)
     list_filter = ("dataset",)
     index_template_name = "modeladmin/index_without_custom_create.html"
@@ -643,9 +706,19 @@ class GeoManagerAdminGroup(ModelAdminGroupWithHiddenItems):
     menu_icon = 'layer-group'
     menu_order = 700
     items = (
-        CategoryModelAdmin, DatasetModelAdmin, MetadataModelAdmin, FileImageLayerModelAdmin,
-        RasterStyleModelAdmin, VectorLayerModelAdmin, WmsLayerModelAdmin, TmsLayerModelAdmin, MBTSourceModelAdmin,
-        LayerRasterFileModelAdmin, PgVectorTableModelAdmin)
+        CategoryModelAdmin,
+        DatasetModelAdmin,
+        MetadataModelAdmin,
+        RasterFileLayerModelAdmin,
+        RasterStyleModelAdmin,
+        VectorFileLayerModelAdmin,
+        WmsLayerModelAdmin,
+        RasterTileLayerModelAdmin,
+        VectorTileLayerModelAdmin,
+        MBTSourceModelAdmin,
+        LayerRasterFileModelAdmin,
+        PgVectorTableModelAdmin
+    )
 
     def get_submenu_items(self):
         menu_items = super().get_submenu_items()

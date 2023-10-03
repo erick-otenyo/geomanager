@@ -5,7 +5,7 @@ from django.db import models
 from django.utils.text import gettext_lazy as _
 from django_extensions.db.models import TimeStampedModel
 
-from geomanager.models.vector import Geostore
+from geomanager.models.geostore import Geostore
 
 
 class AreaOfInterest(TimeStampedModel):

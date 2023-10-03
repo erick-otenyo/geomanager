@@ -2,9 +2,10 @@ from rest_framework import serializers
 
 from geomanager.models import Category
 from geomanager.models.core import SubCategory, Dataset, Metadata
-from geomanager.serializers.raster import FileLayerSerializer
-from geomanager.serializers.tms import TmsLayerSerializer
-from geomanager.serializers.vector import VectorLayerSerializer
+from geomanager.serializers.raster_file import RasterFileLayerSerializer
+from geomanager.serializers.raster_tile import RasterTileLayerSerializer
+from geomanager.serializers.vector_file import VectorFileLayerSerializer
+from geomanager.serializers.vector_tile import VectorTileLayerSerializer
 from geomanager.serializers.wms import WmsLayerSerializer
 
 
@@ -34,17 +35,20 @@ class DatasetSerializer(serializers.ModelSerializer):
     def get_layers(self, obj):
         request = self.context.get('request')
 
-        if obj.layer_type == "file":
-            return FileLayerSerializer(obj.file_layers, many=True, context={"request": request}).data
+        if obj.layer_type == "raster_file":
+            return RasterFileLayerSerializer(obj.raster_file_layers, many=True, context={"request": request}).data
 
-        if obj.layer_type == "vector":
-            return VectorLayerSerializer(obj.vector_layers, many=True, context={"request": request}).data
+        if obj.layer_type == "vector_file":
+            return VectorFileLayerSerializer(obj.vector_file_layers, many=True, context={"request": request}).data
 
         if obj.layer_type == "wms":
             return WmsLayerSerializer(obj.wms_layers, many=True, context={"request": request}).data
 
-        if obj.layer_type == "tms":
-            return TmsLayerSerializer(obj.tms_layers, many=True, context={"request": request}).data
+        if obj.layer_type == "raster_tile":
+            return RasterTileLayerSerializer(obj.raster_tile_layers, many=True, context={"request": request}).data
+
+        if obj.layer_type == "vector_tile":
+            return VectorTileLayerSerializer(obj.vector_tile_layers, many=True, context={"request": request}).data
 
         return None
 

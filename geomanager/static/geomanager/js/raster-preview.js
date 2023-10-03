@@ -188,6 +188,12 @@ $((async function () {
     }
 
     const setLayer = async (layerId) => {
+
+        const selectedLayer = window.geomanager_opts.dataLayers.find(l => l.id === layerId)
+
+        const {id, layerConfig: {source: {tiles}, render}} = selectedLayer
+
+
         const selectedColorMap = $colorScaleSelect.val()
         let style
         if (selectedColorMap === "layer-style") {
@@ -213,7 +219,6 @@ $((async function () {
 
         const {rasterid} = selectedTimestampData
 
-
         const rasterBounds = await fetchRasterBounds(rasterid)
 
         map.fitBounds(rasterBounds, {padding: 20})
@@ -224,7 +229,7 @@ $((async function () {
             style: style
         }
 
-        const tilesUrl = updateTileUrl(window.geomanager_opts.layerTilesUrl, params)
+        const tilesUrl = updateTileUrl(tiles[0], params)
 
         map.addSource(mapRasterLayerId, {
             type: "raster",
@@ -251,7 +256,8 @@ $((async function () {
         await setLayer(layerId)
     }
 
-    const selectedLayer = $layerSelect.val();
+    const selectedLayerId = $layerSelect.val()
+
     await setColorMaps()
-    await setTimestamps(selectedLayer)
+    await setTimestamps(selectedLayerId)
 }));

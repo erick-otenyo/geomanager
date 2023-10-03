@@ -10,8 +10,14 @@ import geopandas as gpd
 from django.contrib.gis.db import models
 from django.db import connection
 
-from geomanager.errors import NoShpFound, NoShxFound, NoDbfFound, InvalidFile, InvalidGeomType, \
+from geomanager.errors import (
+    NoShpFound,
+    NoShxFound,
+    NoDbfFound,
+    InvalidFile,
+    InvalidGeomType,
     GeomValidationNotImplemented
+)
 
 POSTGRES_DATA_TYPES_DJANGO_FIELDS_MAPPING = {
     'smallint': models.SmallIntegerField,
@@ -159,15 +165,13 @@ def get_postgis_table_info(schema, table_name):
         results = cursor.fetchall()
         column_data_types = [{"name": row[0], "data_type": row[1]} for row in results if row[0] != "geom"]
 
-    # # Get the extents of all the data in the table
-    with connection.cursor() as cursor:
+        # Get the extents of all the data in the table
         extent_sql = f"SELECT ST_Extent(geom) FROM {schema}.{table_name}"
         cursor.execute(extent_sql)
         bbox_text = cursor.fetchone()[0]
         bbox_str = bbox_text.replace("BOX(", "").replace(")", "").replace(" ", ",").split(",")
 
-    # Get the geometry type of the 'geom' column
-    with connection.cursor() as cursor:
+        # Get the geometry type of the 'geom' column
         geom_sql = f"""SELECT GeometryType(geom)
         FROM {schema}.{table_name} LIMIT 1
         """

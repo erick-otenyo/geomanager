@@ -23,8 +23,8 @@ from geomanager.models.core import Dataset, BaseLayer
 from geomanager.widgets import RasterStyleWidget
 
 
-class FileImageLayer(TimeStampedModel, BaseLayer):
-    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, related_name="file_layers",
+class RasterFileLayer(TimeStampedModel, BaseLayer):
+    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, related_name="raster_file_layers",
                                 verbose_name=_("dataset"))
     style = models.ForeignKey("RasterStyle", null=True, blank=True, on_delete=models.SET_NULL, verbose_name=_("style"))
 
@@ -63,15 +63,27 @@ class FileImageLayer(TimeStampedModel, BaseLayer):
             })
         return url
 
-    def layer_config(self, request=None):
-        base_tiles_url = reverse("raster_tiles", args=(0, 0, 0))
+    @property
+    def base_tile_url(self):
+        base_tiles_url = reverse("raster_tiles", args=(self.id, 0, 0, 0))
         base_tiles_url = base_tiles_url.replace("/0/0/0", r"/{z}/{x}/{y}")
+        return f"{base_tiles_url}"
 
+    def get_tile_json_url(self, request=None):
+        tile_json_url = reverse("raster_file_tile_json", args=(self.id,))
         if request:
             base_absolute_url = request.scheme + '://' + request.get_host()
-            base_tiles_url = base_absolute_url + base_tiles_url
+            tile_json_url = base_absolute_url + tile_json_url
 
-        tile_url = f"{base_tiles_url}?layer={self.id}&time={{time}}"
+        return tile_json_url
+
+    def layer_config(self, request=None):
+        base_tile_url = self.base_tile_url
+        if request:
+            base_absolute_url = request.scheme + '://' + request.get_host()
+            base_tile_url = base_absolute_url + base_tile_url
+
+        tile_url = f"{base_tile_url}?time={{time}}"
 
         if self.dataset.can_clip:
             tile_url = tile_url + "&geostore_id={geostore_id}"
@@ -157,6 +169,27 @@ class FileImageLayer(TimeStampedModel, BaseLayer):
 
         return analysis_config
 
+    def get_tile_json(self, request=None):
+        base_tile_url = self.base_tile_url
+        timestamps = list(self.raster_files.all().values_list("time", flat=True))
+
+        if request:
+            base_absolute_url = request.scheme + '://' + request.get_host()
+            base_tile_url = base_absolute_url + base_tile_url
+
+        tile_json = {
+            "tilejson": "3.0.0",
+            "name": self.title,
+            "scheme": "xyz",
+            "tiles": [base_tile_url],
+            "minzoom": 0,
+            "maxzoom": 20,
+            "time_parameter": "time",
+            "timestamps": timestamps
+        }
+
+        return tile_json
+
     def clean(self):
         # if adding a layer to a dataset that already has a layer and is not multi layer
         if self._state.adding:
@@ -172,7 +205,7 @@ def layer_raster_file_dir_path(instance, filename):
 
 
 class LayerRasterFile(TimeStampedModel):
-    layer = models.ForeignKey(FileImageLayer, on_delete=models.CASCADE, related_name="raster_files",
+    layer = models.ForeignKey(RasterFileLayer, on_delete=models.CASCADE, related_name="raster_files",
                               verbose_name=_("layer"))
     file = models.FileField(upload_to=layer_raster_file_dir_path, verbose_name=_("file"))
     time = models.DateTimeField(verbose_name=_("time"),
