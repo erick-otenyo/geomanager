@@ -4,7 +4,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from wagtailcache.cache import cache_page
 
-from geomanager.models import Category, VectorLayerIcon
+from geomanager.models import Category, VectorLayerIcon, VectorTileLayerIcon
 from geomanager.models.core import GeomanagerSettings
 from geomanager.serializers import CategorySerializer
 
@@ -36,6 +36,9 @@ def get_mapviewer_config(request):
 
     icon_images = []
     for icon in VectorLayerIcon.objects.all():
+        icon_images.append({"name": icon.name, "url": request.build_absolute_uri(icon.file.url)})
+
+    for icon in VectorTileLayerIcon.objects.all():
         icon_images.append({"name": icon.name, "url": request.build_absolute_uri(icon.file.url)})
 
     response.update({"vectorLayerIcons": icon_images})

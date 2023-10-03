@@ -3,13 +3,16 @@ from wagtailcache.cache import nocache_page
 from wagtailiconchooser.utils import get_svg_sprite_for_icons
 
 from geomanager.models import GeomanagerSettings, Category
+from geomanager.models.vector_file import get_legend_icons
 
 
 @nocache_page
 def map_view(request, location_type=None, adm0=None, adm1=None, adm2=None):
-    # get svg sprite for categories icon
+    # get svg sprite for categories and legend icons
     category_icons = [category.icon for category in Category.objects.all()]
-    svg_sprite = get_svg_sprite_for_icons(category_icons)
+    legend_icons = get_legend_icons()
+    icons = [*category_icons, *legend_icons]
+    svg_sprite = get_svg_sprite_for_icons(icons)
 
     gm_settings = GeomanagerSettings.for_request(request)
     context = {

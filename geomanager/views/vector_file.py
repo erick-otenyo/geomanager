@@ -1,3 +1,4 @@
+import json
 import os
 
 from django.conf import settings
@@ -13,16 +14,19 @@ from django.utils.translation import gettext_lazy as _
 from django.views import View
 from wagtail.admin import messages
 from wagtail.admin.auth import user_passes_test, user_has_any_page_permission, permission_denied
-from wagtail_modeladmin.helpers import AdminURLHelper
 from wagtail.models import Site
 from wagtail.snippets.permissions import get_permission_name
+from wagtail_modeladmin.helpers import AdminURLHelper
 from wagtailcache.cache import cache_page, clear_cache
 
 from geomanager.forms import VectorLayerFileForm, VectorTableForm
 from geomanager.models import Dataset
 from geomanager.models.core import GeomanagerSettings
-from geomanager.models.vector import VectorLayer, VectorUpload, PgVectorTable, Geostore
+from geomanager.models.geostore import Geostore
+from geomanager.models.vector_file import VectorUpload, PgVectorTable, VectorFileLayer, VectorLayerIcon
+from geomanager.serializers.vector_file import VectorFileLayerSerializer
 from geomanager.settings import geomanager_settings
+from geomanager.utils import UUIDEncoder
 from geomanager.utils.vector_utils import ogr_db_import
 
 ALLOWED_VECTOR_EXTENSIONS = ["zip", "geojson", "csv"]
@@ -78,7 +82,7 @@ def upload_vector_file(request, dataset_id=None, layer_id=None):
         upload = VectorUpload.objects.create(file=file, dataset=dataset)
         upload.save()
 
-        query_set = VectorLayer.objects.filter(dataset=dataset)
+        query_set = VectorFileLayer.objects.filter(dataset=dataset)
 
         filename = os.path.splitext(upload.file.name)[0]
         filename_without_ext = os.path.basename(filename)
@@ -104,7 +108,7 @@ def upload_vector_file(request, dataset_id=None, layer_id=None):
         }
 
         form = render_to_string(
-            "geomanager/vector_edit_form.html",
+            "geomanager/vector_file_edit_form.html",
             ctx,
             request=request,
         )
@@ -112,7 +116,7 @@ def upload_vector_file(request, dataset_id=None, layer_id=None):
 
         return JsonResponse(response)
 
-    return render(request, 'geomanager/vector_upload.html', context)
+    return render(request, 'geomanager/vector_file_upload.html', context)
 
 
 @user_passes_test(user_has_any_page_permission)
@@ -125,7 +129,7 @@ def publish_vector(request, upload_id):
     if not upload:
         return JsonResponse({"message": "upload not found"}, status=404)
 
-    db_layer = get_object_or_404(VectorLayer, pk=request.POST.get('layer'))
+    db_layer = get_object_or_404(VectorFileLayer, pk=request.POST.get('layer'))
 
     form_kwargs = {}
 
@@ -136,7 +140,7 @@ def publish_vector(request, upload_id):
         "description": request.POST.get('description'),
     }
 
-    queryset = VectorLayer.objects.filter(dataset=upload.dataset)
+    queryset = VectorFileLayer.objects.filter(dataset=upload.dataset)
     layer_form = VectorLayerFileForm(data=data, queryset=queryset, **form_kwargs)
 
     ctx = {
@@ -150,7 +154,7 @@ def publish_vector(request, upload_id):
         return {
             "success": False,
             "form": render_to_string(
-                "geomanager/vector_edit_form.html",
+                "geomanager/vector_file_edit_form.html",
                 ctx,
                 request=request,
             ),
@@ -231,7 +235,7 @@ def delete_vector_upload(request, upload_id):
 
 @user_passes_test(user_has_any_page_permission)
 def preview_vector_layers(request, dataset_id, layer_id=None):
-    template_name = 'geomanager/vector_preview.html'
+    template_name = 'geomanager/vector_file_layer_preview.html'
     dataset = get_object_or_404(Dataset, pk=dataset_id)
 
     base_absolute_url = request.scheme + '://' + request.get_host()
@@ -239,7 +243,7 @@ def preview_vector_layers(request, dataset_id, layer_id=None):
     dataset_admin_helper = AdminURLHelper(Dataset)
     dataset_list_url = dataset_admin_helper.get_action_url("index")
 
-    vector_layer_admin_helper = AdminURLHelper(VectorLayer)
+    vector_layer_admin_helper = AdminURLHelper(VectorFileLayer)
     vector_layer_list_url = vector_layer_admin_helper.get_action_url("index")
 
     geojson_url = request.build_absolute_uri(
@@ -256,8 +260,17 @@ def preview_vector_layers(request, dataset_id, layer_id=None):
         "columns": data_table.properties if data_table else [],
     }
 
+    dataset_layers = VectorFileLayerSerializer(dataset.vector_file_layers, many=True, context={"request": request}).data
+
+    # get icon images for the dataset vector tile layers, if any
+    icon_images = []
+    layers_id = [layer.get("id") for layer in dataset_layers]
+    for icon in VectorLayerIcon.objects.filter(layer__in=layers_id):
+        icon_images.append({"name": icon.name, "url": request.build_absolute_uri(icon.file.url)})
+
     context = {
         "dataset": dataset,
+        "dataset_layers": json.dumps(dataset_layers, cls=UUIDEncoder),
         "selected_layer": layer_id,
         "datasets_index_url": dataset_list_url,
         "vector_layer_list_url": vector_layer_list_url,
@@ -265,6 +278,7 @@ def preview_vector_layers(request, dataset_id, layer_id=None):
         "vector_tiles_url": base_absolute_url + "/api/vector-tiles/{z}/{x}/{y}",
         "geojson_url": geojson_url,
         "data_table": data_table,
+        "icon_images": icon_images
     }
 
     if request.POST:

@@ -15,8 +15,9 @@ from wagtailcache.cache import cache_page
 
 from geomanager import serializers
 from geomanager.models import Geostore
-from geomanager.models.vector import PgVectorTable
-from geomanager.serializers.vector import AdminBoundarySerializer, GeostoreSerializer
+from geomanager.models.vector_file import PgVectorTable
+from geomanager.serializers.geostore import GeostoreSerializer
+from geomanager.serializers.vector_file import AdminBoundarySerializer
 
 
 class VectorTableFileDetailViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):

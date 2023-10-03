@@ -35,7 +35,7 @@
                 Select Layer
             </label>
             <select name="select" id="layer_select">
-                {% for layer in dataset.vector_layers.all %}
+                {% for layer in dataset.vector_file_layers.all %}
                     <option value="{{ layer.pk }}"
                             {% if selected_layer and selected_layer == layer.pk %}selected{% endif %}>{{ layer.title }}</option>
                 {% endfor %}
@@ -110,9 +110,6 @@
             </div>
         {% endif %}
     </div>
-
-
-
 {% endblock %}
 
 {% block extra_js %}
@@ -122,14 +119,21 @@
     <script src="{% static 'geomanager/js/vendor/maplibre-gl.js' %}"></script>
 
     <script>
+        let dataLayers = '{{ dataset_layers|escapejs }}';
+        if (dataLayers) {
+            dataLayers = JSON.parse(dataLayers)
+        }
+
         window.geomanager_opts = {
+            datasetLayers: dataLayers,
             vectorTilesUrl: "{{ vector_tiles_url }}",
             dataVectorApiBaseUrl: "{{ data_vector_api_base_url }}",
+            iconImages: {{ icon_images|safe }},
         }
     </script>
 
     <!-- Main script -->
-    <script src="{% static 'geomanager/js/vector-preview.js' %}"></script>
+    <script src="{% static 'geomanager/js/vector-file-preview.js' %}"></script>
 
     <script>
         $(document).ready(function () {

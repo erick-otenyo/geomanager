@@ -8,7 +8,7 @@ import django.db.models.deletion
 import django_countries.fields
 import django_extensions.db.fields
 import geomanager.fields
-import geomanager.models.raster
+import geomanager.models.raster_file
 import modelcluster.fields
 import uuid
 import wagtail.blocks
@@ -437,7 +437,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created', django_extensions.db.fields.CreationDateTimeField(auto_now_add=True, verbose_name='created')),
                 ('modified', django_extensions.db.fields.ModificationDateTimeField(auto_now=True, verbose_name='modified')),
-                ('file', models.FileField(editable=False, upload_to=geomanager.models.raster.layer_raster_file_dir_path, verbose_name='file')),
+                ('file', models.FileField(editable=False, upload_to=geomanager.models.raster_file.layer_raster_file_dir_path, verbose_name='file')),
                 ('time', models.DateTimeField(help_text='Time for the raster file. This can be the time the data was acquired, or the date and time for which the data applies', verbose_name='time')),
                 ('layer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='raster_files', to='geomanager.fileimagelayer', verbose_name='layer')),
             ],

@@ -82,10 +82,11 @@ class SubCategory(Orderable):
 
 class Dataset(TimeStampedModel):
     DATASET_TYPE_CHOICES = (
-        ("file", "Raster"),
-        ("wms", "WMS"),
-        ("tms", "TMS"),
-        ("vector", "Vector"),
+        ("raster_file", "Raster File - NetCDF/GeoTiff"),
+        ("vector_file", "Vector File - Shapefile, Geojson"),
+        ("wms", "Web Map Service - WMS Layer"),
+        ("raster_tile", "XYZ Raster Tile Layer"),
+        ("vector_tile", "XYZ Vector Tile Layer"),
     )
 
     CURRENT_TIME_METHOD_CHOICES = (
@@ -104,7 +105,7 @@ class Dataset(TimeStampedModel):
                                help_text=_("Short summary of less than 100 characters"))
     metadata = models.ForeignKey("Metadata", verbose_name=_("metadata"), null=True, blank=True,
                                  on_delete=models.SET_NULL)
-    layer_type = models.CharField(max_length=100, choices=DATASET_TYPE_CHOICES, default="file",
+    layer_type = models.CharField(max_length=100, choices=DATASET_TYPE_CHOICES, default="raster_file",
                                   verbose_name=_("Layer type"))
     published = models.BooleanField(default=True, verbose_name=_("published"),
                                     help_text=_("Should the dataset be available for visualization ?"
@@ -185,17 +186,20 @@ class Dataset(TimeStampedModel):
     def get_layers_rel(self):
         layer_type = self.layer_type
 
-        if layer_type == "file":
-            return self.file_layers
+        if layer_type == "raster_file":
+            return self.raster_file_layers
 
-        if layer_type == "vector":
-            return self.vector_layers
+        if layer_type == "vector_file":
+            return self.vector_file_layers
 
         if layer_type == "wms":
             return self.wms_layers
 
-        if layer_type == "tms":
-            return self.tms_layers
+        if layer_type == "raster_tile":
+            return self.raster_tile_layers
+
+        if layer_type == "vector_tile":
+            return self.vector_tile_layers
 
         return None
 
@@ -241,10 +245,18 @@ class Dataset(TimeStampedModel):
         return False
 
     def can_preview(self):
-        return self.has_raster_files() or self.has_vector_tables() or self.has_wms_layers() or self.has_tms_layers()
+        layers_check = [
+            self.has_raster_files(),
+            self.has_vector_tables(),
+            self.has_wms_layers(),
+            self.has_raster_tile_layers(),
+            self.has_vector_tile_layers()
+        ]
+
+        return any(layers_check)
 
     def has_raster_files(self):
-        layers = self.file_layers.all()
+        layers = self.raster_file_layers.all()
         has_raster_files = False
         if layers.exists():
             for layer in layers:
@@ -254,7 +266,7 @@ class Dataset(TimeStampedModel):
         return has_raster_files
 
     def has_vector_tables(self):
-        vector_layers = self.vector_layers.all()
+        vector_layers = self.vector_file_layers.all()
         has_vector_tables = False
         if vector_layers.exists():
             for layer in vector_layers:
@@ -266,8 +278,11 @@ class Dataset(TimeStampedModel):
     def has_wms_layers(self):
         return self.wms_layers.exists()
 
-    def has_tms_layers(self):
-        return self.tms_layers.exists()
+    def has_raster_tile_layers(self):
+        return self.raster_tile_layers.exists()
+
+    def has_vector_tile_layers(self):
+        return self.vector_tile_layers.exists()
 
     def get_default_layer(self):
         layers = self.get_layers_rel()
@@ -332,7 +347,7 @@ def get_styles():
 
 class BaseLayer(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    title = models.CharField(max_length=255, verbose_name=_("title"), help_text=_("layer title"))
+    title = models.CharField(max_length=255, verbose_name=_("title"), help_text=_("Layer title"))
     default = models.BooleanField(default=False, verbose_name=_("default"), help_text=_("Is Default Layer"))
 
     @property

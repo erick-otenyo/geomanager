@@ -14,64 +14,28 @@ from wagtail.admin.panels import FieldPanel
 from wagtail.fields import StreamField
 from wagtail.images.blocks import ImageChooserBlock
 
-from geomanager.blocks import InlineLegendBlock, FillVectorLayerBlock, LineVectorLayerBlock, CircleVectorLayerBlock, \
-    IconVectorLayerBlock, TextVectorLayerBlock, InlineIconLegendBlock
-from geomanager.constants import MAPBOX_GL_STYLE_SPEC
+from geomanager.blocks import (
+    InlineLegendBlock,
+    FillVectorLayerBlock,
+    LineVectorLayerBlock,
+    CircleVectorLayerBlock,
+    IconVectorLayerBlock,
+    TextVectorLayerBlock,
+    InlineIconLegendBlock
+)
 from geomanager.fields import ListField
 from geomanager.helpers import get_vector_layer_files_url
-from geomanager.models import Dataset
-from geomanager.models.core import BaseLayer
+from geomanager.models.core import Dataset, BaseLayer
+from geomanager.models.vector_tile import VectorTileLayer
 from geomanager.panels import ReadOnlyFieldPanel
 from geomanager.utils.svg import rasterize_svg_to_png
+from geomanager.utils.tiles import get_vector_render_layers
 from geomanager.utils.vector_utils import drop_vector_table
 
 
-class Geostore(TimeStampedModel):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    iso = models.CharField(max_length=100, blank=True, null=True)
-    id1 = models.CharField(max_length=100, blank=True, null=True)
-    id2 = models.CharField(max_length=100, blank=True, null=True)
-    id3 = models.CharField(max_length=100, blank=True, null=True)
-
-    name_0 = models.CharField(max_length=100, blank=True, null=True)
-    name_1 = models.CharField(max_length=100, blank=True, null=True)
-    name_2 = models.CharField(max_length=100, blank=True, null=True)
-    name_3 = models.CharField(max_length=100, blank=True, null=True)
-    name_4 = models.CharField(max_length=100, blank=True, null=True)
-
-    geom = models.MultiPolygonField(srid=4326)
-
-    def __str__(self):
-        return self.id.hex
-
-    @property
-    def bbox(self):
-        min_x, min_y, max_x, max_y = self.geom.envelope.extent
-        bbox = [min_x, min_y, max_x, max_y]
-        return bbox
-
-    @property
-    def info(self):
-
-        info = {}
-
-        if self.iso:
-            info.update({"iso": self.iso, "name": self.name_0})
-
-        if self.id1:
-            info.update({"id1": self.id1, "name": self.name_1})
-
-        if self.id2:
-            info.update({"id2": self.id2, "name": self.name_2})
-
-        if self.id3:
-            info.update({"id3": self.id3, "name": self.id3})
-
-        return info
-
-
-class VectorLayer(TimeStampedModel, ClusterableModel, BaseLayer):
-    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, related_name="vector_layers", verbose_name="dataset")
+class VectorFileLayer(TimeStampedModel, ClusterableModel, BaseLayer):
+    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, related_name="vector_file_layers",
+                                verbose_name="dataset")
     render_layers = StreamField([
         ("fill", FillVectorLayerBlock(label=_("Polygon Layer"))),
         ("line", LineVectorLayerBlock(label=_("Line Layer"))),
@@ -79,6 +43,7 @@ class VectorLayer(TimeStampedModel, ClusterableModel, BaseLayer):
         ("icon", IconVectorLayerBlock(label=_("Icon Layer"))),
         ("text", TextVectorLayerBlock(label=_("Text Label Layer"))),
     ], use_json_field=True, null=True, blank=True, min_num=1, verbose_name=_("Render Layers"))
+
     legend = StreamField([
         ('legend', InlineLegendBlock(label=_("Legend")),),
         ('legend_image', ImageChooserBlock(label=_("Legend Image")),),
@@ -133,66 +98,7 @@ class VectorLayer(TimeStampedModel, ClusterableModel, BaseLayer):
             }
         }
 
-        render_layers = []
-
-        optional_keys = ["filter", "maxzoom", "minzoom"]
-
-        for layer in self.render_layers:
-            data = layer.block.get_api_representation(layer.value)
-
-            render_layer_type = layer.block_type
-            if render_layer_type == "icon" or render_layer_type == "text":
-                render_layer_type = "symbol"
-
-            data.update({"type": render_layer_type})
-
-            data.update({"source-layer": "default"})
-
-            # remove optional keys if they do not have any value
-            for key in optional_keys:
-                if not data.get(key):
-                    data.pop(key, None)
-
-            paint_defaults = MAPBOX_GL_STYLE_SPEC.get("PAINT_DEFAULTS", {})
-            layout_defaults = MAPBOX_GL_STYLE_SPEC.get("LAYOUT_DEFAULTS", {})
-
-            paint = {}
-            for key, value in data.get("paint", {}).items():
-                default_spec_value = paint_defaults.get(key)
-                #  if is equal to default value, no need to include it
-                if default_spec_value == value:
-                    continue
-                js_key = key.replace("_", "-")
-                paint.update({js_key: value})
-
-            layout = {}
-            for key, value in data.get("layout", {}).items():
-                default_spec_value = layout_defaults.get(key)
-                #  if is equal to default value, no need to include it
-                if default_spec_value == value:
-                    continue
-                js_key = key.replace("_", "-")
-                layout.update({js_key: value})
-
-            if bool(paint):
-                data.update({"paint": paint})
-            else:
-                # nothing for paint. Just delete it
-                data.pop("paint", None)
-
-            if bool(layout):
-                data.update({"layout": layout})
-            else:
-                # nothing for layout. Just delete it
-                data.pop("layout", None)
-
-            data.update({
-                "metadata": {
-                    "position": "top",
-                }
-            })
-
-            render_layers.append(data)
+        render_layers = get_vector_render_layers(self.render_layers)
 
         layer_config.update({"render": {"layers": render_layers}})
 
@@ -303,7 +209,7 @@ class VectorLayer(TimeStampedModel, ClusterableModel, BaseLayer):
 
 
 class VectorLayerIcon(models.Model):
-    layer = ParentalKey(VectorLayer, on_delete=models.CASCADE, related_name="icons")
+    layer = ParentalKey(VectorFileLayer, on_delete=models.CASCADE, related_name="icons")
     name = models.CharField(max_length=255)
     color = models.CharField(max_length=100, null=True)
     file = models.FileField(upload_to="vector_icons/")
@@ -328,7 +234,7 @@ class VectorUpload(TimeStampedModel):
 
 class PgVectorTable(TimeStampedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    layer = models.ForeignKey(VectorLayer, on_delete=models.CASCADE, related_name="vector_tables")
+    layer = models.ForeignKey(VectorFileLayer, on_delete=models.CASCADE, related_name="vector_tables")
     table_name = models.CharField(max_length=256, unique=True)
     full_table_name = models.CharField(max_length=256)
     description = models.TextField(blank=True, null=True)
@@ -368,3 +274,18 @@ class PgVectorTable(TimeStampedModel):
 def drop_pg_vector_table(sender, instance, **kwargs):
     if instance.full_table_name:
         drop_vector_table(instance.full_table_name)
+
+
+def get_legend_icons():
+    vector_file_layers = VectorFileLayer.objects.all()
+    vector_tile_layers = VectorTileLayer.objects.all()
+    icons = []
+
+    for layer in [*vector_file_layers, *vector_tile_layers]:
+        if layer.legend:
+            legend_block = layer.legend[0]
+            if legend_block.block_type == "legend_icon":
+                items = legend_block.value.get("items")
+                for item in items:
+                    icons.append(item.get("icon_image"))
+    return icons
