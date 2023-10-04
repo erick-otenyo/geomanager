@@ -17,12 +17,14 @@ class RasterTileLayerSerializer(serializers.ModelSerializer):
     isMultiLayer = serializers.SerializerMethodField()
     nestedLegend = serializers.SerializerMethodField()
     moreInfo = serializers.SerializerMethodField()
+    tileJsonUrl = serializers.SerializerMethodField()
+    timestampsResponseObjectKey = serializers.SerializerMethodField()
 
     class Meta:
         model = RasterTileLayer
         fields = ["id", "dataset", "name", "isMultiLayer", "nestedLegend", "layerType", "layerConfig", "params",
                   "paramsSelectorConfig", "paramsSelectorColumnView", "legendConfig", "multiTemporal",
-                  "currentTimeMethod", "autoUpdateInterval", "moreInfo", ]
+                  "currentTimeMethod", "autoUpdateInterval", "moreInfo", "tileJsonUrl", "timestampsResponseObjectKey"]
 
     def get_isMultiLayer(self, obj):
         return obj.dataset.multi_layer
@@ -34,7 +36,7 @@ class RasterTileLayerSerializer(serializers.ModelSerializer):
         return obj.dataset.auto_update_interval_milliseconds
 
     def get_multiTemporal(self, obj):
-        return obj.dataset.multi_temporal
+        return obj.dataset.multi_temporal and obj.has_time
 
     def get_currentTimeMethod(self, obj):
         return obj.dataset.current_time_method
@@ -58,6 +60,16 @@ class RasterTileLayerSerializer(serializers.ModelSerializer):
 
     def get_paramsSelectorColumnView(self, obj):
         return not obj.params_selectors_side_by_side
+
+    def get_tileJsonUrl(self, obj):
+        if obj.has_time:
+            return obj.tile_json_url
+        return None
+
+    def get_timestampsResponseObjectKey(self, obj):
+        if obj.has_time:
+            return obj.timestamps_response_object_key
+        return None
 
     def get_legendConfig(self, obj):
         request = self.context.get('request')
