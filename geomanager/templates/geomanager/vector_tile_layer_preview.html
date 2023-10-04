@@ -33,7 +33,7 @@
             </a>
         </div>
 
-        <div class="w-field__input" data-field-input="">
+        <div class="w-field__input" data-field-input="" style="display: none">
             <label class="w-field__label" for="layer_select" id="layer_select-label">
                 Select Layer
             </label>
@@ -45,6 +45,15 @@
             </select>
         </div>
         <div id="preview-map" style="position: relative">
+            <div class="layer-timestamps-wrapper" style="display: none" id="timestamps_wrapper">
+                <div class="w-field__input">
+                    <label class="w-field__label" for="timestamps_select" id="timestamps_select-label">
+                        Time
+                    </label>
+                    <select name="select" id="timestamps_select">
+                    </select>
+                </div>
+            </div>
         </div>
     </div>
 

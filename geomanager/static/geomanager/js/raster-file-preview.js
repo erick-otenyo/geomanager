@@ -56,8 +56,8 @@ $((async function () {
      * @returns {Promise} A promise that resolves to the JSON response from the raster API endpoint.
      */
     const fetchLayerFiles = (layerId) => {
-        const rastersUrl = `${window.geomanager_opts.fileRasterApiBaseUrl}?layer=${layerId}`
-        return fetch(rastersUrl).then(res => res.json())
+        const rasterListUrl = `${window.geomanager_opts.fileRasterListUrl}?layer=${layerId}`
+        return fetch(rasterListUrl).then(res => res.json())
     }
 
     /**
@@ -66,7 +66,7 @@ $((async function () {
      * @returns {Promise} A promise that resolves to a two-dimensional array representing the raster's bounds.
      */
     const fetchRasterBounds = (rasterId) => {
-        const metadataUrl = `${window.geomanager_opts.fileRasterApiBaseUrl}/${rasterId}/info/metadata`
+        const metadataUrl = `${window.geomanager_opts.fileRasterMetadataUrl}`.replace("/0/", `/${rasterId}/`)
         return fetch(metadataUrl).then(res => res.json()).then(metadata => {
             return [
                 [metadata.bounds.ll.x, metadata.bounds.ll.y],
@@ -80,7 +80,7 @@ $((async function () {
      * @returns {Promise} A promise that resolves to an array of color maps.
      */
     const fetchColorMaps = () => {
-        const largeImageApiBaseUrl = `${window.geomanager_opts.layerImageApiBaseUrl}/colormaps`
+        const largeImageApiBaseUrl = `${window.geomanager_opts.layerImageColorMapsUrl}`
         return fetch(largeImageApiBaseUrl).then(res => res.json()).then(colormaps => colormaps.matplotlib)
     }
 

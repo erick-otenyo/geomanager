@@ -401,11 +401,11 @@ def preview_raster_layers(request, dataset_id, layer_id=None):
         "selected_layer": selected_layer,
         "datasets_index_url": dataset_list_url,
         "image_file_layer_list_url": image_file_layer_list_url,
-        "file_raster_api_base_url": request.build_absolute_uri("/api/file-raster"),
-        "large_image_api_base_url": request.build_absolute_uri("/api/large-image"),
-        "base_absolute_url": base_absolute_url
+        "file_raster_list_url": request.build_absolute_uri(reverse("file-raster-list")),
+        "large_image_color_maps_url": request.build_absolute_uri(reverse("large-image-colormaps")),
+        "file_raster_metadata_url": request.build_absolute_uri(reverse("file-raster-metadata", args=("0",))),
+        "base_absolute_url": base_absolute_url,
     }
-
     return render(request, 'geomanager/raster_file_layer_preview.html', context)
 
 

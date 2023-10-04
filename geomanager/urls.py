@@ -46,7 +46,7 @@ router = SimpleRouter(trailing_slash=True)
 router.register(r'api/datasets', DatasetViewSet)
 router.register(r'api/metadata', MetadataViewSet)
 
-router.register(r'api/file-raster', RasterLayerRasterFileDetailViewSet)
+router.register(r'api/file-raster', RasterLayerRasterFileDetailViewSet, basename="file-raster")
 router.register(r'api/vector-data', VectorTableFileDetailViewSet)
 
 router.register(r'api/aoi', AoiViewSet)

@@ -234,3 +234,5 @@ CACHES = {
 DJANGO_TABLES2_TEMPLATE = "django-tables2/bulma.html"
 
 APPEND_SLASH = True
+
+FORCE_SCRIPT_NAME = env.str("FORCE_SCRIPT_NAME", None)

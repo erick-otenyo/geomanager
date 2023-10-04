@@ -55,6 +55,28 @@ $((async function () {
         const selectedLayerId = e.target.value;
     })
 
+    /**
+     * Updates the source tiles of a map to show data for a specific time.
+     * @param {string} selectedTime - The time to show data for, formatted as an ISO 8601 string.
+     * @param {object} map - The Mapbox GL JS map object to update.
+     * @param {string} sourceId - The ID of the map source to update.
+     */
+    const onTimeChange = (selectedTime, map, sourceId) => {
+        if (selectedTime && map && sourceId) {
+            const params = {time: selectedTime}
+            updateSourceTileUrl(map, sourceId, params)
+        }
+    };
+
+    // timestamp selection and change event
+    const $timestampsWrapper = $('#timestamps_wrapper')
+    const $timestampsSelect = $('#timestamps_select')
+    $timestampsSelect.on("change", (e) => {
+        const selectedTime = e.target.value;
+        const selectedLayerId = $layerSelect.val();
+        onTimeChange(selectedTime, map, selectedLayerId);
+    })
+
 
     const updateTileUrl = (tileUrl, params) => {
         // construct new url with new query params
@@ -87,6 +109,9 @@ $((async function () {
         map.triggerRepaint();
     }
 
+    const fetchTimestamps = (tileJsonUrl, timestampResponseObjectKey = "timestamps") => {
+        return fetch(tileJsonUrl).then(res => res.json()).then(res => res[timestampResponseObjectKey])
+    }
 
     const setLayer = (selectedLayer) => {
         const {id: layerId, layerConfig: {source: {tiles}}} = selectedLayer
@@ -101,7 +126,13 @@ $((async function () {
             map.removeSource(layerId);
         }
 
+        const selectedTimestamp = $timestampsSelect.val()
+
         const params = {}
+
+        if (selectedTimestamp) {
+            params["time"] = selectedTimestamp
+        }
 
         const tilesUrl = updateTileUrl(tiles[0], params)
 
@@ -122,6 +153,17 @@ $((async function () {
     if (selectedLayerId) {
         const selectedLayer = window.geomanager_opts.dataLayers.find(l => l.id === selectedLayerId)
 
+
+        const {tileJsonUrl, timestampsResponseObjectKey} = selectedLayer
+
+        if (tileJsonUrl) {
+            const timestamps = await fetchTimestamps(tileJsonUrl, timestampsResponseObjectKey)
+            $.each(timestamps, function (index, t) {
+                const optionEl = new Option(t, t)
+                $timestampsSelect.append(optionEl);
+            });
+            $timestampsWrapper.show()
+        }
 
         if (selectedLayer) {
             setLayer(selectedLayer)

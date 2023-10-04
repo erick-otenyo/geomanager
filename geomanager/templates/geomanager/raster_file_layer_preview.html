@@ -80,14 +80,14 @@
             dataLayers = JSON.parse(dataLayers)
         }
 
-
         window.geomanager_opts = {
             dataLayers: dataLayers,
-            fileRasterApiBaseUrl: "{{ file_raster_api_base_url }}",
-            layerImageApiBaseUrl: "{{ large_image_api_base_url }}"
+            fileRasterMetadataUrl: "{{ file_raster_metadata_url }}",
+            fileRasterListUrl: "{{ file_raster_list_url }}",
+            layerImageColorMapsUrl: "{{ large_image_color_maps_url }}",
         }
     </script>
 
     <!-- Main script -->
-    <script src="{% static 'geomanager/js/raster-preview.js' %}"></script>
+    <script src="{% static 'geomanager/js/raster-file-preview.js' %}"></script>
 {% endblock %}
