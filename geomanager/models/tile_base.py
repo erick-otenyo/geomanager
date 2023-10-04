@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django_extensions.db.models import TimeStampedModel
 from modelcluster.models import ClusterableModel
-from wagtail.admin.panels import FieldPanel
+from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.fields import StreamField
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.images.models import Image
@@ -48,10 +48,23 @@ class BaseTileLayer(TimeStampedModel, ClusterableModel, BaseLayer):
         'more_info': {'max_num': 1},
     }, use_json_field=True, null=True, blank=True, max_num=1, verbose_name=_("More Info"), )
 
+    get_time_from_tile_json = models.BooleanField(default=False, verbose_name=_("Get time from tile json url"))
+    tile_json_url = models.URLField(max_length=500, blank=True, null=True, verbose_name=_("Tile JSON url"))
+    timestamps_response_object_key = models.CharField(max_length=100, blank=True, null=True, default="timestamps",
+                                                      verbose_name=_("Timestamps response object key"),
+                                                      help_text=_("Key for timestamps values in response object"))
+
     panels = [
         FieldPanel("title"),
         FieldPanel("default"),
         FieldPanel("base_url"),
+
+        MultiFieldPanel([
+            FieldPanel("get_time_from_tile_json"),
+            FieldPanel("tile_json_url", classname="show_if_get_time_checked"),
+            FieldPanel("timestamps_response_object_key", classname="show_if_get_time_checked"),
+        ], heading=_("TileJson Settings")),
+
         FieldPanel("query_params_static"),
         FieldPanel("query_params_selectable"),
         FieldPanel("params_selectors_side_by_side"),
@@ -65,7 +78,7 @@ class BaseTileLayer(TimeStampedModel, ClusterableModel, BaseLayer):
 
         query_params = {}
 
-        if self.dataset.multi_temporal:
+        if self.has_time:
             query_params.update({
                 "time": "{{time}}"
             })
@@ -117,9 +130,13 @@ class BaseTileLayer(TimeStampedModel, ClusterableModel, BaseLayer):
         return config
 
     @property
+    def has_time(self):
+        return bool(self.dataset.multi_temporal and self.get_time_from_tile_json and self.tile_json_url)
+
+    @property
     def params(self):
         params = {}
-        if self.dataset.multi_temporal:
+        if self.has_time:
             params.update({"time": ""})
 
         selector_config = self.get_selectable_params_config()
@@ -139,8 +156,7 @@ class BaseTileLayer(TimeStampedModel, ClusterableModel, BaseLayer):
     @property
     def param_selector_config(self):
         config = []
-
-        if self.dataset.multi_temporal:
+        if self.has_time:
             time_config = {
                 "key": "time",
                 "required": True,
@@ -152,10 +168,9 @@ class BaseTileLayer(TimeStampedModel, ClusterableModel, BaseLayer):
             time_config.update({
                 "dateFormat": {"currentTime": "yyyy-mm-dd HH:MM"},
             })
-
             config.append(time_config)
-        selectable_params_config = self.get_selectable_params_config()
 
+        selectable_params_config = self.get_selectable_params_config()
         config.extend(selectable_params_config)
 
         return config

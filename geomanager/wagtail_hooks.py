@@ -502,6 +502,7 @@ class RasterTileLayerModelAdmin(ModelAdminCanHide):
     hidden = True
     index_template_name = "modeladmin/index_without_custom_create.html"
     index_view_class = LayerIndexView
+    form_view_extra_js = ["geomanager/js/raster_tile_layer_form.js"]
 
     def __init__(self, parent=None):
         super().__init__(parent)
