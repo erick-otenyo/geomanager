@@ -680,7 +680,7 @@ class VectorFileLayerModelAdmin(ModelAdminCanHide):
 class MBTSourceModelAdmin(ModelAdminCanHide):
     model = MBTSource
     menu_label = _("Basemap Sources")
-    menu_icon = "globe-africa"
+    menu_icon = "globe"
     form_view_extra_js = ["geomanager/js/mbt_source_extra.js"]
 
 
@@ -764,7 +764,7 @@ def register_icons(icons):
         'wagtailfontawesomesvg/solid/palette.svg',
         'wagtailfontawesomesvg/solid/database.svg',
         'wagtailfontawesomesvg/solid/layer-group.svg',
-        'wagtailfontawesomesvg/solid/globe-africa.svg',
+        'wagtailfontawesomesvg/solid/globe.svg',
         'wagtailfontawesomesvg/solid/map.svg',
     ]
 
