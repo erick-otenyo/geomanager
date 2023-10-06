@@ -22,8 +22,8 @@ class QueryParamStaticBlock(blocks.StructBlock):
 
 class QueryParamSelectableBlock(blocks.StructBlock):
     SELECTOR_TYPE_CHOICES = (
-        ("radio", "Radio"),
-        ("dropdown", "Dropdown"),
+        ("radio", _("Radio")),
+        ("dropdown", _("Dropdown")),
     )
     name = blocks.CharBlock(label=_("name"))
     label = blocks.CharBlock(required=False, label=_("label"))
@@ -31,16 +31,16 @@ class QueryParamSelectableBlock(blocks.StructBlock):
     options = blocks.ListBlock(blocks.StructBlock([
         ('label', blocks.CharBlock(label=_("label"))),
         ('value', blocks.CharBlock(label=_("value"))),
-        ('default',
-         blocks.BooleanBlock(required=False, label=_("default"), help_text=_("Check to make default option")))]
+        ('default', blocks.BooleanBlock(required=False, label=_("default"),
+                                        help_text=_("Check to make default option")))]
     ), min_num=1, label=_("Options"))
 
 
 class InlineLegendBlock(blocks.StructBlock):
     LEGEND_TYPES = (
-        ("basic", "Basic"),
-        ("gradient", "Gradient"),
-        ("choropleth", "Choropleth"),
+        ("basic", _("Basic")),
+        ("gradient", _("Gradient")),
+        ("choropleth", _("Choropleth")),
     )
     type = blocks.ChoiceBlock(choices=LEGEND_TYPES, default="basic", label=_("Legend Type"))
     items = blocks.ListBlock(blocks.StructBlock([
@@ -63,17 +63,17 @@ class InlineIconLegendBlock(blocks.StructBlock):
 # A filled polygon with an optional stroked border
 class FillVectorLayerBlock(blocks.StructBlock):
     paint = blocks.StructBlock([
-        ('fill_color', NativeColorBlock(required=False, default="#000000", label=_("fill color"))),
+        ('fill_color', NativeColorBlock(required=False, default="#000000")),
         ('fill_opacity', blocks.FloatBlock(required=False, default=1.0,
                                            validators=[MinValueValidator(0), MaxValueValidator(1)],
-                                           label=_("fill opacity"))),
-        ('fill_outline_color', NativeColorBlock(required=False, default="#000000", label=_("fill outline color"))),
-        ('fill_antialias', blocks.BooleanBlock(required=False, default=True, label=_("fill antialias"))),
-    ], label="Paint Properties")
+                                           )),
+        ('fill_outline_color', NativeColorBlock(required=False, default="#000000")),
+        ('fill_antialias', blocks.BooleanBlock(required=False, default=True)),
+    ], label="Mapbox GL Paint Properties")
 
-    filter = blocks.CharBlock(required=False, label=_("filter"))
-    maxzoom = blocks.IntegerBlock(required=False, label=_("maxzoom"))
-    minzoom = blocks.IntegerBlock(required=False, label=_("minzoom"))
+    filter = blocks.CharBlock(required=False)
+    maxzoom = blocks.IntegerBlock(required=False)
+    minzoom = blocks.IntegerBlock(required=False)
 
 
 # A stroked line
@@ -91,16 +91,13 @@ class LineVectorLayerBlock(blocks.StructBlock):
     )
 
     paint = blocks.StructBlock([
-        ('line_color', NativeColorBlock(required=False, default="#000000", label=_("Line color"))),
-        ('line_dasharray', blocks.CharBlock(required=False, label=_("Line dasharray"))),
-        ('line_gap_width', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=0.0,
-                                             label=_("Line gap width"))),
+        ('line_color', NativeColorBlock(required=False, default="#000000")),
+        ('line_dasharray', blocks.CharBlock(required=False)),
+        ('line_gap_width', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=0.0, )),
         ('line_opacity', blocks.FloatBlock(required=False, validators=[MinValueValidator(0), MaxValueValidator(1)],
-                                           default=1.0, label=_("line opacity"))),
-        ('line_width', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=1.0,
-                                         label=_("Line width"))),
-        ('line_offset', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=0,
-                                          label=_("Line offset"))),
+                                           default=1.0)),
+        ('line_width', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=1.0, )),
+        ('line_offset', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=0)),
 
         # Not implemented here
         # line-gradient - reason => requires source to be geojson, but our source is vector tiles
@@ -109,25 +106,20 @@ class LineVectorLayerBlock(blocks.StructBlock):
         # line-translate-anchor
         # line-trim-offset
 
-    ], label="Paint Properties")
+    ], label="Mapbox GL Paint Properties")
 
     layout = blocks.StructBlock([
-        ('line_cap', blocks.ChoiceBlock(required=False, choices=LINE_CAP_CHOICES, default="butt", label=_("Line cap"))),
-        ('line_join', blocks.ChoiceBlock(required=False, choices=LINE_JOIN_CHOICES, default="miter",
-                                         label=_("Line join"))),
-        ('line_miter_limit', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=2.0,
-                                               label=_("line miter limit"))),
-        ('line_round_limit', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=1.05,
-                                               label=_("line round limit"))),
-
+        ('line_cap', blocks.ChoiceBlock(required=False, choices=LINE_CAP_CHOICES, default="butt")),
+        ('line_join', blocks.ChoiceBlock(required=False, choices=LINE_JOIN_CHOICES, default="miter")),
+        ('line_miter_limit', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=2.0)),
+        ('line_round_limit', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=1.05)),
         # Note implemented here
         # line-sort-key
+    ], label="Mapbox GL Layout Properties")
 
-    ], label="Layout Properties")
-
-    filter = blocks.CharBlock(required=False, label=_("filter"))
-    maxzoom = blocks.IntegerBlock(required=False, label=_("maxzoom"))
-    minzoom = blocks.IntegerBlock(required=False, label=_("minzoom"))
+    filter = blocks.CharBlock(required=False)
+    maxzoom = blocks.IntegerBlock(required=False)
+    minzoom = blocks.IntegerBlock(required=False)
 
 
 SYMBOL_ANCHOR_CHOICES = (
@@ -160,48 +152,41 @@ class IconVectorLayerBlock(blocks.StructBlock):
 
     layout = blocks.StructBlock([
         ('icon_image', IconChooserBlock(label=_("Icon Image"))),
-        ('icon_allow_overlap', blocks.BooleanBlock(required=False, default=False, label=_("Icon allow overlap"))),
-        ('icon_anchor', blocks.ChoiceBlock(required=False, choices=SYMBOL_ANCHOR_CHOICES, default="center",
-                                           label=_("Icon anchor"))),
-        ('icon_ignore_placement', blocks.BooleanBlock(required=False, default=False, label=_("Icon ignore placement"))),
-        ('icon_keep_upright', blocks.BooleanBlock(required=False, default=False, label=_("Icon keep upright"))),
-        ('icon_offset', blocks.CharBlock(required=False, label=_("Icon offset"))),
-        ('icon_optional', blocks.BooleanBlock(required=False, default=False, label=_("Icon optional"))),
-        ('icon_padding', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=2.0,
-                                           label=_("Icon padding"))),
-        ('icon_pitch_alignment', blocks.ChoiceBlock(required=False, choices=SYMBOL_ALIGNMENT_CHOICES, default="auto",
-                                                    label=_("Icon pitch alignment"))),
+        ('icon_allow_overlap', blocks.BooleanBlock(required=False, default=False)),
+        ('icon_anchor', blocks.ChoiceBlock(required=False, choices=SYMBOL_ANCHOR_CHOICES, default="center")),
+        ('icon_ignore_placement', blocks.BooleanBlock(required=False, default=False)),
+        ('icon_keep_upright', blocks.BooleanBlock(required=False, default=False)),
+        ('icon_offset', blocks.CharBlock(required=False)),
+        ('icon_optional', blocks.BooleanBlock(required=False, default=False)),
+        ('icon_padding', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=2.0)),
+        ('icon_pitch_alignment', blocks.ChoiceBlock(required=False, choices=SYMBOL_ALIGNMENT_CHOICES, default="auto")),
         ('icon_rotate', blocks.IntegerBlock(required=False, validators=[MinValueValidator(0), MaxValueValidator(360)],
-                                            default=0, label=_("icon rotate"))),
+                                            default=0)),
         ('icon_rotation_alignment', blocks.ChoiceBlock(required=False, choices=SYMBOL_ALIGNMENT_CHOICES, default="auto",
-                                                       label=_("Icon rotation alignment"))),
-        ('icon_size',
-         blocks.FloatBlock(required=False, validators=[MinValueValidator(0), MaxValueValidator(1)], default=1,
-                           label=_("icon size"))),
-        ('icon_text_fit', blocks.ChoiceBlock(required=False, choices=ICON_TEXT_FIT_CHOICES, default="none",
-                                             label=_("Icon text fit"))),
+                                                       )),
+        ('icon_size', blocks.FloatBlock(required=False, validators=[MinValueValidator(0), MaxValueValidator(1)],
+                                        default=1)),
+        ('icon_text_fit', blocks.ChoiceBlock(required=False, choices=ICON_TEXT_FIT_CHOICES, default="none")),
 
         # Not implemented yet
         # icon-text-fit-padding
         # symbol-avoid-edges
 
-    ], label="Layout Properties")
+    ], label="Mapbox GL Layout Properties")
 
     paint = blocks.StructBlock([
-        ('icon_color', NativeColorBlock(required=False, default="#000000", label=_("Icon color"))),
-        ('icon_halo_blur', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=0.0,
-                                             label=_("Icon halo blur"))),
-        ('icon_halo_color', NativeColorBlock(required=False, default="#000000", label=_("Icon halo color"))),
-        ('icon_halo_width', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=0.0,
-                                              label=_("icon halo width"))),
+        ('icon_color', NativeColorBlock(required=False, default="#000000")),
+        ('icon_halo_blur', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=0.0)),
+        ('icon_halo_color', NativeColorBlock(required=False, default="#000000")),
+        ('icon_halo_width', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=0.0)),
         ('icon_opacity', blocks.FloatBlock(required=False, validators=[MinValueValidator(0), MaxValueValidator(1)],
-                                           default=1.0, label=_("icon opacity"))),
+                                           default=1.0)),
 
         # Not implemented yet
         # icon-translate
         # icon-translate-anchor
 
-    ], label="Paint Properties")
+    ], label="Mapbox GL Paint Properties")
 
 
 # Text label
@@ -236,58 +221,41 @@ class TextVectorLayerBlock(blocks.StructBlock):
     )
 
     paint = blocks.StructBlock([
-        ('text_color', NativeColorBlock(required=False, default="#000000", label=_("Text color"))),
-        ('text_halo_blur', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=0.0,
-                                             label=_("Text halo blur"))),
-        ('text_halo_color', NativeColorBlock(required=False, default="#000000", label=_("Text halo color"))),
-        ('text_halo_width', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=0.0,
-                                              label=_("text halo width"))),
-        ('text_translate', blocks.CharBlock(required=False, label=_("Text translate"))),
+        ('text_color', NativeColorBlock(required=False, default="#000000")),
+        ('text_halo_blur', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=0.0)),
+        ('text_halo_color', NativeColorBlock(required=False, default="#000000")),
+        ('text_halo_width', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=0.0)),
+        ('text_translate', blocks.CharBlock(required=False)),
         ('text_translate_anchor', blocks.ChoiceBlock(required=False, choices=TEXT_TRANSLATE_ANCHOR_CHOICES,
-                                                     default="map", label=_("Text translate anchor"))),
-    ], label="Paint Properties")
+                                                     default="map")),
+    ], label="Mapbox GL Paint Properties")
 
     layout = blocks.StructBlock([
-        ('symbol_placement', blocks.ChoiceBlock(required=False, choices=SYMBOL_PLACEMENT_CHOICES, default="point",
-                                                label=_("Text Placement"))),
-        ('text_allow_overlap', blocks.BooleanBlock(required=False, default=False, label=_("Text allow overlap"))),
-        ('text_anchor', blocks.ChoiceBlock(required=False, choices=SYMBOL_ANCHOR_CHOICES, default="center",
-                                           label=_("Text anchor"))),
-
-        ('text_field', blocks.CharBlock(label=_("Text field"))),
-        ('text_size', blocks.IntegerBlock(required=False, validators=[MinValueValidator(0)], default=16,
-                                          label=_("Text size"))),
-        ('text_transform', blocks.ChoiceBlock(required=False, choices=TEXT_TRANSFORM_CHOICES, default="none",
-                                              label=_("Text transform"))),
-        ('text_ignore_placement', blocks.BooleanBlock(required=False, default=False, label=_("Text ignore placement"))),
-        ('text_justify', blocks.ChoiceBlock(required=False, choices=TEXT_JUSTIFY_CHOICES, default="center",
-                                            label=_("Text justify"))),
-        ('text_keep_upright', blocks.BooleanBlock(required=False, default=False, label=_("Text keep upright"))),
-        ('text_letter_spacing', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=0.0,
-                                                  label=_("Text letter spacing"))),
-        ('text_line_height', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=1.2,
-                                               label=_("Text line height"))),
+        ('symbol_placement', blocks.ChoiceBlock(required=False, choices=SYMBOL_PLACEMENT_CHOICES, default="point")),
+        ('text_allow_overlap', blocks.BooleanBlock(required=False, default=False)),
+        ('text_anchor', blocks.ChoiceBlock(required=False, choices=SYMBOL_ANCHOR_CHOICES, default="center")),
+        ('text_field', blocks.CharBlock(required=True)),
+        ('text_size', blocks.IntegerBlock(required=False, validators=[MinValueValidator(0)], default=16)),
+        ('text_transform', blocks.ChoiceBlock(required=False, choices=TEXT_TRANSFORM_CHOICES, default="none")),
+        ('text_ignore_placement', blocks.BooleanBlock(required=False, default=False)),
+        ('text_justify', blocks.ChoiceBlock(required=False, choices=TEXT_JUSTIFY_CHOICES, default="center")),
+        ('text_keep_upright', blocks.BooleanBlock(required=False, default=False)),
+        ('text_letter_spacing', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=0.0)),
+        ('text_line_height', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=1.2)),
         ('text_max_angle', blocks.IntegerBlock(required=False,
-                                               validators=[MinValueValidator(0), MaxValueValidator(360)], default=45,
-                                               label=_("Text max angle"))),
-        ('text_max_width', blocks.IntegerBlock(required=False, validators=[MinValueValidator(0)], default=10,
-                                               label=_("Text max width"))),
-        ('text_offset', blocks.CharBlock(required=False, label=_("Text offset"))),
+                                               validators=[MinValueValidator(0), MaxValueValidator(360)], default=45)),
+        ('text_max_width', blocks.IntegerBlock(required=False, validators=[MinValueValidator(0)], default=10)),
+        ('text_offset', blocks.CharBlock(required=False)),
         ('text_opacity', blocks.FloatBlock(required=False, validators=[MinValueValidator(0), MaxValueValidator(1)],
-                                           default=1.0, label=_("text opacity"))),
-        ('text_padding', blocks.IntegerBlock(required=False, validators=[MinValueValidator(0)], default=2,
-                                             label=_("Text  padding"))),
-        ('text_pitch_alignment', blocks.ChoiceBlock(required=False, choices=SYMBOL_ALIGNMENT_CHOICES, default="auto",
-                                                    label=_("Text pitch alignment"))),
-        ('text_radial_offset', blocks.IntegerBlock(required=False, validators=[MinValueValidator(0)], default=0,
-                                                   label=_("Text radial offset"))),
+                                           default=1.0)),
+        ('text_padding', blocks.IntegerBlock(required=False, validators=[MinValueValidator(0)], default=2)),
+        ('text_pitch_alignment', blocks.ChoiceBlock(required=False, choices=SYMBOL_ALIGNMENT_CHOICES, default="auto")),
+        ('text_radial_offset', blocks.IntegerBlock(required=False, validators=[MinValueValidator(0)], default=0)),
         ('text_rotate', blocks.IntegerBlock(required=False, validators=[MinValueValidator(0), MaxValueValidator(360)],
-                                            default=0, label=_("Text rotate"))),
-        ('text_rotation_alignment', blocks.ChoiceBlock(required=False, choices=SYMBOL_ALIGNMENT_CHOICES, default="auto",
-                                                       label=_("Text rotation alignment"))),
-
-        ('text_variable_anchor', blocks.ChoiceBlock(required=False, choices=SYMBOL_ANCHOR_CHOICES,
-                                                    label=_("Text variable anchor"))),
+                                            default=0)),
+        ('text_rotation_alignment', blocks.ChoiceBlock(required=False, choices=SYMBOL_ALIGNMENT_CHOICES,
+                                                       default="auto", )),
+        ('text_variable_anchor', blocks.ChoiceBlock(required=False, choices=SYMBOL_ANCHOR_CHOICES)),
 
         # Not implemented yet
         # symbol-avoid-edges
@@ -297,31 +265,30 @@ class TextVectorLayerBlock(blocks.StructBlock):
         # text-optional
         # text-writing-mode
 
-    ], label="Layout Properties")
+    ], label="Mapbox GL Layout Properties")
 
 
 # A filled circle
 class CircleVectorLayerBlock(blocks.StructBlock):
     paint = blocks.StructBlock([
-        ('circle_color', NativeColorBlock(required=False, default="#000000", label=_("circle color"))),
+        ('circle_color', NativeColorBlock(required=False, default="#000000")),
         ('circle_opacity', blocks.FloatBlock(required=False, validators=[MinValueValidator(0), MaxValueValidator(1)],
-                                             default=1.0, label=_("circle opacity"))),
+                                             default=1.0)),
         ('circle_radius', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=5.0,
                                             label=_("circle radius"))),
-        ('circle_stroke_color', NativeColorBlock(required=False, default="#000000", label=_("circle stroke color"))),
-        ('circle_stroke_width', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=0.0,
-                                                  label=_("circle_stroke_width"))),
+        ('circle_stroke_color', NativeColorBlock(required=False, default="#000000")),
+        ('circle_stroke_width', blocks.FloatBlock(required=False, validators=[MinValueValidator(0)], default=0.0)),
 
-    ], label="Paint Properties")
+    ], label="Mapbox GL Paint Properties")
 
-    filter = blocks.CharBlock(required=False, label=_("filter"))
-    maxzoom = blocks.IntegerBlock(required=False, label=_("maxzoom"))
-    minzoom = blocks.IntegerBlock(required=False, label=_("minzoom"))
+    filter = blocks.CharBlock(required=False)
+    maxzoom = blocks.IntegerBlock(required=False)
+    minzoom = blocks.IntegerBlock(required=False)
 
 
 TIMESERIES_CHART_TYPES = (
-    ("lines", "Line Chart"),
-    ("bars", "Bar Chart"),
+    ("lines", _("Line Chart")),
+    ("bars", _("Bar Chart")),
 )
 
 
@@ -336,15 +303,15 @@ class FileLayerPointAnalysisBlock(blocks.StructBlock):
 
 class FileLayerAreaAnalysisBlock(blocks.StructBlock):
     INSTANCE_VALUE_TYPE_CHOICES = (
-        ("mean", "Mean of pixel values"),
-        ("sum", "Sum of pixel values"),
-        ("minmax", "Minimum, Maximum pixel values"),
-        ("minmeanmax", "Minimum, Mean, Maximum pixel values")
+        ("mean", _("Mean of pixel values")),
+        ("sum", _("Sum of pixel values")),
+        ("minmax", _("Minimum, Maximum pixel values")),
+        ("minmeanmax", _("Minimum, Mean, Maximum pixel values"))
     )
 
     TIMESERIES_AGGREGATION_METHODS = (
-        ("mean", "By Mean"),
-        ("sum", "By Sum")
+        ("mean", _("By Mean")),
+        ("sum", _("By Sum"))
     )
 
     instance_data_enabled = blocks.BooleanBlock(required=False, default=True, label=_("Show data for area"))

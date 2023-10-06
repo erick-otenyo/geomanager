@@ -13,7 +13,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as _
 from django_large_image import tilesource
 from large_image.exceptions import TileSourceXYZRangeError
 from rest_framework.renderers import JSONRenderer
@@ -40,9 +40,7 @@ from geomanager.models import (
     LayerRasterFile, Geostore
 )
 from geomanager.models.core import GeomanagerSettings
-from geomanager.models.wms import WmsLayer
 from geomanager.serializers import RasterFileLayerSerializer
-from geomanager.serializers.wms import WmsLayerSerializer
 from geomanager.utils import UUIDEncoder
 from geomanager.utils.raster_utils import (
     get_tile_source,
@@ -254,12 +252,12 @@ def upload_raster_file(request, dataset_id=None, layer_id=None):
 @user_passes_test(user_has_any_page_permission)
 def publish_raster(request, upload_id):
     if request.method != 'POST':
-        return JsonResponse({"message": "Only POST allowed"})
+        return JsonResponse({"message": _("Only POST allowed")})
 
     upload = RasterUpload.objects.get(pk=upload_id)
 
     if not upload:
-        return JsonResponse({"message": "upload not found"}, status=404)
+        return JsonResponse({"message": _("upload not found")}, status=404)
 
     db_layer = get_object_or_404(RasterFileLayer, pk=request.POST.get('layer'))
 
@@ -319,14 +317,15 @@ def publish_raster(request, upload_id):
                     exists = LayerRasterFile.objects.filter(layer=db_layer, time=d_time).exists()
 
                     if exists:
-                        layer_form.add_error("nc_dates",
-                                             f"File with date {time_str} already exists for layer {db_layer}")
+                        error_message = _("File with date %(time_str)s already exists for layer %(db_layer)s") % {
+                            "time_str": time_str, "db_layer": db_layer}
+                        layer_form.add_error("nc_dates", error_message)
                         return JsonResponse(get_response())
 
                     create_layer_raster_file(layer, upload, time=d_time, band_index=str(index),
                                              data_variable=nc_data_variable)
                 except Exception as e:
-                    layer_form.add_error(None, "Error occurred. Try again")
+                    layer_form.add_error(None, _("Error occurred. Try again"))
                     return JsonResponse(get_response())
             # cleanup upload
             upload.delete()
@@ -335,7 +334,9 @@ def publish_raster(request, upload_id):
             exists = LayerRasterFile.objects.filter(layer=db_layer, time=time).exists()
 
             if exists:
-                layer_form.add_error("time", f"File with date {time.isoformat()} already exists for layer {db_layer}")
+                error_message = _("File with date %(time)s already exists for layer %(db_layer)s") % {
+                    "time": time.isoformat(), "db_layer": db_layer}
+                layer_form.add_error("time", error_message)
                 return JsonResponse(get_response())
 
             create_layer_raster_file(layer, upload, time, data_variable=nc_data_variable)
@@ -346,7 +347,9 @@ def publish_raster(request, upload_id):
             exists = LayerRasterFile.objects.filter(layer=db_layer, time=time).exists()
 
             if exists:
-                layer_form.add_error("time", f"File with date {time} already exists for selected layer")
+                error_message = _("File with date %(time)s already exists for selected layer") % {
+                    "time": time.isoformat()}
+                layer_form.add_error("time", error_message)
                 return JsonResponse(get_response())
 
             create_layer_raster_file(layer, upload, time)
@@ -364,7 +367,7 @@ def publish_raster(request, upload_id):
 @user_passes_test(user_has_any_page_permission)
 def delete_raster_upload(request, upload_id):
     if request.method != 'POST':
-        return JsonResponse({"message": "Only POST allowed"})
+        return JsonResponse({"message": _("Only POST allowed")})
 
     upload = RasterUpload.objects.filter(pk=upload_id)
 
@@ -414,21 +417,23 @@ class RasterDataMixin:
         time = self.get_query_param(request, "time")
 
         if not time:
-            raise QueryParamRequired("time param required")
+            raise QueryParamRequired(_("time param required"))
 
         raster_file = LayerRasterFile.objects.filter(layer=layer_id, time=time)
 
         if raster_file.exists():
             return raster_file.first()
 
-        raise RasterFileNotFound(f"File not found matching 'layer': {layer_id} and 'time': {time}")
+        error_message = _("File not found matching 'layer': %(layer_id)s and 'time': %(time)s") % {"layer_id": layer_id,
+                                                                                                   "time": time}
+        raise RasterFileNotFound(error_message)
 
     def get_multiple_raster_files(self, request: Request, layer_id) -> [LayerRasterFile]:
         time_from = self.get_query_param(request, "time_from")
         time_to = self.get_query_param(request, "time_to")
 
         if not time_from and not time_to:
-            raise QueryParamRequired("time_from or time_to param required")
+            raise QueryParamRequired(_("time_from or time_to param required"))
 
         time_filter = {}
 
@@ -448,10 +453,10 @@ class RasterDataMixin:
         y_coord = self.get_query_param(request, "y")
 
         if not x_coord:
-            raise QueryParamRequired("x param required")
+            raise QueryParamRequired(_("x param required"))
 
         if not y_coord:
-            return QueryParamRequired("y param required")
+            return QueryParamRequired(_("y param required"))
 
         x_coord = float(x_coord)
         y_coord = float(y_coord)
@@ -470,13 +475,13 @@ class RasterDataMixin:
         geostore_id = self.get_query_param(request, "geostore_id")
 
         if not geostore_id:
-            raise QueryParamRequired("geostore_id param required")
+            raise QueryParamRequired(_("geostore_id param required"))
 
         try:
             geostore = Geostore.objects.get(pk=geostore_id)
         except ObjectDoesNotExist:
-            raise GeostoreNotFound(f"geostore with id {geostore_id} does not exist")
-
+            error_message = _("Geostore with id %(geostore_id)s does not exist") % {"geostore_id": geostore_id}
+            raise GeostoreNotFound(error_message)
         return geostore
 
     def get_raster_geostore_data(self, raster_file, geostore, value_type):
@@ -554,7 +559,7 @@ class RasterDataPixelView(RasterDataMixin, APIView):
         except QueryParamRequired as e:
             return JsonResponse(e.serialize, status=400)
         except RasterFileNotFound as e:
-            return JsonResponse({"message": e}, status=404)
+            return JsonResponse({"message": "Raster file not found"}, status=404)
 
         return Response(pixel_data)
 

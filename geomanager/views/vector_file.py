@@ -10,7 +10,7 @@ from django.template.defaultfilters import filesizeformat
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.decorators import method_decorator
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as _
 from django.views import View
 from wagtail.admin import messages
 from wagtail.admin.auth import user_passes_test, user_has_any_page_permission, permission_denied
@@ -122,7 +122,7 @@ def upload_vector_file(request, dataset_id=None, layer_id=None):
 @user_passes_test(user_has_any_page_permission)
 def publish_vector(request, upload_id):
     if request.method != 'POST':
-        return JsonResponse({"message": "Only POST allowed"})
+        return JsonResponse({"message": _("Only POST allowed")})
 
     upload = VectorUpload.objects.get(pk=upload_id)
 
@@ -171,7 +171,8 @@ def publish_vector(request, upload_id):
         exists = PgVectorTable.objects.filter(layer=db_layer, time=time, table_name=table_name).exists()
 
         if exists:
-            layer_form.add_error("time", f"File with date {time} already exists for selected layer")
+            error_message = _("File with date %(time)s already exists for selected layer") % {"time": time.isoformat()}
+            layer_form.add_error("time", error_message)
             return JsonResponse(get_response())
 
         data = {
@@ -221,7 +222,7 @@ def publish_vector(request, upload_id):
 @user_passes_test(user_has_any_page_permission)
 def delete_vector_upload(request, upload_id):
     if request.method != 'POST':
-        return JsonResponse({"message": "Only POST allowed"})
+        return JsonResponse({"message": _("Only POST allowed")})
 
     upload = VectorUpload.objects.filter(pk=upload_id)
 
@@ -229,7 +230,6 @@ def delete_vector_upload(request, upload_id):
         upload.first().delete()
     else:
         return JsonResponse({"success": True})
-
     return JsonResponse({"success": True, })
 
 
@@ -291,7 +291,7 @@ def preview_vector_layers(request, dataset_id, layer_id=None):
                 data_table.save()
                 # clear wagtail cache
                 clear_cache()
-            messages.success(request, "Data fields updated successfully")
+            messages.success(request, _("Data fields updated successfully"))
             # redirect
             return redirect(reverse("geomanager_preview_vector_layer", args=(dataset_id, layer_id)))
         else:

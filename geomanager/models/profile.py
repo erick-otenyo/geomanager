@@ -17,3 +17,7 @@ class GeoManagerUserProfile(TimeStampedModel):
     position = models.CharField(max_length=255, verbose_name=_("Position"))
     how_do_you_use = models.CharField(max_length=255, null=True, blank=True, verbose_name=_("How do you Use"))
     interests = models.TextField(null=True, blank=True, verbose_name=_("Interests"))
+
+    class Meta:
+        verbose_name = _("GeoManager User Profile")
+        verbose_name_plural = _("GeoManager User Profiles")

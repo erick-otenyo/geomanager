@@ -39,6 +39,7 @@ class Category(TimeStampedModel, AdminSortable, ClusterableModel):
     public = models.BooleanField(default=True, verbose_name=_("public"), help_text=_("Is the category public ?"))
 
     class Meta(AdminSortable.Meta):
+        verbose_name = _("Category")
         verbose_name_plural = _("Categories")
 
     def __str__(self):
@@ -70,6 +71,10 @@ class SubCategory(Orderable):
     active = models.BooleanField(default=True, verbose_name=_("active"))
     public = models.BooleanField(default=True, verbose_name=_("public"))
 
+    class Meta:
+        verbose_name = _("Subcategory")
+        verbose_name_plural = _("Subcategories")
+
     panels = [
         FieldPanel("title"),
         FieldPanel("active"),
@@ -82,11 +87,11 @@ class SubCategory(Orderable):
 
 class Dataset(TimeStampedModel):
     DATASET_TYPE_CHOICES = (
-        ("raster_file", "Raster File - NetCDF/GeoTiff"),
-        ("vector_file", "Vector File - Shapefile, Geojson"),
-        ("wms", "Web Map Service - WMS Layer"),
-        ("raster_tile", "XYZ Raster Tile Layer"),
-        ("vector_tile", "XYZ Vector Tile Layer"),
+        ("raster_file", _("Raster File - NetCDF/GeoTiff")),
+        ("vector_file", _("Vector File - Shapefile, Geojson")),
+        ("wms", _("Web Map Service - WMS Layer")),
+        ("raster_tile", _("XYZ Raster Tile Layer")),
+        ("vector_tile", _("XYZ Vector Tile Layer")),
     )
 
     CURRENT_TIME_METHOD_CHOICES = (
@@ -99,7 +104,7 @@ class Dataset(TimeStampedModel):
     title = models.CharField(max_length=255, verbose_name=_("title"),
                              help_text=_("The Dataset title as will appear to the public"))
     category = models.ForeignKey(Category, verbose_name=_("category"), on_delete=models.PROTECT)
-    sub_category = models.ForeignKey(SubCategory, verbose_name=_("Sub category"), on_delete=models.PROTECT)
+    sub_category = models.ForeignKey(SubCategory, verbose_name=_("Subcategory"), on_delete=models.PROTECT)
     summary = models.CharField(max_length=100, null=True, blank=True,
                                verbose_name=_("summary"),
                                help_text=_("Short summary of less than 100 characters"))
@@ -141,6 +146,10 @@ class Dataset(TimeStampedModel):
     can_clip = models.BooleanField(default=True, verbose_name=_("Enable Clipping by shape"),
                                    help_text=_("Check to enable clipping by boundary or drawn shapes, "
                                                "for raster and vector datasets. Not implemented for WMS types"))
+
+    class Meta:
+        verbose_name = _("Dataset")
+        verbose_name_plural = _("Datasets")
 
     panels = [
         FieldPanel("title"),
@@ -334,6 +343,7 @@ class Metadata(TimeStampedModel):
                                  help_text=_("External link to where more detail about the dataset can be found"))
 
     class Meta:
+        verbose_name = _("Metadata")
         verbose_name_plural = _("Metadata")
 
     def __str__(self):
@@ -460,6 +470,9 @@ class GeomanagerSettings(BaseSiteSetting):
             ('default', blocks.BooleanBlock(required=False, label=_("default"), help_text=_("Is default style ?"))),
         ]))
     ], use_json_field=True, null=True, blank=True)
+
+    class Meta:
+        verbose_name = _("Geomanager Settings")
 
     edit_handler = TabbedInterface([
         ObjectList([

@@ -10,6 +10,10 @@ class RasterTileLayer(BaseTileLayer):
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, related_name="raster_tile_layers",
                                 verbose_name=_("dataset"))
 
+    class Meta:
+        verbose_name = _("Raster Tile Layer")
+        verbose_name_plural = _("Raster Tile Layers")
+
     panels = [
         FieldPanel("dataset"),
         *BaseTileLayer.panels,
