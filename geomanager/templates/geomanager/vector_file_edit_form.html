@@ -14,8 +14,12 @@
         {% endfor %}
         <li>
             <button type="submit" class="button button-longrunning">
-                {% icon name="spinner" %}{% trans 'Publish' %}</button>
-            <a href="{{ delete_action }}" class="delete button no">{% trans "Delete" %}</a>
+                {% icon name="spinner" %}
+                {% translate 'Publish' %}
+            </button>
+            <a href="{{ delete_action }}" class="delete button no">
+                {% translate "Delete" %}
+            </a>
         </li>
     </ul>
 </form>

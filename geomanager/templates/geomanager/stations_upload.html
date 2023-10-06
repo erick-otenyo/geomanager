@@ -2,8 +2,11 @@
 {% load i18n %}
 {% load l10n %}
 {% load wagtailadmin_tags wagtailimages_tags static %}
-{% block titletag %}{% blocktrans with title=page.get_admin_display_title %}Stations Loader {{ title }}
-{% endblocktrans %}{% endblock %}
+{% block titletag %}
+    {% blocktranslate trimmed with title=page.get_admin_display_title %}
+        Stations Loader {{ title }}
+    {% endblocktranslate %}
+{% endblock %}
 
 {% block extra_css %}
     {{ block.super }}
@@ -36,7 +39,9 @@
                         {% endif %}
                     {% endfor %}
                     <li>
-                        <button type="submit" class="button"> {% trans 'Upload' %}</button>
+                        <button type="submit" class="button">
+                            {% translate "Upload" %}
+                        </button>
                     </li>
                 </ul>
             </form>
