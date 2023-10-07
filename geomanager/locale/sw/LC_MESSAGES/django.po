@@ -1,0 +1,1970 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-10-07 21:45+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: geomanager/blocks.py:12
+#: geomanager/templates/geomanager/stations_preview.html:38
+#: geomanager/templates/geomanager/vector_file_layer_preview.html:75
+msgid "Label"
+msgstr "Lebo"
+
+#: geomanager/blocks.py:13
+msgid "Page"
+msgstr "Ukurasa"
+
+#: geomanager/blocks.py:13
+msgid "Internal page to navigate"
+msgstr "Ukurasa wa ndani wa kusogeza"
+
+#: geomanager/blocks.py:14
+msgid "External Link"
+msgstr "Kiungo cha mtandao cha Nje"
+
+#: geomanager/blocks.py:15
+msgid "External link to navigate to. Used if internal page not provided"
+msgstr ""
+"Kiungo cha mtandao cha nje. Inatumika ikiwa ukurasa wa ndani haujatolewa"
+
+#: geomanager/blocks.py:19
+msgid "Key"
+msgstr "Ufunguo"
+
+#: geomanager/blocks.py:20
+msgid "Value"
+msgstr "Thamani"
+
+#: geomanager/blocks.py:25
+msgid "Radio"
+msgstr "Redio"
+
+#: geomanager/blocks.py:26
+msgid "Dropdown"
+msgstr "Kunjuzi"
+
+#: geomanager/blocks.py:28 geomanager/models/raster_file.py:254
+#: geomanager/models/tile_gl.py:16 geomanager/models/wms.py:330
+#: geomanager/models/wms.py:344 geomanager/models/wms.py:355
+msgid "name"
+msgstr "jina"
+
+#: geomanager/blocks.py:29 geomanager/blocks.py:32
+#: geomanager/models/core.py:464
+msgid "label"
+msgstr "lebo"
+
+#: geomanager/blocks.py:30
+msgid "Selector Type"
+msgstr "Aina ya Kiteuzi"
+
+#: geomanager/blocks.py:33 geomanager/blocks.py:47
+msgid "value"
+msgstr "thamani"
+
+#: geomanager/blocks.py:34 geomanager/models/core.py:361
+#: geomanager/models/core.py:470
+msgid "default"
+msgstr "chaguo-msingi"
+
+#: geomanager/blocks.py:35
+msgid "Check to make default option"
+msgstr "Chagua ili kufanya chaguo-msingi"
+
+#: geomanager/blocks.py:36
+msgid "Options"
+msgstr "Chaguo"
+
+#: geomanager/blocks.py:41
+msgid "Basic"
+msgstr "Msingi"
+
+#: geomanager/blocks.py:42
+msgid "Gradient"
+msgstr "Gradient"
+
+#: geomanager/blocks.py:43
+msgid "Choropleth"
+msgstr "Choropleth"
+
+#: geomanager/blocks.py:45
+msgid "Legend Type"
+msgstr "Aina ya Hadithi"
+
+#: geomanager/blocks.py:48
+msgid "Can be a number or text e.g '10' or '10-20' or 'Vegetation'"
+msgstr "Inaweza kuwa nambari au maandishi k.m '10' au '10-20' au 'Vegetation'"
+
+#: geomanager/blocks.py:49 geomanager/models/raster_file.py:420
+msgid "color"
+msgstr "rangi"
+
+#: geomanager/blocks.py:49
+msgid "Color value e.g rgb(73,73,73) or #494949"
+msgstr "Thamani ya rangi k.m rgb(73,73,73) au #494949"
+
+#: geomanager/blocks.py:51
+msgid "Legend Items"
+msgstr "Vipengee vya Legend"
+
+#: geomanager/blocks.py:56 geomanager/blocks.py:154
+msgid "Icon Image"
+msgstr "Picha ya ikoni"
+
+#: geomanager/blocks.py:57
+msgid "Icon Label"
+msgstr "Lebo ya ikoni"
+
+#: geomanager/blocks.py:58
+msgid "Icon color"
+msgstr "Rangi ya ikoni"
+
+#: geomanager/blocks.py:60
+msgid "Legend Icons"
+msgstr "Aikoni za Hadithi"
+
+#: geomanager/blocks.py:278
+msgid "circle radius"
+msgstr "radius ya mduara"
+
+#: geomanager/blocks.py:290
+msgid "Line Chart"
+msgstr "Chati ya mstari"
+
+#: geomanager/blocks.py:291
+msgid "Bar Chart"
+msgstr "Chati ya Baa"
+
+#: geomanager/blocks.py:296
+msgid "Show data for point"
+msgstr "Onyesha data kwa uhakika"
+
+#: geomanager/blocks.py:298
+msgid "Show timeseries data for point"
+msgstr "Onyesha data ya mfululizo wa nyakati kwa uhakika"
+
+#: geomanager/blocks.py:299 geomanager/blocks.py:321
+#: geomanager/models/raster_file.py:257
+msgid "Data unit"
+msgstr "Kizio cha data"
+
+#: geomanager/blocks.py:300 geomanager/blocks.py:328
+msgid "Chart Type"
+msgstr "Aina ya Chati"
+
+#: geomanager/blocks.py:301
+msgid "Chart Line/Bar Color"
+msgstr "Mstari wa Chati/Rangi ya Upau"
+
+#: geomanager/blocks.py:306
+msgid "Mean of pixel values"
+msgstr "Wastani wa thamani za pixel"
+
+#: geomanager/blocks.py:307
+msgid "Sum of pixel values"
+msgstr "Jumla ya thamani za pixel"
+
+#: geomanager/blocks.py:308
+msgid "Minimum, Maximum pixel values"
+msgstr "Kiwango cha chini, cha juu zaidi cha thamani za pikseli"
+
+#: geomanager/blocks.py:309
+msgid "Minimum, Mean, Maximum pixel values"
+msgstr "Kiwango cha chini, wastani, thamani za juu zaidi za pikseli"
+
+#: geomanager/blocks.py:313
+msgid "By Mean"
+msgstr "Kwa Maana"
+
+#: geomanager/blocks.py:314
+msgid "By Sum"
+msgstr "Kwa Jumla"
+
+#: geomanager/blocks.py:317
+msgid "Show data for area"
+msgstr "Onyesha data ya eneo"
+
+#: geomanager/blocks.py:319
+msgid "Area value type"
+msgstr "Aina ya data ya eneo"
+
+#: geomanager/blocks.py:320
+msgid "The value type that should be displayed"
+msgstr "Aina ya data ambayo inapaswa kuonyeshwa"
+
+#: geomanager/blocks.py:323
+msgid "Show timeseries data for area"
+msgstr "Onyesha data ya mfululizo wa nyakati kwa eneo"
+
+#: geomanager/blocks.py:325
+msgid "Area timeseries data aggregation Method"
+msgstr "Mbinu ya ujumlishaji wa data ya mfululizo wa saa za eneo"
+
+#: geomanager/blocks.py:326
+msgid "How should the region data be aggregated ?"
+msgstr "Je, data ya eneo inapaswa kujumlishwa vipi?"
+
+#: geomanager/blocks.py:329
+msgid "circle stroke color"
+msgstr "rangi ya kiharusi cha mduara"
+
+#: geomanager/blocks.py:347
+msgid "Link text"
+msgstr "Maandishi ya kiungo"
+
+#: geomanager/blocks.py:348
+msgid "Link Url"
+msgstr "Anuani ya mtandao"
+
+#: geomanager/blocks.py:349
+msgid "Short description text"
+msgstr "Maandishi ya maelezo mafupi"
+
+#: geomanager/blocks.py:350
+msgid "Format link as action button"
+msgstr "Fomati kiungo kama kitufe cha kitendo"
+
+#: geomanager/blocks.py:351
+msgid "Show arrow in button"
+msgstr "Onyesha kitufe cha kishale"
+
+#: geomanager/forms.py:11 geomanager/forms.py:38
+#: geomanager/models/raster_file.py:213
+msgid "layer"
+msgstr "safu"
+
+#: geomanager/forms.py:14 geomanager/forms.py:42
+#: geomanager/models/raster_file.py:215
+msgid "time"
+msgstr "wakati"
+
+#: geomanager/forms.py:15 geomanager/models/raster_file.py:216
+msgid ""
+"Time for the raster file. This can be the time the data was acquired, or the "
+"date and time for which the data applies"
+msgstr ""
+"Wakati wa faili ya raster. Huu unaweza kuwa wakati ambao data ilipatikana, "
+"au tarehe na wakati ambao data hiyo inatumika"
+
+#: geomanager/forms.py:17
+msgid "NetCDF Dates"
+msgstr "Tarehe katika faili ya NetCDF"
+
+#: geomanager/forms.py:18
+msgid "Timestamps in the dataset"
+msgstr "Nyakati zilizopo katika data"
+
+#: geomanager/forms.py:43
+msgid ""
+"Time is required for every uploaded vector file. This can be the time the "
+"dataset was collected, or applies to."
+msgstr ""
+"Muda unahitajika kwa kila faili ya vekta iliyopakiwa. Huu unaweza kuwa "
+"wakati ambapo data ilikusanywa, au inatumika."
+
+#: geomanager/forms.py:45
+msgid "database table name"
+msgstr "jina la jedwali la hifadhidata"
+
+#: geomanager/forms.py:46
+msgid "dataset description"
+msgstr "maelezo ya data"
+
+#: geomanager/forms.py:47
+msgid "optional dataset description"
+msgstr "maelezo ya hiari ya data"
+
+#: geomanager/forms.py:57
+msgid "GADM Country Geopackage"
+msgstr "GADM Geopackage ya Nchi"
+
+#: geomanager/forms.py:58
+msgid ""
+"The uploaded file should be a geopackage, downloaded from https://gadm.org/"
+"download_country.html"
+msgstr ""
+"Faili iliyopakiwa inapaswa kuwa geopackage, iliyopakuliwa kutoka https://"
+"gadm.org/download_country.html"
+
+#: geomanager/forms.py:76
+msgid "Maximum value should be greater than minimum value"
+msgstr "Thamani ya juu inapaswa kuwa kubwa kuliko thamani ya chini zaidi"
+
+#: geomanager/forms.py:80
+msgid "Minimum value should be less than maximum value"
+msgstr "Thamani ya chini inapaswa kuwa chini ya thamani ya juu zaidi"
+
+#: geomanager/forms.py:84
+msgid "Steps required when not using custom colors"
+msgstr "Hatua zinazohitajika wakati hutumii rangi maalum"
+
+#: geomanager/forms.py:92
+msgid "Color for the rest of values must be specified"
+msgstr "Rangi kwa thamani zingine lazima ibainishwe"
+
+#: geomanager/forms.py:110
+msgid ""
+"You selected to use custom colors but did not add any. Please add color "
+"values and save."
+msgstr ""
+"Ulichagua kutumia rangi maalum lakini hukuongeza zozote. Tafadhali ongeza "
+"thamani za rangi na uhifadhi."
+
+#: geomanager/forms.py:117
+msgid "Value must be greater than minimum defined value"
+msgstr "Thamani lazima iwe kubwa kuliko kima cha chini kilichobainishwa"
+
+#: geomanager/forms.py:120
+msgid "Value must be less than or equal to the maximum defined value"
+msgstr ""
+"Thamani lazima iwe chini ya au sawa na kiwango cha juu kilichobainishwa"
+
+#: geomanager/forms.py:138
+msgid "Stations Shapefile ZIP"
+msgstr "Faili ya Stations ikiwa kwa muundo wa Zipped Shapefile"
+
+#: geomanager/forms.py:144
+msgid "Station name field"
+msgstr "Sehemu ya jina la kituo"
+
+#: geomanager/helpers.py:18 geomanager/helpers.py:20
+#: geomanager/wagtail_hooks.py:103 geomanager/wagtail_hooks.py:107
+msgid "Create Dataset"
+msgstr "Unda DataSeti"
+
+#: geomanager/helpers.py:42
+msgid "Add Layer"
+msgstr "Ongeza Tabaka"
+
+#: geomanager/helpers.py:44
+msgid "Add %(object)s Layer"
+msgstr "Ongeza Tabaka kwa %(object)s"
+
+#: geomanager/models/aoi.py:13 geomanager/models/profile.py:8
+msgid "User"
+msgstr "Mtumiaji"
+
+#: geomanager/models/aoi.py:15
+msgid "Name"
+msgstr "Jina"
+
+#: geomanager/models/aoi.py:17
+msgid "Geostore Id"
+msgstr "Kitambulisho cha Geostore"
+
+#: geomanager/models/aoi.py:18
+msgid "Adm 0"
+msgstr "Adm 0"
+
+#: geomanager/models/aoi.py:19
+msgid "Adm 1"
+msgstr "Adm 1"
+
+#: geomanager/models/aoi.py:20
+msgid "Adm 2"
+msgstr "Adm 2"
+
+#: geomanager/models/aoi.py:21
+msgid "Adm 3"
+msgstr "Adm 3"
+
+#: geomanager/models/aoi.py:22
+msgid "Public"
+msgstr "Ya Umma"
+
+#: geomanager/models/aoi.py:23
+msgid "Type"
+msgstr "Aina"
+
+#: geomanager/models/aoi.py:24
+msgid "Products"
+msgstr "Bidhaa"
+
+#: geomanager/models/aoi.py:25
+msgid "Tags"
+msgstr "Lebo"
+
+#: geomanager/models/aoi.py:26
+msgid "Webhook Url"
+msgstr "Url ya Mtandao ya Webhook"
+
+#: geomanager/models/aoi.py:29
+msgid "Area of Interest"
+msgstr "Eneo la Kuvutia"
+
+#: geomanager/models/aoi.py:30
+msgid "Areas of Interest"
+msgstr "Maeneo ya Kuvutia"
+
+#: geomanager/models/core.py:36 geomanager/models/core.py:70
+#: geomanager/models/core.py:104 geomanager/models/core.py:314
+#: geomanager/models/core.py:360
+msgid "title"
+msgstr "kichwa"
+
+#: geomanager/models/core.py:36
+msgid "Title of the category"
+msgstr "Kichwa cha kategoria"
+
+#: geomanager/models/core.py:37
+msgid "icon"
+msgstr "ikoni"
+
+#: geomanager/models/core.py:38 geomanager/models/core.py:71
+msgid "active"
+msgstr "inatumika"
+
+#: geomanager/models/core.py:38
+msgid "Is the category active ?"
+msgstr "Je, kitengo kinatumika?"
+
+#: geomanager/models/core.py:39 geomanager/models/core.py:72
+#: geomanager/models/core.py:119
+msgid "public"
+msgstr "umma"
+
+#: geomanager/models/core.py:39
+msgid "Is the category public ?"
+msgstr "Je, kitengo ni cha umma?"
+
+#: geomanager/models/core.py:42 geomanager/wagtail_hooks.py:180
+msgid "Category"
+msgstr "Kategoria"
+
+#: geomanager/models/core.py:43
+msgid "Categories"
+msgstr "Kategoria"
+
+#: geomanager/models/core.py:54
+msgid "Sub Categories"
+msgstr "Vitengo Ndogo"
+
+#: geomanager/models/core.py:54
+msgid "Sub Category"
+msgstr "Kitengo Ndogo"
+
+#: geomanager/models/core.py:75 geomanager/models/core.py:107
+msgid "Subcategory"
+msgstr "Kitengondogo"
+
+#: geomanager/models/core.py:76
+msgid "Subcategories"
+msgstr "Vitengo vidogo"
+
+#: geomanager/models/core.py:90
+msgid "Raster File - NetCDF/GeoTiff"
+msgstr "Faili ya Raster - NetCDF/GeoTiff"
+
+#: geomanager/models/core.py:91
+msgid "Vector File - Shapefile, Geojson"
+msgstr "Faili ya Vector - Shapefile, Geojson"
+
+#: geomanager/models/core.py:92
+msgid "Web Map Service - WMS Layer"
+msgstr "Web Map Service - WMS Layer"
+
+#: geomanager/models/core.py:93
+msgid "XYZ Raster Tile Layer"
+msgstr "XYZ Raster Tile Layer"
+
+#: geomanager/models/core.py:94
+msgid "XYZ Vector Tile Layer"
+msgstr "XYZ Vector Tile Layer"
+
+#: geomanager/models/core.py:98
+msgid "Latest From Source"
+msgstr "Muda ulio wa karibu kama ilivyo kwenye data"
+
+#: geomanager/models/core.py:99
+msgid "Previous to now"
+msgstr "Mudal uliotangulia ikilinganishwa na hivi sasa"
+
+#: geomanager/models/core.py:100
+msgid "Next to Now"
+msgstr "Muda ulio Karibia na Sasa"
+
+#: geomanager/models/core.py:105
+msgid "The Dataset title as will appear to the public"
+msgstr "Kichwa cha Data kama itakavyoonekana kwa umma"
+
+#: geomanager/models/core.py:106
+msgid "category"
+msgstr "kategoria"
+
+#: geomanager/models/core.py:109
+msgid "summary"
+msgstr "muhtasari"
+
+#: geomanager/models/core.py:110
+msgid "Short summary of less than 100 characters"
+msgstr "Muhtasari mfupi wa chini ya herufi 100"
+
+#: geomanager/models/core.py:111
+msgid "metadata"
+msgstr "metadata"
+
+#: geomanager/models/core.py:114
+msgid "Layer type"
+msgstr "Aina ya safu"
+
+#: geomanager/models/core.py:115
+msgid "published"
+msgstr "imechapishwa na inaweza onekana"
+
+#: geomanager/models/core.py:116
+msgid ""
+"Should the dataset be available for visualization ? If unchecked, the "
+"dataset is assumed to be in draft mode and thus not ready"
+msgstr ""
+"Je! data hii inapaswa kupatikana kwa taswira? Ikiwa haijachaguliwa, seti "
+"ya data inadhaniwa kuwa katika hali ya rasimu na hivyo haiko tayari"
+
+#: geomanager/models/core.py:120
+msgid ""
+"Should the dataset be visible to everyone ? If unchecked, only authorized "
+"users can view"
+msgstr ""
+"Je, mkusanyiko wa data unapaswa kuonekana kwa kila mtu? Ikiwa "
+"haijachaguliwa, ni watumiaji walioidhinishwa pekee wanaoweza kutazama"
+
+#: geomanager/models/core.py:122
+msgid "Initially visible on Map by default"
+msgstr "Hapo awali, ilionekana kwenye Ramani kwa chaguomsingi"
+
+#: geomanager/models/core.py:123
+msgid "Make the dataset visible on the map by default"
+msgstr "Fanya data ionekane kwenye ramani kwa chaguomsingi"
+
+#: geomanager/models/core.py:125
+msgid "Multi-temporal"
+msgstr "Ina data ya muda mwingi"
+
+#: geomanager/models/core.py:126
+msgid "The dataset is multi-temporal"
+msgstr "Seti ya data ni ya muda mwingi"
+
+#: geomanager/models/core.py:128
+msgid "Multi-layer"
+msgstr "Ina Safu nyingi"
+
+#: geomanager/models/core.py:129
+msgid "The dataset has more than one layer, to be displayed together"
+msgstr "Seti ya data ina safu zaidi ya moja, ya kuonyeshwa pamoja"
+
+#: geomanager/models/core.py:131
+msgid "Near realtime"
+msgstr "Karibu na wakati halisi"
+
+#: geomanager/models/core.py:133
+msgid "Is the layer near realtime?, for example updates every 10 minutes"
+msgstr ""
+"Je, safu iko karibu na wakati halisi?, kwa mfano husasishwa kila baada ya "
+"dakika 10"
+
+#: geomanager/models/core.py:137
+msgid "current time method"
+msgstr "njia ya wakati wa sasa"
+
+#: geomanager/models/core.py:139
+msgid "How to pick default time and for updates, for Multi-Temporal data"
+msgstr ""
+"Jinsi ya kuchagua muda chaguo-msingi na masasisho, kwa data ya Muda mwingi"
+
+#: geomanager/models/core.py:140
+msgid "Auto Update interval in minutes"
+msgstr "Muda wa Usasishaji Kiotomatiki kwa dakika"
+
+#: geomanager/models/core.py:142
+msgid ""
+"After how many minutes should the layer auto update on the map to show "
+"current data, if multi-temporal. Leave empty to disable auto updating"
+msgstr ""
+"Baada ya dakika ngapi safu inapaswa kusasishwa kiotomatiki kwenye ramani ili "
+"kuonyesha data ya sasa, ikiwa ni ya muda mwingi. Acha tupu ili kuzima "
+"usasishaji kiotomatiki"
+
+#: geomanager/models/core.py:146
+msgid "Enable Clipping by shape"
+msgstr "Washa Kupunguza kwa umbo"
+
+#: geomanager/models/core.py:147
+msgid ""
+"Check to enable clipping by boundary or drawn shapes, for raster and vector "
+"datasets. Not implemented for WMS types"
+msgstr ""
+"Angalia ili kuwezesha kukatwa kwa mpaka au maumbo yaliyochorwa, kwa "
+"data za raster na vekta. Haijatekelezwa kwa aina za WMS"
+
+#: geomanager/models/core.py:151 geomanager/wagtail_hooks.py:301
+#: geomanager/wagtail_hooks.py:459 geomanager/wagtail_hooks.py:510
+#: geomanager/wagtail_hooks.py:560 geomanager/wagtail_hooks.py:622
+msgid "Dataset"
+msgstr "Dataseti"
+
+#: geomanager/models/core.py:152
+#: geomanager/templates/geomanager/vector_file_layer_preview.html:55
+msgid "Datasets"
+msgstr "Seti za data"
+
+#: geomanager/models/core.py:314
+msgid "Title of the dataset"
+msgstr "Kichwa cha seti ya data"
+
+#: geomanager/models/core.py:315
+msgid "subtitle"
+msgstr "manukuu"
+
+#: geomanager/models/core.py:316
+msgid "Subtitle if any"
+msgstr "Manukuu kama yapo"
+
+#: geomanager/models/core.py:317
+msgid "Dataset summary"
+msgstr "Muhtasari wa seti ya data"
+
+#: geomanager/models/core.py:318
+msgid "Short summary of what the dataset shows. Keep it short."
+msgstr ""
+"Muhtasari mfupi wa kile ambacho mkusanyiko wa data unaonyesha. Iwe fupi."
+
+#: geomanager/models/core.py:319
+msgid "resolution"
+msgstr "azimio"
+
+#: geomanager/models/core.py:320
+msgid "The Spatial resolution of the dataset, for example 10km by 10 km"
+msgstr "Azimio la anga la seti ya data, kwa mfano 10km kwa 10 km"
+
+#: geomanager/models/core.py:321
+msgid "Geographic coverage"
+msgstr "Chanjo ya kijiografia"
+
+#: geomanager/models/core.py:322
+msgid ""
+"The geographic coverage of the dataset. For example East Africa or specific "
+"country name like Ethiopia, or Africa"
+msgstr ""
+"Ufunikaji wa kijiografia wa mkusanyiko wa data. Kwa mfano Afrika Mashariki "
+"au jina maalum la nchi kama Ethiopia, au Afrika"
+
+#: geomanager/models/core.py:324
+msgid "source"
+msgstr "chanzo"
+
+#: geomanager/models/core.py:325
+msgid "The source of the data where was it generated or produced"
+msgstr "Chanzo cha data ambapo ilitolewa au kuzalishwa"
+
+#: geomanager/models/core.py:326
+msgid "license"
+msgstr "leseni"
+
+#: geomanager/models/core.py:327
+msgid "Any licensing information for the dataset"
+msgstr "Maelezo yoyote ya leseni ya mkusanyiko wa data"
+
+#: geomanager/models/core.py:329
+msgid "Frequency of updates"
+msgstr "Masasisho ya mara kwa mara"
+
+#: geomanager/models/core.py:330
+msgid ""
+"How frequent is the dataset updated. For example daily, weekly, monthly etc"
+msgstr ""
+"Seti ya data inasasishwa mara ngapi. Kwa mfano kila siku, wiki, mwezi n.k"
+
+#: geomanager/models/core.py:332
+msgid "detail"
+msgstr "undani"
+
+#: geomanager/models/core.py:333
+msgid ""
+"Detail description of the dataset, including the methodology, references or "
+"any other relevant information"
+msgstr ""
+"Maelezo ya kina ya seti ya data, ikijumuisha mbinu, marejeleo au taarifa "
+"nyingine yoyote muhimu"
+
+#: geomanager/models/core.py:335
+msgid "cautions"
+msgstr "tahadhari"
+
+#: geomanager/models/core.py:336
+msgid ""
+"What things should users be aware as they use and interpret this dataset"
+msgstr ""
+"Ni mambo gani watumiaji wanapaswa kufahamu wanapotumia na kutafsiri "
+"mkusanyiko huu wa data"
+
+#: geomanager/models/core.py:337
+msgid "citation"
+msgstr "nukuu"
+
+#: geomanager/models/core.py:338
+msgid ""
+"Scientific citation for this dataset if any. For example the citation for a "
+"scientific paper for the dataset"
+msgstr ""
+"Nukuu ya kisayansi ya mkusanyiko huu wa data ikiwa ipo. Kwa mfano manukuu ya "
+"karatasi ya kisayansi ya seti ya data"
+
+#: geomanager/models/core.py:340
+msgid "Data download link"
+msgstr "Kiungo cha kupakua data"
+
+#: geomanager/models/core.py:341
+msgid "External link to where the source data can be found and downloaded"
+msgstr "Kiungo cha nje ambapo data chanzo inaweza kupatikana na kupakuliwa"
+
+#: geomanager/models/core.py:342
+msgid "Learn more link"
+msgstr "Jifunze kiungo zaidi"
+
+#: geomanager/models/core.py:343
+msgid "External link to where more detail about the dataset can be found"
+msgstr ""
+"Kiungo cha nje ambapo maelezo zaidi kuhusu seti ya data yanaweza kupatikana"
+
+#: geomanager/models/core.py:346 geomanager/models/core.py:347
+#: geomanager/models/core.py:405
+msgid "Metadata"
+msgstr "Metadata"
+
+#: geomanager/models/core.py:360
+msgid "Layer title"
+msgstr "Kichwa cha safu"
+
+#: geomanager/models/core.py:361
+msgid "Is Default Layer"
+msgstr "Ni Tabaka Chaguomsingi"
+
+#: geomanager/models/core.py:387
+msgid "Maximum upload size in MegaBytes"
+msgstr "Upeo wa ukubwa wa upakiaji katika MegaBytes"
+
+#: geomanager/models/core.py:389
+msgid ""
+"Maximum raster file size that can be uploaded in MegaBytes. Default is 10Mbs."
+msgstr ""
+"Upeo wa ukubwa wa faili mbaya ambao unaweza kupakiwa katika MegaBytes. "
+"Chaguomsingi ni 10Mbs."
+
+#: geomanager/models/core.py:391
+msgid "Crop raster to country"
+msgstr "Panda raster kwa nchi"
+
+#: geomanager/models/core.py:392
+msgid "Crop the uploaded raster file to the country boundaries"
+msgstr "Punguza faili ya raster iliyopakiwa hadi kwenye mipaka ya nchi"
+
+#: geomanager/models/core.py:394
+msgid "cap base url"
+msgstr "url ya msingi wa kofia"
+
+#: geomanager/models/core.py:395
+msgid "cap layer sub category"
+msgstr "kategoria ndogo ya safu ya kofia"
+
+#: geomanager/models/core.py:398
+msgid "Auto Refresh interval in minutes"
+msgstr "Muda wa Kuonyesha Kiotomatiki kwa dakika"
+
+#: geomanager/models/core.py:400
+msgid ""
+"Refresh cap alerts on the map after this minutes. Leave blank to disable "
+"auto refreshing"
+msgstr ""
+"Onyesha upya arifa za upeo kwenye ramani baada ya dakika hizi. Acha wazi ili "
+"kuzima uonyeshaji upya kiotomatiki"
+
+#: geomanager/models/core.py:402
+msgid "CAP layer shown by default"
+msgstr "Safu ya CAP iliyoonyeshwa kwa chaguo-msingi"
+
+#: geomanager/models/core.py:403
+msgid "CAP Layer shown on map by default"
+msgstr "Safu ya CAP inayoonyeshwa kwenye ramani kwa chaguo-msingi"
+
+#: geomanager/models/core.py:407
+msgid "GADM Boundary Data Version"
+msgstr "Toleo la Data ya Mpaka wa GADM"
+
+#: geomanager/models/core.py:409
+msgid ""
+"It is encouraged to use the latest version. See available versions here: "
+"https://gadm.org/old_versions.html"
+msgstr ""
+"Inahimizwa kutumia toleo la hivi karibuni. Tazama matoleo yanayopatikana "
+"hapa: https://gadm.org/old_versions.html"
+
+#: geomanager/models/core.py:413 geomanager/models/core.py:414
+msgid "GL Styles Font Url"
+msgstr "Url ya Fonti ya Mitindo ya GL"
+
+#: geomanager/models/core.py:416
+msgid "Open Map Tiles Source"
+msgstr "Fungua Chanzo cha Vigae kwenye Ramani"
+
+#: geomanager/models/core.py:423
+msgid "Logo"
+msgstr "Nembo"
+
+#: geomanager/models/core.py:431
+msgid "Logo page"
+msgstr "Ukurasa wa nembo"
+
+#: geomanager/models/core.py:432
+msgid "Internal page to navigate to on clicking the logo"
+msgstr "Ukurasa wa ndani wa kuelekea kwa kubofya nembo"
+
+#: geomanager/models/core.py:435
+msgid "Logo external link"
+msgstr "Nembo kiungo cha nje"
+
+#: geomanager/models/core.py:436
+msgid "Used if internal logo page not provided"
+msgstr "Inatumika ikiwa ukurasa wa nembo ya ndani haujatolewa"
+
+#: geomanager/models/core.py:443
+msgid "Terms of Service Page"
+msgstr "Ukurasa wa Masharti ya Huduma"
+
+#: geomanager/models/core.py:444
+msgid "MapViewer Terms of Service page"
+msgstr "Ukurasa wa Sheria na Masharti ya MapViewer"
+
+#: geomanager/models/core.py:452
+msgid "Privacy Policy Page"
+msgstr "Ukurasa wa Sera ya Faragha"
+
+#: geomanager/models/core.py:453
+msgid "MapViewer Privacy Policy Page"
+msgstr "Ukurasa wa Sera ya Faragha ya Kitazamaji cha Ramani"
+
+#: geomanager/models/core.py:465
+msgid "background color"
+msgstr "rangi ya mandharinyuma"
+
+#: geomanager/models/core.py:466
+msgid "image"
+msgstr "picha"
+
+#: geomanager/models/core.py:467
+msgid "basemap group"
+msgstr "kikundi cha msingi"
+
+#: geomanager/models/core.py:468
+msgid "labels group"
+msgstr "kikundi cha lebo"
+
+#: geomanager/models/core.py:469
+msgid "url"
+msgstr "url"
+
+#: geomanager/models/core.py:470
+msgid "Is default style ?"
+msgstr "Je, ni mtindo chaguo-msingi?"
+
+#: geomanager/models/core.py:475
+msgid "Geomanager Settings"
+msgstr "Mipangilio ya Geomanager"
+
+#: geomanager/models/core.py:481
+msgid "Upload Settings"
+msgstr "Pakia Mipangilio"
+
+#: geomanager/models/core.py:486
+msgid "Basemap TileServer Settings"
+msgstr "Mipangilio ya TileServer ya Basemap"
+
+#: geomanager/models/core.py:493
+msgid "CAP Layer Settings"
+msgstr "Mipangilio ya Tabaka la CAP"
+
+#: geomanager/models/core.py:501
+msgid "Navigation Settings"
+msgstr "Mipangilio ya Urambazaji"
+
+#: geomanager/models/profile.py:10
+msgid "Gender"
+msgstr "Jinsia"
+
+#: geomanager/models/profile.py:11
+msgid "Country"
+msgstr "Nchi"
+
+#: geomanager/models/profile.py:12
+msgid "City"
+msgstr "Jiji"
+
+#: geomanager/models/profile.py:13
+msgid "Sector"
+msgstr "Sekta"
+
+#: geomanager/models/profile.py:14
+msgid "Organization"
+msgstr "Shirika"
+
+#: geomanager/models/profile.py:15
+msgid "Organization Type"
+msgstr "Aina ya Shirika"
+
+#: geomanager/models/profile.py:16
+msgid "Scale of Operations"
+msgstr "Kiwango cha Uendeshaji"
+
+#: geomanager/models/profile.py:17
+msgid "Position"
+msgstr "Nafasi"
+
+#: geomanager/models/profile.py:18
+msgid "How do you Use"
+msgstr "Unatumiaje"
+
+#: geomanager/models/profile.py:19
+msgid "Interests"
+msgstr "Maslahi"
+
+#: geomanager/models/profile.py:22
+msgid "GeoManager User Profile"
+msgstr "Profaili ya Mtumiaji ya GeoManager"
+
+#: geomanager/models/profile.py:23
+msgid "GeoManager User Profiles"
+msgstr "Profaili za Mtumiaji wa GeoManager"
+
+#: geomanager/models/raster_file.py:28 geomanager/models/raster_file.py:234
+#: geomanager/models/raster_tile.py:11 geomanager/models/vector_file.py:38
+#: geomanager/models/vector_tile.py:46 geomanager/models/wms.py:40
+msgid "dataset"
+msgstr "seti ya data"
+
+#: geomanager/models/raster_file.py:29
+msgid "style"
+msgstr "mtindo"
+
+#: geomanager/models/raster_file.py:32
+msgid "Point Analysis"
+msgstr "Uchambuzi wa Pointi"
+
+#: geomanager/models/raster_file.py:33
+msgid "Area Analysis"
+msgstr "Uchambuzi wa Eneo"
+
+#: geomanager/models/raster_file.py:35
+msgid "Analysis"
+msgstr "Uchambuzi"
+
+#: geomanager/models/raster_file.py:38
+msgid "Raster File Layer"
+msgstr "Safu ya Faili ya Raster"
+
+#: geomanager/models/raster_file.py:39
+msgid "Raster File Layers"
+msgstr "Tabaka za Faili za Raster"
+
+#: geomanager/models/raster_file.py:57
+msgid "Create Style"
+msgstr "Unda Mtindo"
+
+#: geomanager/models/raster_file.py:61
+msgid "Edit Style"
+msgstr "Hariri Mtindo"
+
+#: geomanager/models/raster_file.py:201
+msgid ""
+"Can not add layer because the dataset is not marked as Multi Layer. To add "
+"multiple layers to a dataset, please mark the dataset as Multi Layer and try "
+"again"
+msgstr ""
+"Haiwezi kuongeza safu kwa sababu mkusanyiko wa data haujawekwa alama kama "
+"Tabaka Nyingi. Ili kuongeza safu nyingi kwenye mkusanyiko wa data, tafadhali "
+"weka alama kwenye mkusanyiko wa data kama Tabaka Nyingi na ujaribu tena"
+
+#: geomanager/models/raster_file.py:214 geomanager/models/raster_file.py:235
+#: geomanager/models/tile_gl.py:18
+msgid "file"
+msgstr "faili"
+
+#: geomanager/models/raster_file.py:220
+msgid "Layer Raster File"
+msgstr "Faili ya Raster ya Tabaka"
+
+#: geomanager/models/raster_file.py:221
+msgid "Layer Raster Files"
+msgstr "Faili za Raster za Tabaka"
+
+#: geomanager/models/raster_file.py:239
+msgid "Raster Upload"
+msgstr "Upakiaji wa Raster"
+
+#: geomanager/models/raster_file.py:240
+msgid "Raster Uploads"
+msgstr "Upakiaji wa Raster"
+
+#: geomanager/models/raster_file.py:255
+msgid "Style name for identification"
+msgstr "Jina la mtindo kwa kitambulisho"
+
+#: geomanager/models/raster_file.py:256
+msgid "data unit"
+msgstr "kitengo cha data"
+
+#: geomanager/models/raster_file.py:258
+msgid "minimum value"
+msgstr "thamani ya chini"
+
+#: geomanager/models/raster_file.py:259
+msgid "maximum value"
+msgstr "thamani ya juu"
+
+#: geomanager/models/raster_file.py:261
+msgid "steps"
+msgstr "hatua"
+
+#: geomanager/models/raster_file.py:261
+msgid "Number of steps"
+msgstr "Idadi ya hatua"
+
+#: geomanager/models/raster_file.py:262
+msgid "Use Custom Colors"
+msgstr "Tumia Rangi Maalum"
+
+#: geomanager/models/raster_file.py:263
+msgid "Color Palette"
+msgstr "Palette ya rangi"
+
+#: geomanager/models/raster_file.py:264
+msgid "interpolate"
+msgstr "interpolate"
+
+#: geomanager/models/raster_file.py:266
+msgid "Color for the rest of values"
+msgstr "Rangi kwa thamani zingine"
+
+#: geomanager/models/raster_file.py:268
+msgid ""
+"Color for values greater than the values defined above, as well as values "
+"greater than the maximum defined value"
+msgstr ""
+"Rangi kwa thamani kubwa kuliko zile zilizofafanuliwa hapo juu, pamoja na "
+"thamani kubwa zaidi ya thamani ya juu iliyobainishwa"
+
+#: geomanager/models/raster_file.py:272
+msgid "Raster Style"
+msgstr "Mtindo wa Raster"
+
+#: geomanager/models/raster_file.py:273
+msgid "Raster Styles"
+msgstr "Mitindo ya Raster"
+
+#: geomanager/models/raster_file.py:285
+msgid "Data values"
+msgstr "Thamani za data"
+
+#: geomanager/models/raster_file.py:291 geomanager/models/raster_file.py:425
+msgid "Color Values"
+msgstr "Maadili ya Rangi"
+
+#: geomanager/models/raster_file.py:291 geomanager/models/raster_file.py:424
+msgid "Color Value"
+msgstr "Thamani ya Rangi"
+
+#: geomanager/models/raster_file.py:293
+msgid "Custom Color Values"
+msgstr "Maadili Maalum ya Rangi"
+
+#: geomanager/models/raster_file.py:418
+msgid "Threshold value"
+msgstr "Thamani ya kizingiti"
+
+#: geomanager/models/raster_file.py:419
+msgid ""
+"Values less than or equal to the input value, will be assigned the chosen "
+"color"
+msgstr ""
+"Thamani zilizo chini ya au sawa na thamani ya ingizo, zitapewa rangi "
+"iliyochaguliwa"
+
+#: geomanager/models/raster_file.py:421
+msgid "Label for Legend"
+msgstr "Lebo ya Legend"
+
+#: geomanager/models/raster_tile.py:14
+msgid "Raster Tile Layer"
+msgstr "Safu ya Tile ya Raster"
+
+#: geomanager/models/raster_tile.py:15
+msgid "Raster Tile Layers"
+msgstr "Tabaka za Tile Raster"
+
+#: geomanager/models/tile_base.py:23
+msgid "Base Tile url"
+msgstr "Url ya Kigae cha Msingi"
+
+#: geomanager/models/tile_base.py:26 geomanager/models/wms.py:59
+msgid "Query Parameter"
+msgstr "Kigezo cha hoja"
+
+#: geomanager/models/tile_base.py:27
+msgid "Static Query Params"
+msgstr "Vigezo vya Maswali Tuli"
+
+#: geomanager/models/tile_base.py:28
+msgid "Static query params to be added to the url"
+msgstr "Vigezo vya hoja tuli vya kuongezwa kwenye url"
+
+#: geomanager/models/tile_base.py:31
+msgid "Selectable Query Parameter"
+msgstr "Kigezo cha Maswali Inayoweza Kuchaguliwa"
+
+#: geomanager/models/tile_base.py:32
+msgid "Query Params With selectable Options"
+msgstr "Vigezo vya Kuuliza Na Chaguzi zinazoweza kuchaguliwa"
+
+#: geomanager/models/tile_base.py:33 geomanager/models/wms.py:62
+msgid ""
+"This should provide a list of options that users can choose to change the "
+"query parameter of the url"
+msgstr ""
+"Hii inapaswa kutoa orodha ya chaguo ambazo watumiaji wanaweza kuchagua "
+"kubadilisha kigezo cha hoja cha url"
+
+#: geomanager/models/tile_base.py:37 geomanager/models/wms.py:65
+msgid "Arrange Param Selectors side by side"
+msgstr "Panga Viteuzi vya Param kando"
+
+#: geomanager/models/tile_base.py:40 geomanager/models/wms.py:67
+msgid "Custom Legend"
+msgstr "Hadithi Maalum"
+
+#: geomanager/models/tile_base.py:41 geomanager/models/wms.py:68
+msgid "Custom Image"
+msgstr "Picha Maalum"
+
+#: geomanager/models/tile_base.py:42 geomanager/models/vector_file.py:50
+msgid "Legend Icon"
+msgstr "Aikoni ya Hadithi"
+
+#: geomanager/models/tile_base.py:43 geomanager/models/vector_file.py:48
+#: geomanager/models/vector_file.py:51 geomanager/models/wms.py:69
+msgid "Legend"
+msgstr "Hadithi"
+
+#: geomanager/models/tile_base.py:46 geomanager/models/wms.py:80
+msgid "Info link"
+msgstr "Kiungo cha habari"
+
+#: geomanager/models/tile_base.py:49 geomanager/models/wms.py:83
+msgid "More Info"
+msgstr "Maelezo Zaidi"
+
+#: geomanager/models/tile_base.py:51
+msgid "Get time from tile json url"
+msgstr "Pata muda kutoka kwa tile json url"
+
+#: geomanager/models/tile_base.py:52
+msgid "Tile JSON url"
+msgstr "Weka url ya JSON"
+
+#: geomanager/models/tile_base.py:54
+msgid "Timestamps response object key"
+msgstr "Kitufe cha majibu ya mihuri ya saa"
+
+#: geomanager/models/tile_base.py:55
+msgid "Key for timestamps values in response object"
+msgstr "Ufunguo wa thamani za mihuri ya muda katika kitu cha kujibu"
+
+#: geomanager/models/tile_base.py:66
+msgid "TileJson Settings"
+msgstr "Mipangilio ya TileJson"
+
+#: geomanager/models/tile_gl.py:16
+msgid "Style Name"
+msgstr "Jina la Mtindo"
+
+#: geomanager/models/tile_gl.py:19
+msgid "Use default style"
+msgstr "Tumia mtindo chaguo-msingi"
+
+#: geomanager/models/tile_gl.py:20
+msgid "OpenMapTiles style"
+msgstr "Mtindo wa OpenMapTiles"
+
+#: geomanager/models/tile_gl.py:34
+msgid "Basemap Source"
+msgstr "Chanzo cha Basemap"
+
+#: geomanager/models/tile_gl.py:35 geomanager/wagtail_hooks.py:682
+msgid "Basemap Sources"
+msgstr "Vyanzo vya Ramani ya Msingi"
+
+#: geomanager/models/vector_file.py:40 geomanager/models/vector_tile.py:49
+msgid "Polygon Layer"
+msgstr "Tabaka la poligoni"
+
+#: geomanager/models/vector_file.py:41 geomanager/models/vector_tile.py:50
+msgid "Line Layer"
+msgstr "Safu ya Mstari"
+
+#: geomanager/models/vector_file.py:42 geomanager/models/vector_tile.py:51
+msgid "Point Layer"
+msgstr "Tabaka la Pointi"
+
+#: geomanager/models/vector_file.py:43 geomanager/models/vector_tile.py:52
+msgid "Icon Layer"
+msgstr "Safu ya ikoni"
+
+#: geomanager/models/vector_file.py:44 geomanager/models/vector_tile.py:53
+msgid "Text Label Layer"
+msgstr "Tabaka la Lebo ya maandishi"
+
+#: geomanager/models/vector_file.py:45 geomanager/models/vector_tile.py:54
+msgid "Render Layers"
+msgstr "Tabaka za Mpeni"
+
+#: geomanager/models/vector_file.py:49
+msgid "Legend Image"
+msgstr "Picha ya Hadithi"
+
+#: geomanager/models/vector_file.py:54
+msgid "Vector File Layer"
+msgstr "Safu ya Faili ya Vector"
+
+#: geomanager/models/vector_file.py:55
+msgid "Vector File Layers"
+msgstr "Tabaka za Faili za Vector"
+
+#: geomanager/models/vector_file.py:222
+msgid "Vector Layer Icon"
+msgstr "Ikoni ya Tabaka la Vekta"
+
+#: geomanager/models/vector_file.py:223
+msgid "Vector Layer Icons"
+msgstr "Aikoni za Tabaka la Vekta"
+
+#: geomanager/models/vector_file.py:235
+msgid "Vector Upload"
+msgstr "Upakiaji wa Vekta"
+
+#: geomanager/models/vector_file.py:236
+msgid "Vector Uploads"
+msgstr "Upakiaji wa Vekta"
+
+#: geomanager/models/vector_file.py:253
+msgid "time for the dataset"
+msgstr "muda wa mkusanyiko wa data"
+
+#: geomanager/models/vector_tile.py:25 geomanager/models/vector_tile.py:29
+#: geomanager/models/vector_tile.py:33 geomanager/models/vector_tile.py:37
+#: geomanager/models/vector_tile.py:41
+msgid "source layer"
+msgstr "safu ya chanzo"
+
+#: geomanager/models/vector_tile.py:57
+msgid "Vector Tile Layer"
+msgstr "Safu ya Tile ya Vector"
+
+#: geomanager/models/vector_tile.py:58
+msgid "Vector Tile Layers"
+msgstr "Tabaka za Tile za Vector"
+
+#: geomanager/models/wms.py:33
+msgid "Hourly - (E.g 2023-01-01 00:00)"
+msgstr "Kila Saa - (Mf 2023-01-01 00:00)"
+
+#: geomanager/models/wms.py:34
+msgid "Daily - (E.g 2023-01-01)"
+msgstr "Kila siku - (Mf 2023-01-01)"
+
+#: geomanager/models/wms.py:35
+msgid "Monthly - (E.g 2023-01)"
+msgstr "Kila mwezi - (Mf 2023-01)"
+
+#: geomanager/models/wms.py:36
+msgid "Monthly - (E.g January 2023)"
+msgstr "Kila mwezi - (Mf. Januari 2023)"
+
+#: geomanager/models/wms.py:37
+msgid "Pentadal - (E.g Jan 2023 - P1 1-5th)"
+msgstr "Pentadal - (Mf. Januari 2023 - P1 1-5th)"
+
+#: geomanager/models/wms.py:41
+msgid "Request time from capabilities"
+msgstr "Omba muda kutoka kwa uwezo"
+
+#: geomanager/models/wms.py:42
+msgid "Get list of available times for this layer from getCapabilities"
+msgstr ""
+"Pata orodha ya nyakati zinazopatikana za safu hii kutoka kwa GetCapabilities"
+
+#: geomanager/models/wms.py:44
+msgid "base url for WMS"
+msgstr "url ya msingi ya WMS"
+
+#: geomanager/models/wms.py:45
+msgid "WMS Version"
+msgstr "Toleo la WMS"
+
+#: geomanager/models/wms.py:46
+msgid "Pixel Width"
+msgstr "Upana wa Pixel"
+
+#: geomanager/models/wms.py:47
+msgid "The size of the map image in pixels along the i axis"
+msgstr "Ukubwa wa picha ya ramani katika saizi kwenye mhimili wa i"
+
+#: geomanager/models/wms.py:48
+msgid "Pixel Height"
+msgstr "Urefu wa Pixel"
+
+#: geomanager/models/wms.py:49
+msgid "The size of the map image in pixels along the j axis"
+msgstr "Ukubwa wa picha ya ramani katika saizi kwenye mhimili wa j"
+
+#: geomanager/models/wms.py:50
+msgid "Transparency"
+msgstr "Uwazi"
+
+#: geomanager/models/wms.py:51
+msgid "Ability of underlying maps to be visible or not"
+msgstr "Uwezo wa ramani za msingi kuonekana au la"
+
+#: geomanager/models/wms.py:52
+msgid "Spatial Reference System"
+msgstr "Mfumo wa Marejeleo ya anga"
+
+#: geomanager/models/wms.py:53
+msgid "WMS Spatial Reference e.g EPSG:3857"
+msgstr "Marejeleo ya anga ya WMS k.m EPSG:3857"
+
+#: geomanager/models/wms.py:55
+msgid "Output Format"
+msgstr "Umbizo la Pato"
+
+#: geomanager/models/wms.py:57
+msgid ""
+"Allowed map formats are either “picture” formats or “graphic element” "
+"formats."
+msgstr ""
+"Miundo ya ramani inayoruhusiwa ni umbizo la \"picha\" au miundo ya "
+"\"kipengele cha picha\"."
+
+#: geomanager/models/wms.py:60
+msgid "WMS Query Params With selectable Options"
+msgstr "Vigezo vya Maswali ya WMS Na Chaguzi zinazoweza kuchaguliwa"
+
+#: geomanager/models/wms.py:71
+msgid "Get Capabilities URL"
+msgstr "Pata URL ya Uwezo"
+
+#: geomanager/models/wms.py:72
+msgid ""
+"Alternative URL for the GetCapabilities request. Used when 'Request time "
+"from capabilities' option is checked. Leave blank to use base url."
+msgstr ""
+"URL mbadala ya ombi la GetCapabilities. Inatumika wakati chaguo la 'Omba "
+"muda kutoka kwa uwezo' limechaguliwa. Acha wazi ili kutumia url ya msingi."
+
+#: geomanager/models/wms.py:76
+msgid "Get Capabilities Layer Name"
+msgstr "Pata Jina la Tabaka la Uwezo"
+
+#: geomanager/models/wms.py:77
+msgid "Alternative layer name for the GetCapabilities request"
+msgstr "Jina la safu mbadala kwa ombi la GetCapabilities"
+
+#: geomanager/models/wms.py:86
+msgid "WMS Layer"
+msgstr "Safu ya WMS"
+
+#: geomanager/models/wms.py:87
+msgid "WMS Layers"
+msgstr "Tabaka za WMS"
+
+#: geomanager/models/wms.py:104 geomanager/models/wms.py:328
+#: geomanager/models/wms.py:337
+msgid "WMS Request Layers"
+msgstr "Tabaka za Ombi la WMS"
+
+#: geomanager/models/wms.py:105 geomanager/models/wms.py:336
+msgid "WMS Request Layer"
+msgstr "Tabaka la Ombi la WMS"
+
+#: geomanager/models/wms.py:106 geomanager/models/wms.py:342
+#: geomanager/models/wms.py:349
+msgid "WMS Request Styles"
+msgstr "Mitindo ya Ombi la WMS"
+
+#: geomanager/models/wms.py:107 geomanager/models/wms.py:348
+msgid "WMS Request Style"
+msgstr "Mtindo wa Ombi la WMS"
+
+#: geomanager/models/wms.py:108
+msgid "WMS Request Additional Parameters"
+msgstr "WMS Ombi la Vigezo vya Ziada"
+
+#: geomanager/models/wms.py:109
+msgid "WMS Request Param"
+msgstr "Kigezo cha Ombi la WMS"
+
+#: geomanager/models/wms.py:111
+msgid "WMS GetMap Configuration"
+msgstr "Usanidi wa GetMap wa WMS"
+
+#: geomanager/models/wms.py:116
+msgid "WMS GetCapabilities Configuration"
+msgstr "Usanidi wa Uwezo wa Kupata Uwezo wa WMS"
+
+#: geomanager/models/wms.py:331
+msgid ""
+"WMS Layer is requested by using this name in the LAYERS parameter of a "
+"GetMap request."
+msgstr ""
+"Safu ya WMS inaombwa kwa kutumia jina hili katika kigezo cha LAYERS cha ombi "
+"la GetMap."
+
+#: geomanager/models/wms.py:345
+msgid "The style's Name is used in the Map request STYLES parameter"
+msgstr "Jina la mtindo linatumika katika kigezo cha ombi la Ramani STYLES"
+
+#: geomanager/models/wms.py:354
+msgid "WMS Requests Additional Parameters"
+msgstr "WMS Inaomba Vigezo vya Ziada"
+
+#: geomanager/models/wms.py:356
+msgid "Name of the parameter"
+msgstr "Jina la kigezo"
+
+#: geomanager/models/wms.py:357
+msgid "Value of the parameter"
+msgstr "Thamani ya parameter"
+
+#: geomanager/models/wms.py:360
+msgid "WMS Request Parameter"
+msgstr "Kigezo cha Ombi la WMS"
+
+#: geomanager/models/wms.py:361
+msgid "WMS Request Parameters"
+msgstr "Vigezo vya Ombi la WMS"
+
+#: geomanager/templates/geomanager/raster_file_edit_form.html:7
+#, python-format
+msgid "Data Variable : %(data_var)s"
+msgstr "Kigezo cha Data : %(data_var)s"
+
+#: geomanager/templates/geomanager/raster_file_edit_form.html:26
+#: geomanager/templates/geomanager/vector_file_edit_form.html:18
+msgid "Publish"
+msgstr "Kuchapisha"
+
+#: geomanager/templates/geomanager/raster_file_edit_form.html:29
+#: geomanager/templates/geomanager/vector_file_edit_form.html:21
+msgid "Delete"
+msgstr "Futa"
+
+#: geomanager/templates/geomanager/raster_file_layer_preview.html:7
+#, python-format
+msgid "Preview Layer %(title)s"
+msgstr "Hakiki Safu %(title)s"
+
+#: geomanager/templates/geomanager/raster_file_layer_preview.html:23
+#: geomanager/templates/geomanager/raster_tile_layer_preview.html:21
+#: geomanager/templates/geomanager/vector_file_layer_preview.html:20
+#: geomanager/templates/geomanager/vector_tile_layer_preview.html:21
+#: geomanager/templates/geomanager/wms_layer_preview.html:22
+msgid "Preview"
+msgstr "Hakiki"
+
+#: geomanager/templates/geomanager/raster_file_layer_preview.html:38
+#: geomanager/templates/geomanager/raster_file_upload.html:39
+#: geomanager/templates/geomanager/raster_tile_layer_preview.html:36
+#: geomanager/templates/geomanager/vector_file_layer_preview.html:34
+#: geomanager/templates/geomanager/vector_file_upload.html:38
+#: geomanager/templates/geomanager/vector_tile_layer_preview.html:36
+#: geomanager/templates/geomanager/wms_layer_preview.html:37
+msgid "Back to Layers"
+msgstr "Rudi kwa Tabaka"
+
+#: geomanager/templates/geomanager/raster_file_layer_preview.html:40
+#: geomanager/templates/geomanager/raster_file_upload.html:41
+#: geomanager/templates/geomanager/raster_tile_layer_preview.html:38
+#: geomanager/templates/geomanager/vector_file_layer_preview.html:36
+#: geomanager/templates/geomanager/vector_file_upload.html:40
+#: geomanager/templates/geomanager/vector_tile_layer_preview.html:38
+#: geomanager/templates/geomanager/wms_layer_preview.html:39
+msgid "Back to Datasets"
+msgstr "Rudi kwenye Hifadhidata"
+
+#: geomanager/templates/geomanager/raster_file_layer_preview.html:47
+#: geomanager/templates/geomanager/raster_tile_layer_preview.html:44
+#: geomanager/templates/geomanager/vector_file_layer_preview.html:42
+#: geomanager/templates/geomanager/vector_tile_layer_preview.html:45
+#: geomanager/templates/geomanager/wms_layer_preview.html:46
+msgid "Select Layer"
+msgstr "Chagua Tabaka"
+
+#: geomanager/templates/geomanager/raster_file_layer_preview.html:60
+#: geomanager/templates/geomanager/raster_tile_layer_preview.html:57
+#: geomanager/templates/geomanager/vector_tile_layer_preview.html:58
+#: geomanager/templates/geomanager/wms_layer_preview.html:59
+msgid "Time"
+msgstr "Wakati"
+
+#: geomanager/templates/geomanager/raster_file_layer_preview.html:69
+msgid "Color Scale"
+msgstr "Kiwango cha Rangi"
+
+#: geomanager/templates/geomanager/raster_file_upload.html:7
+#, python-format
+msgid "Upload Raster %(title)s"
+msgstr "Pakia Raster %(title)s"
+
+#: geomanager/templates/geomanager/raster_file_upload.html:21
+#: geomanager/wagtail_hooks.py:303
+msgid "Upload Raster Files"
+msgstr "Pakia Faili za Raster"
+
+#: geomanager/templates/geomanager/raster_file_upload.html:54
+#: geomanager/templates/geomanager/vector_file_upload.html:53
+msgid "Go to Map preview"
+msgstr "Nenda kwenye onyesho la kukagua Ramani"
+
+#: geomanager/templates/geomanager/raster_file_upload.html:60
+msgid "Drag and drop a raster file into this area to upload immediately"
+msgstr ""
+"Buruta na udondoshe faili ya raster kwenye eneo hili ili upakie mara moja"
+
+#: geomanager/templates/geomanager/raster_file_upload.html:73
+#: geomanager/templates/geomanager/vector_file_upload.html:70
+msgid "Or choose from your computer"
+msgstr "Au chagua kutoka kwa kompyuta yako"
+
+#: geomanager/templates/geomanager/raster_file_upload.html:101
+#: geomanager/templates/geomanager/vector_file_upload.html:95
+msgid ""
+"Upload successful. Please update this file with required details and "
+"publish. You may also delete the file completely if the upload wasn't "
+"required."
+msgstr ""
+"Imepakia. Tafadhali sasisha faili hii kwa maelezo yanayohitajika na "
+"uchapishe. Unaweza pia kufuta faili kabisa ikiwa upakiaji haukuhitajika."
+
+#: geomanager/templates/geomanager/raster_file_upload.html:104
+#: geomanager/templates/geomanager/vector_file_upload.html:96
+msgid "Sorry, upload failed."
+msgstr "Samahani, upakiaji haukufaulu."
+
+#: geomanager/templates/geomanager/raster_file_upload.html:108
+#: geomanager/templates/geomanager/vector_file_upload.html:98
+msgid "Server Error"
+msgstr "Hitilafu ya Seva"
+
+#: geomanager/templates/geomanager/raster_file_upload.html:110
+#: geomanager/templates/geomanager/vector_file_upload.html:99
+msgid ""
+"Report this error to your website administrator with the following "
+"information:"
+msgstr "Ripoti hitilafu hii kwa msimamizi wa tovuti yako na maelezo yafuatayo:"
+
+#: geomanager/templates/geomanager/raster_file_upload.html:113
+#: geomanager/templates/geomanager/vector_file_upload.html:102
+msgid "File updated."
+msgstr "Faili imesasishwa."
+
+#: geomanager/templates/geomanager/raster_tile_layer_preview.html:6
+#: geomanager/templates/geomanager/vector_file_layer_preview.html:6
+#: geomanager/templates/geomanager/vector_tile_layer_preview.html:6
+#: geomanager/templates/geomanager/wms_layer_preview.html:6
+#, python-format
+msgid "Preview Layers %(title)s"
+msgstr "Hakiki Tabaka %(title)s"
+
+#: geomanager/templates/geomanager/stations_preview.html:6
+#, python-format
+msgid "Stations Data %(title)s"
+msgstr "Data ya Vituo %(title)s"
+
+#: geomanager/templates/geomanager/stations_preview.html:17
+#: geomanager/wagtail_hooks.py:741
+msgid "Stations Data"
+msgstr "Data ya Vituo"
+
+#: geomanager/templates/geomanager/stations_preview.html:18
+msgid "Load Stations"
+msgstr "Vituo vya Kupakia"
+
+#: geomanager/templates/geomanager/stations_preview.html:29
+#: geomanager/templates/geomanager/vector_file_layer_preview.html:66
+msgid "Data Fields"
+msgstr "Sehemu za Data"
+
+#: geomanager/templates/geomanager/stations_preview.html:35
+#: geomanager/templates/geomanager/vector_file_layer_preview.html:72
+msgid "Field"
+msgstr "Shamba"
+
+#: geomanager/templates/geomanager/stations_preview.html:41
+msgid "Show in Table"
+msgstr "Onyesha kwenye Jedwali"
+
+#: geomanager/templates/geomanager/stations_preview.html:44
+msgid "Show in Map Popup"
+msgstr "Onyesha katika Dirisha Ibukizi la Ramani"
+
+#: geomanager/templates/geomanager/stations_preview.html:95
+#: geomanager/templates/geomanager/vector_file_layer_preview.html:122
+msgid "Save"
+msgstr "Hifadhi"
+
+#: geomanager/templates/geomanager/stations_preview.html:109
+msgid "No station data loaded."
+msgstr "Hakuna data ya kituo iliyopakiwa."
+
+#: geomanager/templates/geomanager/stations_preview.html:110
+msgid "Please "
+msgstr "Tafadhali"
+
+#: geomanager/templates/geomanager/stations_preview.html:112
+msgid "load station data"
+msgstr "pakia data ya kituo"
+
+#: geomanager/templates/geomanager/stations_preview.html:114
+msgid "to preview"
+msgstr "kuhakiki"
+
+#: geomanager/templates/geomanager/stations_upload.html:6
+#, python-format
+msgid "Stations Loader %(title)s"
+msgstr "Kipakiaji cha Vituo %(title)s"
+
+#: geomanager/templates/geomanager/stations_upload.html:18
+msgid "Stations Loader"
+msgstr "Vituo vya Loader"
+
+#: geomanager/templates/geomanager/stations_upload.html:43
+msgid "Upload"
+msgstr "Pakia"
+
+#: geomanager/templates/geomanager/vector_file_layer_preview.html:78
+msgid "Show in Popup"
+msgstr "Onyesha kwenye Dirisha Ibukizi"
+
+#: geomanager/templates/geomanager/vector_file_upload.html:6
+#, python-format
+msgid "Upload Vector %(title)s"
+msgstr "Pakia Vekta %(title)s"
+
+#: geomanager/templates/geomanager/vector_file_upload.html:20
+#: geomanager/wagtail_hooks.py:624
+msgid "Upload Vector Files"
+msgstr "Pakia Faili za Vekta"
+
+#: geomanager/templates/geomanager/vector_file_upload.html:59
+msgid "Drag and drop a vector file into this area to upload immediately."
+msgstr ""
+"Buruta na udondoshe faili ya vekta kwenye eneo hili ili kupakia mara moja."
+
+#: geomanager/templates/geomanager/widgets/raster_style_widget.html:87
+msgid "Select Color"
+msgstr "Chagua Rangi"
+
+#: geomanager/templates/geomanager/widgets/raster_style_widget.html:95
+msgid "Legend Preview"
+msgstr "Hakiki ya Hadithi"
+
+#: geomanager/templates/modeladmin/index_without_custom_create.html:41
+msgid "Download XLSX"
+msgstr "Pakua XLSX"
+
+#: geomanager/templates/modeladmin/index_without_custom_create.html:48
+msgid "Download CSV"
+msgstr "Pakua CSV"
+
+#: geomanager/templates/modeladmin/index_without_custom_create.html:71
+msgid "Filter"
+msgstr "Chuja"
+
+#: geomanager/templates/modeladmin/index_without_custom_create.html:82
+#, python-format
+msgid ""
+"No %(name)s have been created yet. One of the following must be created "
+"before you can add any %(name)s:"
+msgstr ""
+"Bado hakuna %(name)s zilizoundwa. Moja ya yafuatayo lazima iundwe kabla ya "
+"kuongeza %(name)s yoyote:"
+
+#: geomanager/templates/modeladmin/index_without_custom_create.html:90
+#, python-format
+msgid "No %(name)s have been created yet."
+msgstr "Bado hakuna %(name)s zilizoundwa."
+
+#: geomanager/templates/modeladmin/index_without_custom_create.html:117
+msgid "Pagination"
+msgstr "Pagination"
+
+#: geomanager/templates/modeladmin/index_without_custom_create.html:119
+#, python-format
+msgid "Page %(current_page)s of %(num_pages)s."
+msgstr "Ukurasa %(current_page)s wa %(num_pages)s."
+
+#: geomanager/utils/vector_utils.py:112
+msgid "No shapefile found in provided zip file"
+msgstr "Hakuna faili ya umbo iliyopatikana katika faili ya zip iliyotolewa"
+
+#: geomanager/utils/vector_utils.py:121
+msgid "No .shx file found in provided zip file"
+msgstr "Hakuna faili ya .shx iliyopatikana katika faili ya zip iliyotolewa"
+
+#: geomanager/utils/vector_utils.py:125
+msgid "No .dbf file found in provided zip file"
+msgstr "Hakuna faili ya .dbf iliyopatikana katika faili ya zip iliyotolewa"
+
+#: geomanager/utils/vector_utils.py:155
+msgid "Unsupported file type"
+msgstr "Aina ya faili isiyotumika"
+
+#: geomanager/utils/vector_utils.py:215
+#, python-format
+msgid ""
+"Invalid geometry type. Expected one of %(valid_geom_types)s. Not "
+"%(geom_type)s"
+msgstr ""
+"Aina batili ya jiometri. Inatarajiwa moja kati ya %(valid_geom_types)s. Sio "
+"%(geom_type)s"
+
+#: geomanager/utils/vector_utils.py:219
+#, python-format
+msgid "Geometry Type validation not implemented for format %(vector_format)s"
+msgstr ""
+"Uthibitishaji wa Aina ya Jiometri haujatekelezwa kwa umbizo %(vector_format)s"
+
+#: geomanager/views/raster_file.py:69
+#, python-format
+msgid ""
+"Not a supported raster format. Supported formats: %(supported_formats)s."
+msgstr ""
+"Sio umbizo la raster linalotumika. Miundo inayotumika: %(supported_formats)s."
+
+#: geomanager/views/raster_file.py:72
+#, python-format
+msgid ""
+"This file is too big (%(file_size)s). Maximum filesize %(max_filesize)s. You "
+"can adjust the Maximum upload file size under Geomanager settings"
+msgstr ""
+"Faili hii ni kubwa mno (%(file_size)s). Upeo wa ukubwa wa faili "
+"%(max_filesize)s. Unaweza kurekebisha Upeo wa ukubwa wa faili ya upakiaji "
+"chini ya mipangilio ya Geomanager"
+
+#: geomanager/views/raster_file.py:76
+#, python-format
+msgid ""
+"This file is too big. Maximum filesize %(max_filesize)s. You can adjust the "
+"Maximum upload file size under Geomanager settings."
+msgstr ""
+"Faili hii ni kubwa sana. Upeo wa ukubwa wa faili %(max_filesize)s. Unaweza "
+"kurekebisha Upeo wa ukubwa wa faili ya upakiaji chini ya mipangilio ya "
+"Geomanager."
+
+#: geomanager/views/raster_file.py:139
+msgid ""
+"You have set to clip uploaded raster files to the country(s) boundary but "
+"the uploaded file is not within the set countries. Make sure the uploaded "
+"file is within your country/countries or disable 'Crop raster to country' "
+"option in Geomanager settings"
+msgstr ""
+"Umeweka klipu ya faili za raster zilizopakiwa kwenye mpaka wa nchi lakini "
+"faili iliyopakiwa haiko ndani ya nchi zilizowekwa. Hakikisha kuwa faili "
+"iliyopakiwa iko ndani ya nchi/nchi zako au zima chaguo la 'Punguza raster "
+"hadi nchi' katika mipangilio ya Geomanager."
+
+#: geomanager/views/raster_file.py:255 geomanager/views/raster_file.py:370
+#: geomanager/views/vector_file.py:125 geomanager/views/vector_file.py:225
+msgid "Only POST allowed"
+msgstr "POST pekee inaruhusiwa"
+
+#: geomanager/views/raster_file.py:260
+msgid "upload not found"
+msgstr "upakiaji haujapatikana"
+
+#: geomanager/views/raster_file.py:320
+#, python-format
+msgid "File with date %(time_str)s already exists for layer %(db_layer)s"
+msgstr ""
+"Faili yenye tarehe %(time_str)s tayari ipo kwa ajili ya safu %(db_layer)s"
+
+#: geomanager/views/raster_file.py:328
+msgid "Error occurred. Try again"
+msgstr "Hitilafu imetokea. Jaribu tena"
+
+#: geomanager/views/raster_file.py:337
+#, python-format
+msgid "File with date %(time)s already exists for layer %(db_layer)s"
+msgstr "Faili yenye tarehe %(time)s tayari ipo kwa safu %(db_layer)s"
+
+#: geomanager/views/raster_file.py:350 geomanager/views/vector_file.py:174
+#, python-format
+msgid "File with date %(time)s already exists for selected layer"
+msgstr "Faili yenye tarehe %(time)s tayari ipo kwa safu iliyochaguliwa"
+
+#: geomanager/views/raster_file.py:420
+msgid "time param required"
+msgstr "param ya wakati inahitajika"
+
+#: geomanager/views/raster_file.py:427
+#, python-format
+msgid "File not found matching 'layer': %(layer_id)s and 'time': %(time)s"
+msgstr ""
+"Faili haijapatikana inayolingana na 'layer': %(layer_id)s na 'time': %(time)s"
+
+#: geomanager/views/raster_file.py:436
+msgid "time_from or time_to param required"
+msgstr "time_from au time_to param inahitajika"
+
+#: geomanager/views/raster_file.py:456
+msgid "x param required"
+msgstr "x param inahitajika"
+
+#: geomanager/views/raster_file.py:459
+msgid "y param required"
+msgstr "y param inahitajika"
+
+#: geomanager/views/raster_file.py:478
+msgid "geostore_id param required"
+msgstr "geostore_id param inahitajika"
+
+#: geomanager/views/raster_file.py:483
+#, python-format
+msgid "Geostore with id %(geostore_id)s does not exist"
+msgstr "Geostore yenye id %(geostore_id)s haipo"
+
+#: geomanager/views/stations.py:79
+msgid "Stations data loaded successfully"
+msgstr "Data ya vituo imepakiwa"
+
+#: geomanager/views/stations.py:132
+msgid "Stations columns updated successfully"
+msgstr "Safu wima za vituo zimesasishwa"
+
+#: geomanager/views/vector_file.py:46
+#, python-format
+msgid ""
+"Not a supported vector format. Supported formats: %(supported_formats)s."
+msgstr ""
+"Sio umbizo la vekta linalotumika. Miundo inayotumika: %(supported_formats)s."
+
+#: geomanager/views/vector_file.py:49
+#, python-format
+msgid ""
+"This file is too big (%(file_size)s). Maximum filesize %(max_filesize)s."
+msgstr ""
+"Faili hii ni kubwa mno (%(file_size)s). Upeo wa ukubwa wa faili "
+"%(max_filesize)s."
+
+#: geomanager/views/vector_file.py:52
+#, python-format
+msgid "This file is too big. Maximum filesize %(max_filesize)s."
+msgstr "Faili hii ni kubwa sana. Upeo wa ukubwa wa faili %(max_filesize)s."
+
+#: geomanager/views/vector_file.py:294
+msgid "Data fields updated successfully"
+msgstr "Sehemu za data zimesasishwa"
+
+#: geomanager/wagtail_hooks.py:95
+msgid "Data Categories"
+msgstr "Vitengo vya Data"
+
+#: geomanager/wagtail_hooks.py:104 geomanager/wagtail_hooks.py:121
+msgid "View Datasets"
+msgstr "Tazama Seti za Data"
+
+#: geomanager/wagtail_hooks.py:144
+msgid "Create from categories"
+msgstr "Unda kutoka kwa kategoria"
+
+#: geomanager/wagtail_hooks.py:181
+msgid "View Layers"
+msgstr "Tazama Tabaka"
+
+#: geomanager/wagtail_hooks.py:182 geomanager/wagtail_hooks.py:233
+#: geomanager/wagtail_hooks.py:315 geomanager/wagtail_hooks.py:638
+msgid "Upload Files"
+msgstr "Pakia Faili"
+
+#: geomanager/wagtail_hooks.py:185
+msgid "Edit Category"
+msgstr "Badilisha Kategoria"
+
+#: geomanager/wagtail_hooks.py:194
+msgid "Layers"
+msgstr "Tabaka"
+
+#: geomanager/wagtail_hooks.py:215
+msgid "Preview Dataset"
+msgstr "Hakiki Seti ya Data"
+
+#: geomanager/wagtail_hooks.py:256
+msgid "Create from datasets"
+msgstr "Unda kutoka kwa hifadhidata"
+
+#: geomanager/wagtail_hooks.py:288
+msgid "File Layers"
+msgstr "Tabaka za Faili"
+
+#: geomanager/wagtail_hooks.py:302 geomanager/wagtail_hooks.py:666
+msgid "Uploaded Files"
+msgstr "Faili Zilizopakiwa"
+
+#: geomanager/wagtail_hooks.py:304 geomanager/wagtail_hooks.py:460
+#: geomanager/wagtail_hooks.py:511 geomanager/wagtail_hooks.py:561
+#: geomanager/wagtail_hooks.py:625
+msgid "Preview on Map"
+msgstr "Hakiki kwenye Ramani"
+
+#: geomanager/wagtail_hooks.py:329 geomanager/wagtail_hooks.py:623
+msgid "View Uploaded Files"
+msgstr "Tazama Faili Zilizopakiwa"
+
+#: geomanager/wagtail_hooks.py:343 geomanager/wagtail_hooks.py:471
+#: geomanager/wagtail_hooks.py:522 geomanager/wagtail_hooks.py:572
+#: geomanager/wagtail_hooks.py:652
+msgid "Preview Layer"
+msgstr "Safu ya Hakiki"
+
+#: geomanager/wagtail_hooks.py:420
+msgid "Color Preview"
+msgstr "Onyesho la Kuchungulia Rangi"
+
+#: geomanager/wagtail_hooks.py:610
+msgid "Vector Layers"
+msgstr "Tabaka za Vector"
+
+#: geomanager/wagtail_hooks.py:706
+msgid "Geo Manager"
+msgstr "GeoManager"
+
+#: geomanager/wagtail_hooks.py:732
+msgid "Boundary Settings"
+msgstr "Mipangilio ya Mipaka"
+
+#: geomanager/wagtail_hooks.py:737
+msgid "Boundary Data"
+msgstr "Data ya mipaka"
+
+#: geomanager/wagtail_hooks.py:750
+msgid "Settings"
+msgstr "Mipangilio"
