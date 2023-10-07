@@ -41,7 +41,7 @@ class DatasetButtonHelper(ButtonHelper):
                 "url": obj.create_layer_url(),
                 "label": _("Add Layer"),
                 "classname": cn,
-                "title": _("Add Layer ") % {"object": self.verbose_name},
+                "title": _("Add %(object)s Layer") % {"object": self.verbose_name},
             }
             buttons.append(create_layer_button)
 

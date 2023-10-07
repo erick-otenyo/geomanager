@@ -2,8 +2,11 @@
 {% load i18n %}
 {% load l10n %}
 {% load wagtailadmin_tags wagtailimages_tags static %}
-{% block titletag %}{% blocktrans with title=page.get_admin_display_title %}Stations Data{{ title }}
-{% endblocktrans %}{% endblock %}
+{% block titletag %}
+    {% blocktranslate trimmed with title=page.get_admin_display_title %}
+        Stations Data {{ title }}
+    {% endblocktranslate %}
+{% endblock %}
 {% block extra_css %}
     {{ block.super }}
     <link href="https://unpkg.com/maplibre-gl@3.1.0/dist/maplibre-gl.css" rel="stylesheet"/>
@@ -11,9 +14,10 @@
 {% endblock %}
 
 {% block content %}
-    {% trans "Stations Data" as header_str %}
+    {% translate "Stations Data" as header_str %}
+    {% translate "Load Stations" as action_text_trans %}
 
-    {% include "wagtailadmin/shared/header.html" with title=header_str icon="map" action_url=load_stations_url action_text="Load Stations" %}
+    {% include "wagtailadmin/shared/header.html" with title=header_str icon="map" action_url=load_stations_url action_text=action_text_trans %}
 
     <div class="nice-padding">
         {% if station_columns %}
@@ -21,14 +25,24 @@
                 <div id="preview-map" style="height: 600px;width: 100%"></div>
             </div>
             <div style="margin-top: 20px;">
-                <h2 class="title">Data Fields</h2>
+                <h2 class="title">
+                    {% translate "Data Fields" %}
+                </h2>
                 <table class="listing">
                     <thead>
                     <tr>
-                        <th style="font-weight: 700">Field</th>
-                        <th style="font-weight: 700">Label</th>
-                        <th style="font-weight: 700">Show in Table</th>
-                        <th style="font-weight: 700">Show in Popup</th>
+                        <th style="font-weight: 700">
+                            {% translate "Field" %}
+                        </th>
+                        <th style="font-weight: 700">
+                            {% translate "Label" %}
+                        </th>
+                        <th style="font-weight: 700">
+                            {% translate "Show in Table" %}
+                        </th>
+                        <th style="font-weight: 700">
+                            {% translate "Show in Map Popup" %}
+                        </th>
                     </tr>
                     </thead>
                     <tbody>
@@ -77,7 +91,9 @@
                             {% endif %}
                         {% endfor %}
                         <li>
-                            <button type="submit" class="button"> {% trans 'Save' %}</button>
+                            <button type="submit" class="button">
+                                {% translate 'Save' %}
+                            </button>
                         </li>
                     </ul>
                 </form>
@@ -90,7 +106,12 @@
                     <use href="#icon-help"></use>
                 </svg>
                 <p>
-                    No station data loaded. Please <a href="{{ load_stations_url }}">load station data</a> to preview
+                    {% translate "No station data loaded." %}
+                    {% translate "Please " %}
+                    <a href="{{ load_stations_url }}">
+                        {% translate "load station data" %}
+                    </a>
+                    {% translate "to preview" %}
                 </p>
 
             </div>

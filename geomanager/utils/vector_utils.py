@@ -9,6 +9,7 @@ from zipfile import ZipFile
 import geopandas as gpd
 from django.contrib.gis.db import models
 from django.db import connection
+from django.utils.translation import gettext as _
 
 from geomanager.errors import (
     NoShpFound,
@@ -108,7 +109,7 @@ def extract_zipped_shapefile(shp_zip_path, out_dir):
     shp = glob.glob(f"{out_dir}/*.shp") or glob.glob(f"{out_dir}/*/*.shp")
 
     if not shp:
-        raise NoShpFound("No shapefile found in provided zip file")
+        raise NoShpFound(_("No shapefile found in provided zip file"))
 
     shp_fn = os.path.splitext(shp[0])[0]
     shp_dir = os.path.dirname(shp_fn)
@@ -117,11 +118,11 @@ def extract_zipped_shapefile(shp_zip_path, out_dir):
 
     # check for .shx
     if f"{shp_fn}.shx" not in files:
-        raise NoShxFound("No .shx file found in provided zip file")
+        raise NoShxFound(_("No .shx file found in provided zip file"))
 
     # check for .dbf
     if f"{shp_fn}.dbf" not in files:
-        raise NoDbfFound("No .dbf file found in provided zip file")
+        raise NoDbfFound(_("No .dbf file found in provided zip file"))
 
     # return first shp path
     return shp[0]
@@ -151,7 +152,7 @@ def ogr_db_import(file_path, table_name, db_settings, overwrite=False, validate_
         table_info = ogr2pg(file_path, table_name, db_settings, overwrite=overwrite)
         return table_info
 
-    raise InvalidFile(message='Unsupported file type')
+    raise InvalidFile(message=_('Unsupported file type'))
 
 
 def get_postgis_table_info(schema, table_name):
@@ -211,10 +212,13 @@ def validate_vector_geom_type(file_path, valid_geom_types, vector_format):
 
         for geom_type in geom_types:
             if geom_type not in valid_geom_types:
-                raise InvalidGeomType(
-                    f"Invalid geometry type. Expected one of {valid_geom_types}. Not {geom_type}")
+                error_message = _("Invalid geometry type. Expected one of %(valid_geom_types)s. Not %(geom_type)s") % {
+                    "valid_geom_types": valid_geom_types, "geom_type": geom_type}
+                raise InvalidGeomType(error_message)
     else:
-        raise GeomValidationNotImplemented(f"Geometry Type validation not implemented for format {vector_format}")
+        error_message = _("Geometry Type validation not implemented for format %(vector_format)s") % {
+            "vector_format": vector_format}
+        raise GeomValidationNotImplemented(error_message)
 
 
 def get_model_field(pg_data_type):

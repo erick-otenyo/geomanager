@@ -2,12 +2,14 @@
 {% load i18n %}
 {% load l10n %}
 {% load wagtailadmin_tags wagtailimages_tags static %}
-{% block titletag %}{% blocktrans with title=page.get_admin_display_title %}Preview Layers{{ title }}
-{% endblocktrans %}{% endblock %}
+{% block titletag %}
+    {% blocktranslate trimmed with title=page.get_admin_display_title %}
+        Preview Layers {{ title }}
+    {% endblocktranslate %}
+{% endblock %}
 
 {% block extra_css %}
     {{ block.super }}
-
     {{ form_media.css }}
 
     <link rel="stylesheet" href="{% static 'geomanager/css/vendor/maplibre-gl.css' %}">
@@ -29,13 +31,18 @@
                     <svg class="icon icon-plus icon" aria-hidden="true">
                         <use href="#icon-arrow-left"></use>
                     </svg>
-                </span>{% if selected_layer %}Back to Layers{% else %}Back to Datasets{% endif %}
+                </span>
+                {% if selected_layer %}
+                    {% translate "Back to Layers" %}
+                {% else %}
+                    {% translate "Back to Datasets" %}
+                {% endif %}
             </a>
         </div>
 
         <div class="w-field__input" data-field-input="" style="display: none">
             <label class="w-field__label" for="layer_select" id="layer_select-label">
-                Select Layer
+                {% translate "Select Layer" %}
             </label>
             <select name="select" id="layer_select">
                 {% for layer in dataset.vector_tile_layers.all %}
@@ -48,7 +55,7 @@
             <div class="layer-timestamps-wrapper" style="display: none" id="timestamps_wrapper">
                 <div class="w-field__input">
                     <label class="w-field__label" for="timestamps_select" id="timestamps_select-label">
-                        Time
+                        {% translate "Time" %}
                     </label>
                     <select name="select" id="timestamps_select">
                     </select>

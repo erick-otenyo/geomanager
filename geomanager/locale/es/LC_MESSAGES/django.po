@@ -1,0 +1,1991 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-10-07 21:45+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: geomanager/blocks.py:12
+#: geomanager/templates/geomanager/stations_preview.html:38
+#: geomanager/templates/geomanager/vector_file_layer_preview.html:75
+msgid "Label"
+msgstr "Etiqueta"
+
+#: geomanager/blocks.py:13
+msgid "Page"
+msgstr "Página"
+
+#: geomanager/blocks.py:13
+msgid "Internal page to navigate"
+msgstr "Página interna para navegar"
+
+#: geomanager/blocks.py:14
+msgid "External Link"
+msgstr "Enlace externo"
+
+#: geomanager/blocks.py:15
+msgid "External link to navigate to. Used if internal page not provided"
+msgstr ""
+"Enlace externo para navegar. Se utiliza si no se proporciona la página "
+"interna"
+
+#: geomanager/blocks.py:19
+msgid "Key"
+msgstr "Llave"
+
+#: geomanager/blocks.py:20
+msgid "Value"
+msgstr "Valor"
+
+#: geomanager/blocks.py:25
+msgid "Radio"
+msgstr "Radio"
+
+#: geomanager/blocks.py:26
+msgid "Dropdown"
+msgstr "Desplegable"
+
+#: geomanager/blocks.py:28 geomanager/models/raster_file.py:254
+#: geomanager/models/tile_gl.py:16 geomanager/models/wms.py:330
+#: geomanager/models/wms.py:344 geomanager/models/wms.py:355
+msgid "name"
+msgstr "nombre"
+
+#: geomanager/blocks.py:29 geomanager/blocks.py:32
+#: geomanager/models/core.py:464
+msgid "label"
+msgstr "etiqueta"
+
+#: geomanager/blocks.py:30
+msgid "Selector Type"
+msgstr "Tipo de selector"
+
+#: geomanager/blocks.py:33 geomanager/blocks.py:47
+msgid "value"
+msgstr "valor"
+
+#: geomanager/blocks.py:34 geomanager/models/core.py:361
+#: geomanager/models/core.py:470
+msgid "default"
+msgstr "por defecto"
+
+#: geomanager/blocks.py:35
+msgid "Check to make default option"
+msgstr "Marque para hacer la opción predeterminada"
+
+#: geomanager/blocks.py:36
+msgid "Options"
+msgstr "Opciones"
+
+#: geomanager/blocks.py:41
+msgid "Basic"
+msgstr "Básico"
+
+#: geomanager/blocks.py:42
+msgid "Gradient"
+msgstr "Degradado"
+
+#: geomanager/blocks.py:43
+msgid "Choropleth"
+msgstr "coropleta"
+
+#: geomanager/blocks.py:45
+msgid "Legend Type"
+msgstr "Tipo de leyenda"
+
+#: geomanager/blocks.py:48
+msgid "Can be a number or text e.g '10' or '10-20' or 'Vegetation'"
+msgstr ""
+"Puede ser un número o texto, por ejemplo, '10' o '10-20' o 'Vegetación'"
+
+#: geomanager/blocks.py:49 geomanager/models/raster_file.py:420
+msgid "color"
+msgstr "color"
+
+#: geomanager/blocks.py:49
+msgid "Color value e.g rgb(73,73,73) or #494949"
+msgstr "Valor de color, por ejemplo, rgb(73,73,73) o #494949"
+
+#: geomanager/blocks.py:51
+msgid "Legend Items"
+msgstr "Artículos de leyenda"
+
+#: geomanager/blocks.py:56 geomanager/blocks.py:154
+msgid "Icon Image"
+msgstr "Imagen del icono"
+
+#: geomanager/blocks.py:57
+msgid "Icon Label"
+msgstr "Etiqueta de icono"
+
+#: geomanager/blocks.py:58
+msgid "Icon color"
+msgstr "Color del icono"
+
+#: geomanager/blocks.py:60
+msgid "Legend Icons"
+msgstr "Iconos de leyenda"
+
+#: geomanager/blocks.py:278
+msgid "circle radius"
+msgstr "radio del círculo"
+
+#: geomanager/blocks.py:290
+msgid "Line Chart"
+msgstr "Gráfico de linea"
+
+#: geomanager/blocks.py:291
+msgid "Bar Chart"
+msgstr "Gráfico de barras"
+
+#: geomanager/blocks.py:296
+msgid "Show data for point"
+msgstr "Mostrar datos para el punto"
+
+#: geomanager/blocks.py:298
+msgid "Show timeseries data for point"
+msgstr "Mostrar datos de series temporales para el punto"
+
+#: geomanager/blocks.py:299 geomanager/blocks.py:321
+#: geomanager/models/raster_file.py:257
+msgid "Data unit"
+msgstr "unidad de datos"
+
+#: geomanager/blocks.py:300 geomanager/blocks.py:328
+msgid "Chart Type"
+msgstr "Tipo de gráfico"
+
+#: geomanager/blocks.py:301
+msgid "Chart Line/Bar Color"
+msgstr "Color de línea/barra del gráfico"
+
+#: geomanager/blocks.py:306
+msgid "Mean of pixel values"
+msgstr "Media de los valores de píxeles"
+
+#: geomanager/blocks.py:307
+msgid "Sum of pixel values"
+msgstr "Suma de valores de píxeles"
+
+#: geomanager/blocks.py:308
+msgid "Minimum, Maximum pixel values"
+msgstr "Valores de píxeles mínimos y máximos"
+
+#: geomanager/blocks.py:309
+msgid "Minimum, Mean, Maximum pixel values"
+msgstr "Valores de píxeles mínimos, medios y máximos"
+
+#: geomanager/blocks.py:313
+msgid "By Mean"
+msgstr "Por el medio"
+
+#: geomanager/blocks.py:314
+msgid "By Sum"
+msgstr "Por suma"
+
+#: geomanager/blocks.py:317
+msgid "Show data for area"
+msgstr "Mostrar datos por área"
+
+#: geomanager/blocks.py:319
+msgid "Area value type"
+msgstr "Tipo de valor de área"
+
+#: geomanager/blocks.py:320
+msgid "The value type that should be displayed"
+msgstr "El tipo de valor que debe mostrarse"
+
+#: geomanager/blocks.py:323
+msgid "Show timeseries data for area"
+msgstr "Mostrar datos de series temporales para el área"
+
+#: geomanager/blocks.py:325
+msgid "Area timeseries data aggregation Method"
+msgstr "Método de agregación de datos de series temporales de área"
+
+#: geomanager/blocks.py:326
+msgid "How should the region data be aggregated ?"
+msgstr "¿Cómo se deben agregar los datos de la región?"
+
+#: geomanager/blocks.py:329
+msgid "circle stroke color"
+msgstr "color del trazo del círculo"
+
+#: geomanager/blocks.py:347
+msgid "Link text"
+msgstr "Texto del enlace"
+
+#: geomanager/blocks.py:348
+msgid "Link Url"
+msgstr "URL del enlace"
+
+#: geomanager/blocks.py:349
+msgid "Short description text"
+msgstr "Texto de descripción breve"
+
+#: geomanager/blocks.py:350
+msgid "Format link as action button"
+msgstr "Dar formato al enlace como botón de acción"
+
+#: geomanager/blocks.py:351
+msgid "Show arrow in button"
+msgstr "Mostrar flecha en el botón"
+
+#: geomanager/forms.py:11 geomanager/forms.py:38
+#: geomanager/models/raster_file.py:213
+msgid "layer"
+msgstr "capa"
+
+#: geomanager/forms.py:14 geomanager/forms.py:42
+#: geomanager/models/raster_file.py:215
+msgid "time"
+msgstr "tiempo"
+
+#: geomanager/forms.py:15 geomanager/models/raster_file.py:216
+msgid ""
+"Time for the raster file. This can be the time the data was acquired, or the "
+"date and time for which the data applies"
+msgstr ""
+"Es hora del archivo ráster. Esta puede ser la hora en que se adquirieron los "
+"datos o la fecha y hora a la que se aplican los datos."
+
+#: geomanager/forms.py:17
+msgid "NetCDF Dates"
+msgstr "Fechas NetCDF"
+
+#: geomanager/forms.py:18
+msgid "Timestamps in the dataset"
+msgstr "Marcas de tiempo en el conjunto de datos"
+
+#: geomanager/forms.py:43
+msgid ""
+"Time is required for every uploaded vector file. This can be the time the "
+"dataset was collected, or applies to."
+msgstr ""
+"Se requiere tiempo para cada archivo vectorial cargado. Este puede ser el "
+"momento en que se recopiló el conjunto de datos o el momento al que "
+"corresponde."
+
+#: geomanager/forms.py:45
+msgid "database table name"
+msgstr "nombre de la tabla de base de datos"
+
+#: geomanager/forms.py:46
+msgid "dataset description"
+msgstr "descripción del conjunto de datos"
+
+#: geomanager/forms.py:47
+msgid "optional dataset description"
+msgstr "descripción del conjunto de datos opcional"
+
+#: geomanager/forms.py:57
+msgid "GADM Country Geopackage"
+msgstr "Paquete geográfico de país GADM"
+
+#: geomanager/forms.py:58
+msgid ""
+"The uploaded file should be a geopackage, downloaded from https://gadm.org/"
+"download_country.html"
+msgstr ""
+"El archivo cargado debe ser un paquete geográfico, descargado de https://"
+"gadm.org/download_country.html"
+
+#: geomanager/forms.py:76
+msgid "Maximum value should be greater than minimum value"
+msgstr "El valor máximo debe ser mayor que el valor mínimo."
+
+#: geomanager/forms.py:80
+msgid "Minimum value should be less than maximum value"
+msgstr "El valor mínimo debe ser menor que el valor máximo."
+
+#: geomanager/forms.py:84
+msgid "Steps required when not using custom colors"
+msgstr "Pasos necesarios cuando no se utilizan colores personalizados"
+
+#: geomanager/forms.py:92
+msgid "Color for the rest of values must be specified"
+msgstr "Se debe especificar color para el resto de valores."
+
+#: geomanager/forms.py:110
+msgid ""
+"You selected to use custom colors but did not add any. Please add color "
+"values and save."
+msgstr ""
+"Seleccionó usar colores personalizados pero no agregó ninguno. Agregue "
+"valores de color y guárdelo."
+
+#: geomanager/forms.py:117
+msgid "Value must be greater than minimum defined value"
+msgstr "El valor debe ser mayor que el valor mínimo definido."
+
+#: geomanager/forms.py:120
+msgid "Value must be less than or equal to the maximum defined value"
+msgstr "El valor debe ser menor o igual al valor máximo definido"
+
+#: geomanager/forms.py:138
+msgid "Stations Shapefile ZIP"
+msgstr "Estaciones Shapefile ZIP"
+
+#: geomanager/forms.py:144
+msgid "Station name field"
+msgstr "Campo de nombre de estación"
+
+#: geomanager/helpers.py:18 geomanager/helpers.py:20
+#: geomanager/wagtail_hooks.py:103 geomanager/wagtail_hooks.py:107
+msgid "Create Dataset"
+msgstr "Crear conjunto de datos"
+
+#: geomanager/helpers.py:42
+msgid "Add Layer"
+msgstr "Agregar capa"
+
+#: geomanager/helpers.py:44
+msgid "Add %(object)s Layer"
+msgstr "Agregar %(object)s capa"
+
+#: geomanager/models/aoi.py:13 geomanager/models/profile.py:8
+msgid "User"
+msgstr "Usuario"
+
+#: geomanager/models/aoi.py:15
+msgid "Name"
+msgstr "Nombre"
+
+#: geomanager/models/aoi.py:17
+msgid "Geostore Id"
+msgstr "ID de almacén geográfico"
+
+#: geomanager/models/aoi.py:18
+msgid "Adm 0"
+msgstr "administrador 0"
+
+#: geomanager/models/aoi.py:19
+msgid "Adm 1"
+msgstr "administrador 1"
+
+#: geomanager/models/aoi.py:20
+msgid "Adm 2"
+msgstr "administrador 2"
+
+#: geomanager/models/aoi.py:21
+msgid "Adm 3"
+msgstr "administrador 3"
+
+#: geomanager/models/aoi.py:22
+msgid "Public"
+msgstr "Público"
+
+#: geomanager/models/aoi.py:23
+msgid "Type"
+msgstr "Tipo"
+
+#: geomanager/models/aoi.py:24
+msgid "Products"
+msgstr "Productos"
+
+#: geomanager/models/aoi.py:25
+msgid "Tags"
+msgstr "Etiquetas"
+
+#: geomanager/models/aoi.py:26
+msgid "Webhook Url"
+msgstr "URL del webhook"
+
+#: geomanager/models/aoi.py:29
+msgid "Area of Interest"
+msgstr "Area de interes"
+
+#: geomanager/models/aoi.py:30
+msgid "Areas of Interest"
+msgstr "Áreas de interés"
+
+#: geomanager/models/core.py:36 geomanager/models/core.py:70
+#: geomanager/models/core.py:104 geomanager/models/core.py:314
+#: geomanager/models/core.py:360
+msgid "title"
+msgstr "título"
+
+#: geomanager/models/core.py:36
+msgid "Title of the category"
+msgstr "Título de la categoría"
+
+#: geomanager/models/core.py:37
+msgid "icon"
+msgstr "icono"
+
+#: geomanager/models/core.py:38 geomanager/models/core.py:71
+msgid "active"
+msgstr "activo"
+
+#: geomanager/models/core.py:38
+msgid "Is the category active ?"
+msgstr "¿Está activa la categoría?"
+
+#: geomanager/models/core.py:39 geomanager/models/core.py:72
+#: geomanager/models/core.py:119
+msgid "public"
+msgstr "público"
+
+#: geomanager/models/core.py:39
+msgid "Is the category public ?"
+msgstr "¿La categoría es pública?"
+
+#: geomanager/models/core.py:42 geomanager/wagtail_hooks.py:180
+msgid "Category"
+msgstr "Categoría"
+
+#: geomanager/models/core.py:43
+msgid "Categories"
+msgstr "Categorías"
+
+#: geomanager/models/core.py:54
+msgid "Sub Categories"
+msgstr "Subcategorías"
+
+#: geomanager/models/core.py:54
+msgid "Sub Category"
+msgstr "Subcategoría"
+
+#: geomanager/models/core.py:75 geomanager/models/core.py:107
+msgid "Subcategory"
+msgstr "Subcategoría"
+
+#: geomanager/models/core.py:76
+msgid "Subcategories"
+msgstr "Subcategorías"
+
+#: geomanager/models/core.py:90
+msgid "Raster File - NetCDF/GeoTiff"
+msgstr "Archivo ráster: NetCDF/GeoTiff"
+
+#: geomanager/models/core.py:91
+msgid "Vector File - Shapefile, Geojson"
+msgstr "Archivo vectorial: Shapefile, Geojson"
+
+#: geomanager/models/core.py:92
+msgid "Web Map Service - WMS Layer"
+msgstr "Servicio de mapas web: capa WMS"
+
+#: geomanager/models/core.py:93
+msgid "XYZ Raster Tile Layer"
+msgstr "Capa de mosaico ráster XYZ"
+
+#: geomanager/models/core.py:94
+msgid "XYZ Vector Tile Layer"
+msgstr "Capa de mosaico vectorial XYZ"
+
+#: geomanager/models/core.py:98
+msgid "Latest From Source"
+msgstr "Lo último de la fuente"
+
+#: geomanager/models/core.py:99
+msgid "Previous to now"
+msgstr "Antes de ahora"
+
+#: geomanager/models/core.py:100
+msgid "Next to Now"
+msgstr "Al lado de ahora"
+
+#: geomanager/models/core.py:105
+msgid "The Dataset title as will appear to the public"
+msgstr "El título del conjunto de datos tal como aparecerá al público."
+
+#: geomanager/models/core.py:106
+msgid "category"
+msgstr "categoría"
+
+#: geomanager/models/core.py:109
+msgid "summary"
+msgstr "resumen"
+
+#: geomanager/models/core.py:110
+msgid "Short summary of less than 100 characters"
+msgstr "Breve resumen de menos de 100 caracteres."
+
+#: geomanager/models/core.py:111
+msgid "metadata"
+msgstr "metadata"
+
+#: geomanager/models/core.py:114
+msgid "Layer type"
+msgstr "Tipo de capa"
+
+#: geomanager/models/core.py:115
+msgid "published"
+msgstr "publicado"
+
+#: geomanager/models/core.py:116
+msgid ""
+"Should the dataset be available for visualization ? If unchecked, the "
+"dataset is assumed to be in draft mode and thus not ready"
+msgstr ""
+"¿El conjunto de datos debería estar disponible para su visualización? Si no "
+"está marcado, se supone que el conjunto de datos está en modo borrador y, "
+"por lo tanto, no está listo."
+
+#: geomanager/models/core.py:120
+msgid ""
+"Should the dataset be visible to everyone ? If unchecked, only authorized "
+"users can view"
+msgstr ""
+"¿El conjunto de datos debería ser visible para todos? Si no está marcado, "
+"solo los usuarios autorizados pueden ver"
+
+#: geomanager/models/core.py:122
+msgid "Initially visible on Map by default"
+msgstr "Inicialmente visible en el mapa de forma predeterminada"
+
+#: geomanager/models/core.py:123
+msgid "Make the dataset visible on the map by default"
+msgstr ""
+"Hacer que el conjunto de datos sea visible en el mapa de forma predeterminada"
+
+#: geomanager/models/core.py:125
+msgid "Multi-temporal"
+msgstr "multitemporal"
+
+#: geomanager/models/core.py:126
+msgid "The dataset is multi-temporal"
+msgstr "El conjunto de datos es multitemporal."
+
+#: geomanager/models/core.py:128
+msgid "Multi-layer"
+msgstr "multicapa"
+
+#: geomanager/models/core.py:129
+msgid "The dataset has more than one layer, to be displayed together"
+msgstr "El conjunto de datos tiene más de una capa, que se mostrarán juntas"
+
+#: geomanager/models/core.py:131
+msgid "Near realtime"
+msgstr "Casi en tiempo real"
+
+#: geomanager/models/core.py:133
+msgid "Is the layer near realtime?, for example updates every 10 minutes"
+msgstr ""
+"¿La capa está casi en tiempo real? Por ejemplo, se actualiza cada 10 minutos."
+
+#: geomanager/models/core.py:137
+msgid "current time method"
+msgstr "método de tiempo actual"
+
+#: geomanager/models/core.py:139
+msgid "How to pick default time and for updates, for Multi-Temporal data"
+msgstr ""
+"Cómo elegir la hora predeterminada y las actualizaciones para datos "
+"multitemporales"
+
+#: geomanager/models/core.py:140
+msgid "Auto Update interval in minutes"
+msgstr "Intervalo de actualización automática en minutos"
+
+#: geomanager/models/core.py:142
+msgid ""
+"After how many minutes should the layer auto update on the map to show "
+"current data, if multi-temporal. Leave empty to disable auto updating"
+msgstr ""
+"Después de cuántos minutos debe actualizarse automáticamente la capa en el "
+"mapa para mostrar los datos actuales, si es multitemporal. Déjelo vacío para "
+"deshabilitar la actualización automática"
+
+#: geomanager/models/core.py:146
+msgid "Enable Clipping by shape"
+msgstr "Habilitar recorte por forma"
+
+#: geomanager/models/core.py:147
+msgid ""
+"Check to enable clipping by boundary or drawn shapes, for raster and vector "
+"datasets. Not implemented for WMS types"
+msgstr ""
+"Marque para habilitar el recorte por límites o formas dibujadas, para "
+"conjuntos de datos ráster y vectoriales. No implementado para tipos WMS"
+
+#: geomanager/models/core.py:151 geomanager/wagtail_hooks.py:301
+#: geomanager/wagtail_hooks.py:459 geomanager/wagtail_hooks.py:510
+#: geomanager/wagtail_hooks.py:560 geomanager/wagtail_hooks.py:622
+msgid "Dataset"
+msgstr "Conjunto de datos"
+
+#: geomanager/models/core.py:152
+#: geomanager/templates/geomanager/vector_file_layer_preview.html:55
+msgid "Datasets"
+msgstr "Conjuntos de datos"
+
+#: geomanager/models/core.py:314
+msgid "Title of the dataset"
+msgstr "Título del conjunto de datos"
+
+#: geomanager/models/core.py:315
+msgid "subtitle"
+msgstr "subtitular"
+
+#: geomanager/models/core.py:316
+msgid "Subtitle if any"
+msgstr "Subtítulo si lo hubiera"
+
+#: geomanager/models/core.py:317
+msgid "Dataset summary"
+msgstr "Resumen del conjunto de datos"
+
+#: geomanager/models/core.py:318
+msgid "Short summary of what the dataset shows. Keep it short."
+msgstr "Breve resumen de lo que muestra el conjunto de datos. Que sea breve."
+
+#: geomanager/models/core.py:319
+msgid "resolution"
+msgstr "resolución"
+
+#: geomanager/models/core.py:320
+msgid "The Spatial resolution of the dataset, for example 10km by 10 km"
+msgstr ""
+"La resolución espacial del conjunto de datos, por ejemplo 10 km por 10 km."
+
+#: geomanager/models/core.py:321
+msgid "Geographic coverage"
+msgstr "Cobertura geográfica"
+
+#: geomanager/models/core.py:322
+msgid ""
+"The geographic coverage of the dataset. For example East Africa or specific "
+"country name like Ethiopia, or Africa"
+msgstr ""
+"La cobertura geográfica del conjunto de datos. Por ejemplo, África Oriental "
+"o un nombre de país específico como Etiopía o África."
+
+#: geomanager/models/core.py:324
+msgid "source"
+msgstr "fuente"
+
+#: geomanager/models/core.py:325
+msgid "The source of the data where was it generated or produced"
+msgstr "La fuente de los datos donde se generaron o produjeron."
+
+#: geomanager/models/core.py:326
+msgid "license"
+msgstr "licencia"
+
+#: geomanager/models/core.py:327
+msgid "Any licensing information for the dataset"
+msgstr "Cualquier información de licencia para el conjunto de datos."
+
+#: geomanager/models/core.py:329
+msgid "Frequency of updates"
+msgstr "Frecuencia de actualizaciones"
+
+#: geomanager/models/core.py:330
+msgid ""
+"How frequent is the dataset updated. For example daily, weekly, monthly etc"
+msgstr ""
+"¿Con qué frecuencia se actualiza el conjunto de datos? Por ejemplo diario, "
+"semanal, mensual, etc."
+
+#: geomanager/models/core.py:332
+msgid "detail"
+msgstr "detalle"
+
+#: geomanager/models/core.py:333
+msgid ""
+"Detail description of the dataset, including the methodology, references or "
+"any other relevant information"
+msgstr ""
+"Descripción detallada del conjunto de datos, incluida la metodología, "
+"referencias o cualquier otra información relevante."
+
+#: geomanager/models/core.py:335
+msgid "cautions"
+msgstr "precauciones"
+
+#: geomanager/models/core.py:336
+msgid ""
+"What things should users be aware as they use and interpret this dataset"
+msgstr ""
+"¿Qué cosas deben tener en cuenta los usuarios al utilizar e interpretar este "
+"conjunto de datos?"
+
+#: geomanager/models/core.py:337
+msgid "citation"
+msgstr "citación"
+
+#: geomanager/models/core.py:338
+msgid ""
+"Scientific citation for this dataset if any. For example the citation for a "
+"scientific paper for the dataset"
+msgstr ""
+"Cita científica para este conjunto de datos, si corresponde. Por ejemplo, la "
+"cita de un artículo científico para el conjunto de datos."
+
+#: geomanager/models/core.py:340
+msgid "Data download link"
+msgstr "enlace de descarga de datos"
+
+#: geomanager/models/core.py:341
+msgid "External link to where the source data can be found and downloaded"
+msgstr ""
+"Enlace externo donde se pueden encontrar y descargar los datos de origen"
+
+#: geomanager/models/core.py:342
+msgid "Learn more link"
+msgstr "Más información enlace"
+
+#: geomanager/models/core.py:343
+msgid "External link to where more detail about the dataset can be found"
+msgstr ""
+"Enlace externo donde se pueden encontrar más detalles sobre el conjunto de "
+"datos."
+
+#: geomanager/models/core.py:346 geomanager/models/core.py:347
+#: geomanager/models/core.py:405
+msgid "Metadata"
+msgstr "Metadata"
+
+#: geomanager/models/core.py:360
+msgid "Layer title"
+msgstr "Título de capa"
+
+#: geomanager/models/core.py:361
+msgid "Is Default Layer"
+msgstr "Es la capa predeterminada"
+
+#: geomanager/models/core.py:387
+msgid "Maximum upload size in MegaBytes"
+msgstr "Tamaño máximo de carga en MegaBytes"
+
+#: geomanager/models/core.py:389
+msgid ""
+"Maximum raster file size that can be uploaded in MegaBytes. Default is 10Mbs."
+msgstr ""
+"Tamaño máximo de archivo ráster que se puede cargar en MegaBytes. El valor "
+"predeterminado es 10 MB."
+
+#: geomanager/models/core.py:391
+msgid "Crop raster to country"
+msgstr "Recortar ráster al país"
+
+#: geomanager/models/core.py:392
+msgid "Crop the uploaded raster file to the country boundaries"
+msgstr "Recorte el archivo ráster cargado hasta los límites del país"
+
+#: geomanager/models/core.py:394
+msgid "cap base url"
+msgstr "URL base de la tapa"
+
+#: geomanager/models/core.py:395
+msgid "cap layer sub category"
+msgstr "subcategoría de capa de tapa"
+
+#: geomanager/models/core.py:398
+msgid "Auto Refresh interval in minutes"
+msgstr "Intervalo de actualización automática en minutos"
+
+#: geomanager/models/core.py:400
+msgid ""
+"Refresh cap alerts on the map after this minutes. Leave blank to disable "
+"auto refreshing"
+msgstr ""
+"Actualizar las alertas de límite en el mapa después de estos minutos. Déjelo "
+"en blanco para desactivar la actualización automática."
+
+#: geomanager/models/core.py:402
+msgid "CAP layer shown by default"
+msgstr "Capa CAP mostrada por defecto"
+
+#: geomanager/models/core.py:403
+msgid "CAP Layer shown on map by default"
+msgstr "Capa CAP mostrada en el mapa de forma predeterminada"
+
+#: geomanager/models/core.py:407
+msgid "GADM Boundary Data Version"
+msgstr "Versión de datos de límites GADM"
+
+#: geomanager/models/core.py:409
+msgid ""
+"It is encouraged to use the latest version. See available versions here: "
+"https://gadm.org/old_versions.html"
+msgstr ""
+"Se recomienda utilizar la última versión. Vea las versiones disponibles "
+"aquí: https://gadm.org/old_versions.html"
+
+#: geomanager/models/core.py:413 geomanager/models/core.py:414
+msgid "GL Styles Font Url"
+msgstr "URL de fuente de estilos GL"
+
+#: geomanager/models/core.py:416
+msgid "Open Map Tiles Source"
+msgstr "Abrir fuente de mosaicos de mapa"
+
+#: geomanager/models/core.py:423
+msgid "Logo"
+msgstr "Logo"
+
+#: geomanager/models/core.py:431
+msgid "Logo page"
+msgstr "Página del logotipo"
+
+#: geomanager/models/core.py:432
+msgid "Internal page to navigate to on clicking the logo"
+msgstr "Página interna a la que navegar al hacer clic en el logo"
+
+#: geomanager/models/core.py:435
+msgid "Logo external link"
+msgstr "Enlace externo del logotipo"
+
+#: geomanager/models/core.py:436
+msgid "Used if internal logo page not provided"
+msgstr "Se utiliza si no se proporciona la página del logotipo interno"
+
+#: geomanager/models/core.py:443
+msgid "Terms of Service Page"
+msgstr "Página de términos de servicio"
+
+#: geomanager/models/core.py:444
+msgid "MapViewer Terms of Service page"
+msgstr "Página de Términos de servicio de MapViewer"
+
+#: geomanager/models/core.py:452
+msgid "Privacy Policy Page"
+msgstr "Página de política de privacidad"
+
+#: geomanager/models/core.py:453
+msgid "MapViewer Privacy Policy Page"
+msgstr "Página de política de privacidad de MapViewer"
+
+#: geomanager/models/core.py:465
+msgid "background color"
+msgstr "color de fondo"
+
+#: geomanager/models/core.py:466
+msgid "image"
+msgstr "imagen"
+
+#: geomanager/models/core.py:467
+msgid "basemap group"
+msgstr "grupo de mapas base"
+
+#: geomanager/models/core.py:468
+msgid "labels group"
+msgstr "grupo de etiquetas"
+
+#: geomanager/models/core.py:469
+msgid "url"
+msgstr "URL"
+
+#: geomanager/models/core.py:470
+msgid "Is default style ?"
+msgstr "¿Es el estilo predeterminado?"
+
+#: geomanager/models/core.py:475
+msgid "Geomanager Settings"
+msgstr "Configuración del Geoadministrador"
+
+#: geomanager/models/core.py:481
+msgid "Upload Settings"
+msgstr "Cargar configuración"
+
+#: geomanager/models/core.py:486
+msgid "Basemap TileServer Settings"
+msgstr "Configuración del servidor TileServer del mapa base"
+
+#: geomanager/models/core.py:493
+msgid "CAP Layer Settings"
+msgstr "Configuración de capa CAP"
+
+#: geomanager/models/core.py:501
+msgid "Navigation Settings"
+msgstr "Configuración de navegación"
+
+#: geomanager/models/profile.py:10
+msgid "Gender"
+msgstr "Género"
+
+#: geomanager/models/profile.py:11
+msgid "Country"
+msgstr "País"
+
+#: geomanager/models/profile.py:12
+msgid "City"
+msgstr "Ciudad"
+
+#: geomanager/models/profile.py:13
+msgid "Sector"
+msgstr "Sector"
+
+#: geomanager/models/profile.py:14
+msgid "Organization"
+msgstr "Organización"
+
+#: geomanager/models/profile.py:15
+msgid "Organization Type"
+msgstr "Tipo de organización"
+
+#: geomanager/models/profile.py:16
+msgid "Scale of Operations"
+msgstr "Escala de operaciones"
+
+#: geomanager/models/profile.py:17
+msgid "Position"
+msgstr "Posición"
+
+#: geomanager/models/profile.py:18
+msgid "How do you Use"
+msgstr "Cómo usas"
+
+#: geomanager/models/profile.py:19
+msgid "Interests"
+msgstr "Intereses"
+
+#: geomanager/models/profile.py:22
+msgid "GeoManager User Profile"
+msgstr "Perfil de usuario de GeoManager"
+
+#: geomanager/models/profile.py:23
+msgid "GeoManager User Profiles"
+msgstr "Perfiles de usuario de GeoManager"
+
+#: geomanager/models/raster_file.py:28 geomanager/models/raster_file.py:234
+#: geomanager/models/raster_tile.py:11 geomanager/models/vector_file.py:38
+#: geomanager/models/vector_tile.py:46 geomanager/models/wms.py:40
+msgid "dataset"
+msgstr "conjunto de datos"
+
+#: geomanager/models/raster_file.py:29
+msgid "style"
+msgstr "estilo"
+
+#: geomanager/models/raster_file.py:32
+msgid "Point Analysis"
+msgstr "Análisis de puntos"
+
+#: geomanager/models/raster_file.py:33
+msgid "Area Analysis"
+msgstr "Análisis de área"
+
+#: geomanager/models/raster_file.py:35
+msgid "Analysis"
+msgstr "Análisis"
+
+#: geomanager/models/raster_file.py:38
+msgid "Raster File Layer"
+msgstr "Capa de archivo ráster"
+
+#: geomanager/models/raster_file.py:39
+msgid "Raster File Layers"
+msgstr "Capas de archivos ráster"
+
+#: geomanager/models/raster_file.py:57
+msgid "Create Style"
+msgstr "Crear estilo"
+
+#: geomanager/models/raster_file.py:61
+msgid "Edit Style"
+msgstr "Editar estilo"
+
+#: geomanager/models/raster_file.py:201
+msgid ""
+"Can not add layer because the dataset is not marked as Multi Layer. To add "
+"multiple layers to a dataset, please mark the dataset as Multi Layer and try "
+"again"
+msgstr ""
+"No se puede agregar una capa porque el conjunto de datos no está marcado "
+"como multicapa. Para agregar varias capas a un conjunto de datos, marque el "
+"conjunto de datos como Multicapa e inténtelo nuevamente"
+
+#: geomanager/models/raster_file.py:214 geomanager/models/raster_file.py:235
+#: geomanager/models/tile_gl.py:18
+msgid "file"
+msgstr "archivo"
+
+#: geomanager/models/raster_file.py:220
+msgid "Layer Raster File"
+msgstr "Archivo ráster de capa"
+
+#: geomanager/models/raster_file.py:221
+msgid "Layer Raster Files"
+msgstr "Archivos ráster de capa"
+
+#: geomanager/models/raster_file.py:239
+msgid "Raster Upload"
+msgstr "Carga de ráster"
+
+#: geomanager/models/raster_file.py:240
+msgid "Raster Uploads"
+msgstr "Cargas de ráster"
+
+#: geomanager/models/raster_file.py:255
+msgid "Style name for identification"
+msgstr "Nombre de estilo para identificación"
+
+#: geomanager/models/raster_file.py:256
+msgid "data unit"
+msgstr "unidad de datos"
+
+#: geomanager/models/raster_file.py:258
+msgid "minimum value"
+msgstr "valor mínimo"
+
+#: geomanager/models/raster_file.py:259
+msgid "maximum value"
+msgstr "valor máximo"
+
+#: geomanager/models/raster_file.py:261
+msgid "steps"
+msgstr "pasos"
+
+#: geomanager/models/raster_file.py:261
+msgid "Number of steps"
+msgstr "Numero de pasos"
+
+#: geomanager/models/raster_file.py:262
+msgid "Use Custom Colors"
+msgstr "Usar colores personalizados"
+
+#: geomanager/models/raster_file.py:263
+msgid "Color Palette"
+msgstr "Paleta de color"
+
+#: geomanager/models/raster_file.py:264
+msgid "interpolate"
+msgstr "interpolar"
+
+#: geomanager/models/raster_file.py:266
+msgid "Color for the rest of values"
+msgstr "Color para el resto de valores."
+
+#: geomanager/models/raster_file.py:268
+msgid ""
+"Color for values greater than the values defined above, as well as values "
+"greater than the maximum defined value"
+msgstr ""
+"Color para valores mayores que los valores definidos anteriormente, así como "
+"valores mayores que el valor máximo definido"
+
+#: geomanager/models/raster_file.py:272
+msgid "Raster Style"
+msgstr "Estilo ráster"
+
+#: geomanager/models/raster_file.py:273
+msgid "Raster Styles"
+msgstr "Estilos ráster"
+
+#: geomanager/models/raster_file.py:285
+msgid "Data values"
+msgstr "Valores de datos"
+
+#: geomanager/models/raster_file.py:291 geomanager/models/raster_file.py:425
+msgid "Color Values"
+msgstr "Valores de color"
+
+#: geomanager/models/raster_file.py:291 geomanager/models/raster_file.py:424
+msgid "Color Value"
+msgstr "Valor de color"
+
+#: geomanager/models/raster_file.py:293
+msgid "Custom Color Values"
+msgstr "Valores de color personalizados"
+
+#: geomanager/models/raster_file.py:418
+msgid "Threshold value"
+msgstr "Valor umbral"
+
+#: geomanager/models/raster_file.py:419
+msgid ""
+"Values less than or equal to the input value, will be assigned the chosen "
+"color"
+msgstr ""
+"A los valores menores o iguales al valor ingresado, se les asignará el color "
+"elegido"
+
+#: geomanager/models/raster_file.py:421
+msgid "Label for Legend"
+msgstr "Etiqueta para leyenda"
+
+#: geomanager/models/raster_tile.py:14
+msgid "Raster Tile Layer"
+msgstr "Capa de mosaico ráster"
+
+#: geomanager/models/raster_tile.py:15
+msgid "Raster Tile Layers"
+msgstr "Capas de mosaicos rasterizados"
+
+#: geomanager/models/tile_base.py:23
+msgid "Base Tile url"
+msgstr "URL del mosaico base"
+
+#: geomanager/models/tile_base.py:26 geomanager/models/wms.py:59
+msgid "Query Parameter"
+msgstr "Parámetro de consulta"
+
+#: geomanager/models/tile_base.py:27
+msgid "Static Query Params"
+msgstr "Parámetros de consulta estática"
+
+#: geomanager/models/tile_base.py:28
+msgid "Static query params to be added to the url"
+msgstr "Parámetros de consulta estática que se agregarán a la URL"
+
+#: geomanager/models/tile_base.py:31
+msgid "Selectable Query Parameter"
+msgstr "Parámetro de consulta seleccionable"
+
+#: geomanager/models/tile_base.py:32
+msgid "Query Params With selectable Options"
+msgstr "Parámetros de consulta con opciones seleccionables"
+
+#: geomanager/models/tile_base.py:33 geomanager/models/wms.py:62
+msgid ""
+"This should provide a list of options that users can choose to change the "
+"query parameter of the url"
+msgstr ""
+"Esto debería proporcionar una lista de opciones que los usuarios pueden "
+"elegir para cambiar el parámetro de consulta de la URL."
+
+#: geomanager/models/tile_base.py:37 geomanager/models/wms.py:65
+msgid "Arrange Param Selectors side by side"
+msgstr "Organizar los selectores de parámetros uno al lado del otro"
+
+#: geomanager/models/tile_base.py:40 geomanager/models/wms.py:67
+msgid "Custom Legend"
+msgstr "Leyenda personalizada"
+
+#: geomanager/models/tile_base.py:41 geomanager/models/wms.py:68
+msgid "Custom Image"
+msgstr "Imagen personalizada"
+
+#: geomanager/models/tile_base.py:42 geomanager/models/vector_file.py:50
+msgid "Legend Icon"
+msgstr "Icono de leyenda"
+
+#: geomanager/models/tile_base.py:43 geomanager/models/vector_file.py:48
+#: geomanager/models/vector_file.py:51 geomanager/models/wms.py:69
+msgid "Legend"
+msgstr "Leyenda"
+
+#: geomanager/models/tile_base.py:46 geomanager/models/wms.py:80
+msgid "Info link"
+msgstr "Enlace de información"
+
+#: geomanager/models/tile_base.py:49 geomanager/models/wms.py:83
+msgid "More Info"
+msgstr "Más información"
+
+#: geomanager/models/tile_base.py:51
+msgid "Get time from tile json url"
+msgstr "Obtener tiempo desde la URL json del mosaico"
+
+#: geomanager/models/tile_base.py:52
+msgid "Tile JSON url"
+msgstr "URL JSON de mosaico"
+
+#: geomanager/models/tile_base.py:54
+msgid "Timestamps response object key"
+msgstr "Clave de objeto de respuesta de marcas de tiempo"
+
+#: geomanager/models/tile_base.py:55
+msgid "Key for timestamps values in response object"
+msgstr "Clave para valores de marcas de tiempo en el objeto de respuesta"
+
+#: geomanager/models/tile_base.py:66
+msgid "TileJson Settings"
+msgstr "Configuración de TileJson"
+
+#: geomanager/models/tile_gl.py:16
+msgid "Style Name"
+msgstr "Nombre de estilo"
+
+#: geomanager/models/tile_gl.py:19
+msgid "Use default style"
+msgstr "Usar estilo predeterminado"
+
+#: geomanager/models/tile_gl.py:20
+msgid "OpenMapTiles style"
+msgstr "Estilo OpenMapTiles"
+
+#: geomanager/models/tile_gl.py:34
+msgid "Basemap Source"
+msgstr "Fuente del mapa base"
+
+#: geomanager/models/tile_gl.py:35 geomanager/wagtail_hooks.py:682
+msgid "Basemap Sources"
+msgstr "Fuentes de mapas base"
+
+#: geomanager/models/vector_file.py:40 geomanager/models/vector_tile.py:49
+msgid "Polygon Layer"
+msgstr "Capa de polígono"
+
+#: geomanager/models/vector_file.py:41 geomanager/models/vector_tile.py:50
+msgid "Line Layer"
+msgstr "Capa de línea"
+
+#: geomanager/models/vector_file.py:42 geomanager/models/vector_tile.py:51
+msgid "Point Layer"
+msgstr "Capa de puntos"
+
+#: geomanager/models/vector_file.py:43 geomanager/models/vector_tile.py:52
+msgid "Icon Layer"
+msgstr "Capa de icono"
+
+#: geomanager/models/vector_file.py:44 geomanager/models/vector_tile.py:53
+msgid "Text Label Layer"
+msgstr "Capa de etiqueta de texto"
+
+#: geomanager/models/vector_file.py:45 geomanager/models/vector_tile.py:54
+msgid "Render Layers"
+msgstr "Renderizar capas"
+
+#: geomanager/models/vector_file.py:49
+msgid "Legend Image"
+msgstr "Imagen de leyenda"
+
+#: geomanager/models/vector_file.py:54
+msgid "Vector File Layer"
+msgstr "Capa de archivo vectorial"
+
+#: geomanager/models/vector_file.py:55
+msgid "Vector File Layers"
+msgstr "Capas de archivos vectoriales"
+
+#: geomanager/models/vector_file.py:222
+msgid "Vector Layer Icon"
+msgstr "Icono de capa vectorial"
+
+#: geomanager/models/vector_file.py:223
+msgid "Vector Layer Icons"
+msgstr "Iconos de capa vectorial"
+
+#: geomanager/models/vector_file.py:235
+msgid "Vector Upload"
+msgstr "Subir vectores"
+
+#: geomanager/models/vector_file.py:236
+msgid "Vector Uploads"
+msgstr "Cargas de vectores"
+
+#: geomanager/models/vector_file.py:253
+msgid "time for the dataset"
+msgstr "tiempo para el conjunto de datos"
+
+#: geomanager/models/vector_tile.py:25 geomanager/models/vector_tile.py:29
+#: geomanager/models/vector_tile.py:33 geomanager/models/vector_tile.py:37
+#: geomanager/models/vector_tile.py:41
+msgid "source layer"
+msgstr "capa fuente"
+
+#: geomanager/models/vector_tile.py:57
+msgid "Vector Tile Layer"
+msgstr "Capa de mosaico vectorial"
+
+#: geomanager/models/vector_tile.py:58
+msgid "Vector Tile Layers"
+msgstr "Capas de mosaicos vectoriales"
+
+#: geomanager/models/wms.py:33
+msgid "Hourly - (E.g 2023-01-01 00:00)"
+msgstr "Cada hora - (por ejemplo, 2023-01-01 00:00)"
+
+#: geomanager/models/wms.py:34
+msgid "Daily - (E.g 2023-01-01)"
+msgstr "Diario - (por ejemplo, 2023-01-01)"
+
+#: geomanager/models/wms.py:35
+msgid "Monthly - (E.g 2023-01)"
+msgstr "Mensual - (por ejemplo, 2023-01)"
+
+#: geomanager/models/wms.py:36
+msgid "Monthly - (E.g January 2023)"
+msgstr "Mensual - (por ejemplo, enero de 2023)"
+
+#: geomanager/models/wms.py:37
+msgid "Pentadal - (E.g Jan 2023 - P1 1-5th)"
+msgstr "Pentadal - (por ejemplo, enero de 2023 - P1 1-5)"
+
+#: geomanager/models/wms.py:41
+msgid "Request time from capabilities"
+msgstr "Solicitar tiempo de capacidades"
+
+#: geomanager/models/wms.py:42
+msgid "Get list of available times for this layer from getCapabilities"
+msgstr ""
+"Obtenga una lista de tiempos disponibles para esta capa desde getCapabilities"
+
+#: geomanager/models/wms.py:44
+msgid "base url for WMS"
+msgstr "URL base para WMS"
+
+#: geomanager/models/wms.py:45
+msgid "WMS Version"
+msgstr "Versión WMS"
+
+#: geomanager/models/wms.py:46
+msgid "Pixel Width"
+msgstr "Ancho de píxel"
+
+#: geomanager/models/wms.py:47
+msgid "The size of the map image in pixels along the i axis"
+msgstr "El tamaño de la imagen del mapa en píxeles a lo largo del eje i."
+
+#: geomanager/models/wms.py:48
+msgid "Pixel Height"
+msgstr "Altura de píxel"
+
+#: geomanager/models/wms.py:49
+msgid "The size of the map image in pixels along the j axis"
+msgstr "El tamaño de la imagen del mapa en píxeles a lo largo del eje j."
+
+#: geomanager/models/wms.py:50
+msgid "Transparency"
+msgstr "Transparencia"
+
+#: geomanager/models/wms.py:51
+msgid "Ability of underlying maps to be visible or not"
+msgstr "Capacidad de los mapas subyacentes para ser visibles o no."
+
+#: geomanager/models/wms.py:52
+msgid "Spatial Reference System"
+msgstr "Sistema de referencia espacial"
+
+#: geomanager/models/wms.py:53
+msgid "WMS Spatial Reference e.g EPSG:3857"
+msgstr "Referencia espacial WMS, por ejemplo, EPSG:3857"
+
+#: geomanager/models/wms.py:55
+msgid "Output Format"
+msgstr "Formato de salida"
+
+#: geomanager/models/wms.py:57
+msgid ""
+"Allowed map formats are either “picture” formats or “graphic element” "
+"formats."
+msgstr ""
+"Los formatos de mapas permitidos son formatos de “imagen” o formatos de "
+"“elementos gráficos”."
+
+#: geomanager/models/wms.py:60
+msgid "WMS Query Params With selectable Options"
+msgstr "Parámetros de consulta WMS con opciones seleccionables"
+
+#: geomanager/models/wms.py:71
+msgid "Get Capabilities URL"
+msgstr "Obtener URL de capacidades"
+
+#: geomanager/models/wms.py:72
+msgid ""
+"Alternative URL for the GetCapabilities request. Used when 'Request time "
+"from capabilities' option is checked. Leave blank to use base url."
+msgstr ""
+"URL alternativa para la solicitud GetCapabilities. Se utiliza cuando la "
+"opción 'Solicitar tiempo de capacidades' está marcada. Déjelo en blanco para "
+"usar la URL base."
+
+#: geomanager/models/wms.py:76
+msgid "Get Capabilities Layer Name"
+msgstr "Obtener nombre de capa de capacidades"
+
+#: geomanager/models/wms.py:77
+msgid "Alternative layer name for the GetCapabilities request"
+msgstr "Nombre de capa alternativo para la solicitud GetCapabilities"
+
+#: geomanager/models/wms.py:86
+msgid "WMS Layer"
+msgstr "Capa WMS"
+
+#: geomanager/models/wms.py:87
+msgid "WMS Layers"
+msgstr "Capas WMS"
+
+#: geomanager/models/wms.py:104 geomanager/models/wms.py:328
+#: geomanager/models/wms.py:337
+msgid "WMS Request Layers"
+msgstr "Capas de solicitud WMS"
+
+#: geomanager/models/wms.py:105 geomanager/models/wms.py:336
+msgid "WMS Request Layer"
+msgstr "Capa de solicitud WMS"
+
+#: geomanager/models/wms.py:106 geomanager/models/wms.py:342
+#: geomanager/models/wms.py:349
+msgid "WMS Request Styles"
+msgstr "Estilos de solicitud WMS"
+
+#: geomanager/models/wms.py:107 geomanager/models/wms.py:348
+msgid "WMS Request Style"
+msgstr "Estilo de solicitud WMS"
+
+#: geomanager/models/wms.py:108
+msgid "WMS Request Additional Parameters"
+msgstr "WMS solicita parámetros adicionales"
+
+#: geomanager/models/wms.py:109
+msgid "WMS Request Param"
+msgstr "Parámetro de solicitud WMS"
+
+#: geomanager/models/wms.py:111
+msgid "WMS GetMap Configuration"
+msgstr "Configuración de WMS GetMap"
+
+#: geomanager/models/wms.py:116
+msgid "WMS GetCapabilities Configuration"
+msgstr "Configuración de WMS GetCapabilities"
+
+#: geomanager/models/wms.py:331
+msgid ""
+"WMS Layer is requested by using this name in the LAYERS parameter of a "
+"GetMap request."
+msgstr ""
+"La capa WMS se solicita utilizando este nombre en el parámetro LAYERS de una "
+"solicitud GetMap."
+
+#: geomanager/models/wms.py:345
+msgid "The style's Name is used in the Map request STYLES parameter"
+msgstr ""
+"El nombre del estilo se utiliza en el parámetro ESTILOS de solicitud de mapa."
+
+#: geomanager/models/wms.py:354
+msgid "WMS Requests Additional Parameters"
+msgstr "WMS solicita parámetros adicionales"
+
+#: geomanager/models/wms.py:356
+msgid "Name of the parameter"
+msgstr "Nombre del parámetro"
+
+#: geomanager/models/wms.py:357
+msgid "Value of the parameter"
+msgstr "Valor del parámetro"
+
+#: geomanager/models/wms.py:360
+msgid "WMS Request Parameter"
+msgstr "Parámetro de solicitud WMS"
+
+#: geomanager/models/wms.py:361
+msgid "WMS Request Parameters"
+msgstr "Parámetros de solicitud WMS"
+
+#: geomanager/templates/geomanager/raster_file_edit_form.html:7
+#, python-format
+msgid "Data Variable : %(data_var)s"
+msgstr "Variables de datos: %(data_var)s"
+
+#: geomanager/templates/geomanager/raster_file_edit_form.html:26
+#: geomanager/templates/geomanager/vector_file_edit_form.html:18
+msgid "Publish"
+msgstr "Publicar"
+
+#: geomanager/templates/geomanager/raster_file_edit_form.html:29
+#: geomanager/templates/geomanager/vector_file_edit_form.html:21
+msgid "Delete"
+msgstr "Borrar"
+
+#: geomanager/templates/geomanager/raster_file_layer_preview.html:7
+#, python-format
+msgid "Preview Layer %(title)s"
+msgstr "Vista previa de capa %(title)s"
+
+#: geomanager/templates/geomanager/raster_file_layer_preview.html:23
+#: geomanager/templates/geomanager/raster_tile_layer_preview.html:21
+#: geomanager/templates/geomanager/vector_file_layer_preview.html:20
+#: geomanager/templates/geomanager/vector_tile_layer_preview.html:21
+#: geomanager/templates/geomanager/wms_layer_preview.html:22
+msgid "Preview"
+msgstr "Avance"
+
+#: geomanager/templates/geomanager/raster_file_layer_preview.html:38
+#: geomanager/templates/geomanager/raster_file_upload.html:39
+#: geomanager/templates/geomanager/raster_tile_layer_preview.html:36
+#: geomanager/templates/geomanager/vector_file_layer_preview.html:34
+#: geomanager/templates/geomanager/vector_file_upload.html:38
+#: geomanager/templates/geomanager/vector_tile_layer_preview.html:36
+#: geomanager/templates/geomanager/wms_layer_preview.html:37
+msgid "Back to Layers"
+msgstr "Volver a capas"
+
+#: geomanager/templates/geomanager/raster_file_layer_preview.html:40
+#: geomanager/templates/geomanager/raster_file_upload.html:41
+#: geomanager/templates/geomanager/raster_tile_layer_preview.html:38
+#: geomanager/templates/geomanager/vector_file_layer_preview.html:36
+#: geomanager/templates/geomanager/vector_file_upload.html:40
+#: geomanager/templates/geomanager/vector_tile_layer_preview.html:38
+#: geomanager/templates/geomanager/wms_layer_preview.html:39
+msgid "Back to Datasets"
+msgstr "Volver a conjuntos de datos"
+
+#: geomanager/templates/geomanager/raster_file_layer_preview.html:47
+#: geomanager/templates/geomanager/raster_tile_layer_preview.html:44
+#: geomanager/templates/geomanager/vector_file_layer_preview.html:42
+#: geomanager/templates/geomanager/vector_tile_layer_preview.html:45
+#: geomanager/templates/geomanager/wms_layer_preview.html:46
+msgid "Select Layer"
+msgstr "Seleccionar capa"
+
+#: geomanager/templates/geomanager/raster_file_layer_preview.html:60
+#: geomanager/templates/geomanager/raster_tile_layer_preview.html:57
+#: geomanager/templates/geomanager/vector_tile_layer_preview.html:58
+#: geomanager/templates/geomanager/wms_layer_preview.html:59
+msgid "Time"
+msgstr "Tiempo"
+
+#: geomanager/templates/geomanager/raster_file_layer_preview.html:69
+msgid "Color Scale"
+msgstr "Escala de colores"
+
+#: geomanager/templates/geomanager/raster_file_upload.html:7
+#, python-format
+msgid "Upload Raster %(title)s"
+msgstr "Cargar %(title)s de ráster"
+
+#: geomanager/templates/geomanager/raster_file_upload.html:21
+#: geomanager/wagtail_hooks.py:303
+msgid "Upload Raster Files"
+msgstr "Cargar archivos ráster"
+
+#: geomanager/templates/geomanager/raster_file_upload.html:54
+#: geomanager/templates/geomanager/vector_file_upload.html:53
+msgid "Go to Map preview"
+msgstr "Ir a la vista previa del mapa"
+
+#: geomanager/templates/geomanager/raster_file_upload.html:60
+msgid "Drag and drop a raster file into this area to upload immediately"
+msgstr ""
+"Arrastre y suelte un archivo ráster en esta área para cargarlo inmediatamente"
+
+#: geomanager/templates/geomanager/raster_file_upload.html:73
+#: geomanager/templates/geomanager/vector_file_upload.html:70
+msgid "Or choose from your computer"
+msgstr "O elige desde tu computadora"
+
+#: geomanager/templates/geomanager/raster_file_upload.html:101
+#: geomanager/templates/geomanager/vector_file_upload.html:95
+msgid ""
+"Upload successful. Please update this file with required details and "
+"publish. You may also delete the file completely if the upload wasn't "
+"required."
+msgstr ""
+"Subida exitosa. Actualice este archivo con los detalles requeridos y "
+"publíquelo. También puede eliminar el archivo por completo si no fue "
+"necesario cargarlo."
+
+#: geomanager/templates/geomanager/raster_file_upload.html:104
+#: geomanager/templates/geomanager/vector_file_upload.html:96
+msgid "Sorry, upload failed."
+msgstr "Lo sentimos, la carga falló."
+
+#: geomanager/templates/geomanager/raster_file_upload.html:108
+#: geomanager/templates/geomanager/vector_file_upload.html:98
+msgid "Server Error"
+msgstr "Error del Servidor"
+
+#: geomanager/templates/geomanager/raster_file_upload.html:110
+#: geomanager/templates/geomanager/vector_file_upload.html:99
+msgid ""
+"Report this error to your website administrator with the following "
+"information:"
+msgstr ""
+"Informe este error al administrador de su sitio web con la siguiente "
+"información:"
+
+#: geomanager/templates/geomanager/raster_file_upload.html:113
+#: geomanager/templates/geomanager/vector_file_upload.html:102
+msgid "File updated."
+msgstr "Archivo actualizado."
+
+#: geomanager/templates/geomanager/raster_tile_layer_preview.html:6
+#: geomanager/templates/geomanager/vector_file_layer_preview.html:6
+#: geomanager/templates/geomanager/vector_tile_layer_preview.html:6
+#: geomanager/templates/geomanager/wms_layer_preview.html:6
+#, python-format
+msgid "Preview Layers %(title)s"
+msgstr "Vista previa de capas %(title)s"
+
+#: geomanager/templates/geomanager/stations_preview.html:6
+#, python-format
+msgid "Stations Data %(title)s"
+msgstr "Estaciones Datos %(title)s"
+
+#: geomanager/templates/geomanager/stations_preview.html:17
+#: geomanager/wagtail_hooks.py:741
+msgid "Stations Data"
+msgstr "Datos de estaciones"
+
+#: geomanager/templates/geomanager/stations_preview.html:18
+msgid "Load Stations"
+msgstr "Estaciones de carga"
+
+#: geomanager/templates/geomanager/stations_preview.html:29
+#: geomanager/templates/geomanager/vector_file_layer_preview.html:66
+msgid "Data Fields"
+msgstr "Campos de información"
+
+#: geomanager/templates/geomanager/stations_preview.html:35
+#: geomanager/templates/geomanager/vector_file_layer_preview.html:72
+msgid "Field"
+msgstr "Campo"
+
+#: geomanager/templates/geomanager/stations_preview.html:41
+msgid "Show in Table"
+msgstr "Mostrar en la tabla"
+
+#: geomanager/templates/geomanager/stations_preview.html:44
+msgid "Show in Map Popup"
+msgstr "Mostrar en la ventana emergente del mapa"
+
+#: geomanager/templates/geomanager/stations_preview.html:95
+#: geomanager/templates/geomanager/vector_file_layer_preview.html:122
+msgid "Save"
+msgstr "Ahorrar"
+
+#: geomanager/templates/geomanager/stations_preview.html:109
+msgid "No station data loaded."
+msgstr "No hay datos de estación cargados."
+
+#: geomanager/templates/geomanager/stations_preview.html:110
+msgid "Please "
+msgstr "Por favor"
+
+#: geomanager/templates/geomanager/stations_preview.html:112
+msgid "load station data"
+msgstr "datos de la estación de carga"
+
+#: geomanager/templates/geomanager/stations_preview.html:114
+msgid "to preview"
+msgstr "para previsualizar"
+
+#: geomanager/templates/geomanager/stations_upload.html:6
+#, python-format
+msgid "Stations Loader %(title)s"
+msgstr "Cargador de estaciones %(title)s"
+
+#: geomanager/templates/geomanager/stations_upload.html:18
+msgid "Stations Loader"
+msgstr "Cargador de estaciones"
+
+#: geomanager/templates/geomanager/stations_upload.html:43
+msgid "Upload"
+msgstr "Subir"
+
+#: geomanager/templates/geomanager/vector_file_layer_preview.html:78
+msgid "Show in Popup"
+msgstr "Mostrar en ventana emergente"
+
+#: geomanager/templates/geomanager/vector_file_upload.html:6
+#, python-format
+msgid "Upload Vector %(title)s"
+msgstr "Cargar %(title)s vectoriales"
+
+#: geomanager/templates/geomanager/vector_file_upload.html:20
+#: geomanager/wagtail_hooks.py:624
+msgid "Upload Vector Files"
+msgstr "Cargar archivos vectoriales"
+
+#: geomanager/templates/geomanager/vector_file_upload.html:59
+msgid "Drag and drop a vector file into this area to upload immediately."
+msgstr ""
+"Arrastre y suelte un archivo vectorial en esta área para cargarlo "
+"inmediatamente."
+
+#: geomanager/templates/geomanager/widgets/raster_style_widget.html:87
+msgid "Select Color"
+msgstr "Seleccionar el color"
+
+#: geomanager/templates/geomanager/widgets/raster_style_widget.html:95
+msgid "Legend Preview"
+msgstr "Vista previa de leyenda"
+
+#: geomanager/templates/modeladmin/index_without_custom_create.html:41
+msgid "Download XLSX"
+msgstr "Descargar XLSX"
+
+#: geomanager/templates/modeladmin/index_without_custom_create.html:48
+msgid "Download CSV"
+msgstr "Descargar CSV"
+
+#: geomanager/templates/modeladmin/index_without_custom_create.html:71
+msgid "Filter"
+msgstr "Filtrar"
+
+#: geomanager/templates/modeladmin/index_without_custom_create.html:82
+#, python-format
+msgid ""
+"No %(name)s have been created yet. One of the following must be created "
+"before you can add any %(name)s:"
+msgstr ""
+"Aún no se han creado %(name)s. Se debe crear uno de los siguientes antes de "
+"poder agregar %(name)s:"
+
+#: geomanager/templates/modeladmin/index_without_custom_create.html:90
+#, python-format
+msgid "No %(name)s have been created yet."
+msgstr "Aún no se han creado %(name)s."
+
+#: geomanager/templates/modeladmin/index_without_custom_create.html:117
+msgid "Pagination"
+msgstr "Paginación"
+
+#: geomanager/templates/modeladmin/index_without_custom_create.html:119
+#, python-format
+msgid "Page %(current_page)s of %(num_pages)s."
+msgstr "Página %(current_page)s de %(num_pages)s."
+
+#: geomanager/utils/vector_utils.py:112
+msgid "No shapefile found in provided zip file"
+msgstr "No se encontró ningún archivo de forma en el archivo zip proporcionado"
+
+#: geomanager/utils/vector_utils.py:121
+msgid "No .shx file found in provided zip file"
+msgstr "No se encontró ningún archivo .shx en el archivo zip proporcionado"
+
+#: geomanager/utils/vector_utils.py:125
+msgid "No .dbf file found in provided zip file"
+msgstr "No se encontró ningún archivo .dbf en el archivo zip proporcionado"
+
+#: geomanager/utils/vector_utils.py:155
+msgid "Unsupported file type"
+msgstr "Tipo de archivo no soportado"
+
+#: geomanager/utils/vector_utils.py:215
+#, python-format
+msgid ""
+"Invalid geometry type. Expected one of %(valid_geom_types)s. Not "
+"%(geom_type)s"
+msgstr ""
+"Tipo de geometría no válido. Se esperaba uno de %(valid_geom_types)s. No "
+"%(geom_type)s"
+
+#: geomanager/utils/vector_utils.py:219
+#, python-format
+msgid "Geometry Type validation not implemented for format %(vector_format)s"
+msgstr ""
+"Validación del tipo de geometría no implementada para el formato "
+"%(vector_format)s"
+
+#: geomanager/views/raster_file.py:69
+#, python-format
+msgid ""
+"Not a supported raster format. Supported formats: %(supported_formats)s."
+msgstr ""
+"No es un formato ráster compatible. Formatos admitidos: "
+"%(supported_formats)s."
+
+#: geomanager/views/raster_file.py:72
+#, python-format
+msgid ""
+"This file is too big (%(file_size)s). Maximum filesize %(max_filesize)s. You "
+"can adjust the Maximum upload file size under Geomanager settings"
+msgstr ""
+"Este archivo es demasiado grande (%(file_size)s). Tamaño máximo del tamaño "
+"%(max_filesize)s. Puede ajustar el tamaño máximo del archivo de carga en la "
+"configuración de Geomanager"
+
+#: geomanager/views/raster_file.py:76
+#, python-format
+msgid ""
+"This file is too big. Maximum filesize %(max_filesize)s. You can adjust the "
+"Maximum upload file size under Geomanager settings."
+msgstr ""
+"Este archivo es demasiado grande. Tamaño máximo del tamaño %(max_filesize)s. "
+"Puede ajustar el tamaño máximo del archivo de carga en la configuración de "
+"Geomanager."
+
+#: geomanager/views/raster_file.py:139
+msgid ""
+"You have set to clip uploaded raster files to the country(s) boundary but "
+"the uploaded file is not within the set countries. Make sure the uploaded "
+"file is within your country/countries or disable 'Crop raster to country' "
+"option in Geomanager settings"
+msgstr ""
+"Ha configurado recortar los archivos ráster cargados a los límites del país, "
+"pero el archivo cargado no se encuentra dentro de los países establecidos. "
+"Asegúrese de que el archivo cargado esté dentro de su país o países o "
+"deshabilite la opción 'Recortar ráster al país' en la configuración de "
+"Geomanager"
+
+#: geomanager/views/raster_file.py:255 geomanager/views/raster_file.py:370
+#: geomanager/views/vector_file.py:125 geomanager/views/vector_file.py:225
+msgid "Only POST allowed"
+msgstr "Solo se permite PUBLICAR"
+
+#: geomanager/views/raster_file.py:260
+msgid "upload not found"
+msgstr "carga no encontrada"
+
+#: geomanager/views/raster_file.py:320
+#, python-format
+msgid "File with date %(time_str)s already exists for layer %(db_layer)s"
+msgstr "El archivo con fecha %(time_str)s ya existe para la capa %(db_layer)s"
+
+#: geomanager/views/raster_file.py:328
+msgid "Error occurred. Try again"
+msgstr "Se produjo un error. Intentar otra vez"
+
+#: geomanager/views/raster_file.py:337
+#, python-format
+msgid "File with date %(time)s already exists for layer %(db_layer)s"
+msgstr "El archivo con fecha %(time)s ya existe para la capa %(db_layer)s"
+
+#: geomanager/views/raster_file.py:350 geomanager/views/vector_file.py:174
+#, python-format
+msgid "File with date %(time)s already exists for selected layer"
+msgstr "El archivo con fecha %(time)s ya existe para la capa seleccionada"
+
+#: geomanager/views/raster_file.py:420
+msgid "time param required"
+msgstr "parámetro de tiempo requerido"
+
+#: geomanager/views/raster_file.py:427
+#, python-format
+msgid "File not found matching 'layer': %(layer_id)s and 'time': %(time)s"
+msgstr ""
+"Archivo no encontrado que coincida con 'capa': %(layer_id)s y 'tiempo': "
+"%(time)s"
+
+#: geomanager/views/raster_file.py:436
+msgid "time_from or time_to param required"
+msgstr "Se requiere el parámetro time_from o time_to"
+
+#: geomanager/views/raster_file.py:456
+msgid "x param required"
+msgstr "x parámetro requerido"
+
+#: geomanager/views/raster_file.py:459
+msgid "y param required"
+msgstr "y parámetro requerido"
+
+#: geomanager/views/raster_file.py:478
+msgid "geostore_id param required"
+msgstr "parámetro geostore_id requerido"
+
+#: geomanager/views/raster_file.py:483
+#, python-format
+msgid "Geostore with id %(geostore_id)s does not exist"
+msgstr "El geostore con id %(geostore_id)s no existe"
+
+#: geomanager/views/stations.py:79
+msgid "Stations data loaded successfully"
+msgstr "Datos de estaciones cargados exitosamente"
+
+#: geomanager/views/stations.py:132
+msgid "Stations columns updated successfully"
+msgstr "Columnas de estaciones actualizadas exitosamente"
+
+#: geomanager/views/vector_file.py:46
+#, python-format
+msgid ""
+"Not a supported vector format. Supported formats: %(supported_formats)s."
+msgstr ""
+"No es un formato vectorial compatible. Formatos admitidos: "
+"%(supported_formats)s."
+
+#: geomanager/views/vector_file.py:49
+#, python-format
+msgid ""
+"This file is too big (%(file_size)s). Maximum filesize %(max_filesize)s."
+msgstr ""
+"Este archivo es demasiado grande (%(file_size)s). Tamaño máximo del tamaño "
+"%(max_filesize)s."
+
+#: geomanager/views/vector_file.py:52
+#, python-format
+msgid "This file is too big. Maximum filesize %(max_filesize)s."
+msgstr ""
+"Este archivo es demasiado grande. Tamaño máximo del tamaño %(max_filesize)s."
+
+#: geomanager/views/vector_file.py:294
+msgid "Data fields updated successfully"
+msgstr "Campos de datos actualizados exitosamente"
+
+#: geomanager/wagtail_hooks.py:95
+msgid "Data Categories"
+msgstr "Categorías de datos"
+
+#: geomanager/wagtail_hooks.py:104 geomanager/wagtail_hooks.py:121
+msgid "View Datasets"
+msgstr "Ver conjuntos de datos"
+
+#: geomanager/wagtail_hooks.py:144
+msgid "Create from categories"
+msgstr "Crear a partir de categorías"
+
+#: geomanager/wagtail_hooks.py:181
+msgid "View Layers"
+msgstr "Ver capas"
+
+#: geomanager/wagtail_hooks.py:182 geomanager/wagtail_hooks.py:233
+#: geomanager/wagtail_hooks.py:315 geomanager/wagtail_hooks.py:638
+msgid "Upload Files"
+msgstr "Subir archivos"
+
+#: geomanager/wagtail_hooks.py:185
+msgid "Edit Category"
+msgstr "Editar categoria"
+
+#: geomanager/wagtail_hooks.py:194
+msgid "Layers"
+msgstr "Capas"
+
+#: geomanager/wagtail_hooks.py:215
+msgid "Preview Dataset"
+msgstr "Vista previa del conjunto de datos"
+
+#: geomanager/wagtail_hooks.py:256
+msgid "Create from datasets"
+msgstr "Crear a partir de conjuntos de datos"
+
+#: geomanager/wagtail_hooks.py:288
+msgid "File Layers"
+msgstr "Capas de archivos"
+
+#: geomanager/wagtail_hooks.py:302 geomanager/wagtail_hooks.py:666
+msgid "Uploaded Files"
+msgstr "Archivos subidos"
+
+#: geomanager/wagtail_hooks.py:304 geomanager/wagtail_hooks.py:460
+#: geomanager/wagtail_hooks.py:511 geomanager/wagtail_hooks.py:561
+#: geomanager/wagtail_hooks.py:625
+msgid "Preview on Map"
+msgstr "Vista previa en el mapa"
+
+#: geomanager/wagtail_hooks.py:329 geomanager/wagtail_hooks.py:623
+msgid "View Uploaded Files"
+msgstr "Ver archivos cargados"
+
+#: geomanager/wagtail_hooks.py:343 geomanager/wagtail_hooks.py:471
+#: geomanager/wagtail_hooks.py:522 geomanager/wagtail_hooks.py:572
+#: geomanager/wagtail_hooks.py:652
+msgid "Preview Layer"
+msgstr "Vista previa de capa"
+
+#: geomanager/wagtail_hooks.py:420
+msgid "Color Preview"
+msgstr "Vista previa de color"
+
+#: geomanager/wagtail_hooks.py:610
+msgid "Vector Layers"
+msgstr "Capas vectoriales"
+
+#: geomanager/wagtail_hooks.py:706
+msgid "Geo Manager"
+msgstr "GeoManager"
+
+#: geomanager/wagtail_hooks.py:732
+msgid "Boundary Settings"
+msgstr "Configuración de límites"
+
+#: geomanager/wagtail_hooks.py:737
+msgid "Boundary Data"
+msgstr "Datos de límites"
+
+#: geomanager/wagtail_hooks.py:750
+msgid "Settings"
+msgstr "Ajustes"
+
+#~ msgid "Add Layer "
+#~ msgstr "Agregar capa"

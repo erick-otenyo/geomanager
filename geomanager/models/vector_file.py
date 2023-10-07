@@ -35,7 +35,7 @@ from geomanager.utils.vector_utils import drop_vector_table
 
 class VectorFileLayer(TimeStampedModel, ClusterableModel, BaseLayer):
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, related_name="vector_file_layers",
-                                verbose_name="dataset")
+                                verbose_name=_("dataset"))
     render_layers = StreamField([
         ("fill", FillVectorLayerBlock(label=_("Polygon Layer"))),
         ("line", LineVectorLayerBlock(label=_("Line Layer"))),
@@ -49,6 +49,10 @@ class VectorFileLayer(TimeStampedModel, ClusterableModel, BaseLayer):
         ('legend_image', ImageChooserBlock(label=_("Legend Image")),),
         ('legend_icon', InlineIconLegendBlock(label=_("Legend Icon")),)
     ], use_json_field=True, null=True, blank=True, max_num=1, verbose_name=_("Legend"), )
+
+    class Meta:
+        verbose_name = _("Vector File Layer")
+        verbose_name_plural = _("Vector File Layers")
 
     def __str__(self):
         return self.title
@@ -214,6 +218,10 @@ class VectorLayerIcon(models.Model):
     color = models.CharField(max_length=100, null=True)
     file = models.FileField(upload_to="vector_icons/")
 
+    class Meta:
+        verbose_name = _("Vector Layer Icon")
+        verbose_name_plural = _("Vector Layer Icons")
+
     def __str__(self):
         return f"{self.layer.title}-{self.name}-{self.color}"
 
@@ -222,6 +230,10 @@ class VectorUpload(TimeStampedModel):
     dataset = models.ForeignKey(Dataset, blank=True, null=True, on_delete=models.SET_NULL)
     file = models.FileField(upload_to="vector_uploads")
     vector_metadata = models.JSONField(blank=True, null=True)
+
+    class Meta:
+        verbose_name = _("Vector Upload")
+        verbose_name_plural = _("Vector Uploads")
 
     panels = [
         FieldPanel("dataset"),
@@ -238,7 +250,7 @@ class PgVectorTable(TimeStampedModel):
     table_name = models.CharField(max_length=256, unique=True)
     full_table_name = models.CharField(max_length=256)
     description = models.TextField(blank=True, null=True)
-    time = models.DateTimeField(help_text="time for the dataset")
+    time = models.DateTimeField(help_text=_("time for the dataset"))
 
     properties = models.JSONField()
     geometry_type = models.CharField(max_length=100)

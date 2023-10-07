@@ -34,6 +34,10 @@ class RasterFileLayer(TimeStampedModel, BaseLayer):
     ], block_counts={'point_analysis': {'max_num': 1}, 'area_analysis': {'max_num': 1}}, use_json_field=True,
         null=True, blank=True, max_num=2, verbose_name=_("Analysis"), )
 
+    class Meta:
+        verbose_name = _("Raster File Layer")
+        verbose_name_plural = _("Raster File Layers")
+
     panels = [
         FieldPanel("dataset"),
         FieldPanel("title"),
@@ -50,11 +54,11 @@ class RasterFileLayer(TimeStampedModel, BaseLayer):
         return url
 
     def get_style_url(self):
-        url = {"action": "Create Style"}
+        url = {"action": _("Create Style")}
         style_admin_helper = AdminURLHelper(RasterStyle)
         if self.style:
             url.update({
-                "action": "Edit Style",
+                "action": _("Edit Style"),
                 "url": style_admin_helper.get_action_url("edit", self.style.pk)
             })
         else:
@@ -194,9 +198,9 @@ class RasterFileLayer(TimeStampedModel, BaseLayer):
         # if adding a layer to a dataset that already has a layer and is not multi layer
         if self._state.adding:
             if self.dataset.has_layers() and not self.dataset.multi_layer:
-                raise ValidationError(
-                    "Can not add layer because the dataset is not marked as Multi Layer. "
-                    "To add multiple layers to a dataset, please mark the dataset as Multi Layer and try again")
+                raise ValidationError(_("Can not add layer because the dataset is not marked as Multi Layer. "
+                                        "To add multiple layers to a dataset, please mark the dataset as "
+                                        "Multi Layer and try again"))
 
 
 def layer_raster_file_dir_path(instance, filename):
@@ -209,10 +213,12 @@ class LayerRasterFile(TimeStampedModel):
                               verbose_name=_("layer"))
     file = models.FileField(upload_to=layer_raster_file_dir_path, verbose_name=_("file"))
     time = models.DateTimeField(verbose_name=_("time"),
-                                help_text="Time for the raster file. This can be the time the data was acquired, "
-                                          "or the date and time for which the data applies", )
+                                help_text=_("Time for the raster file. This can be the time the data was acquired, "
+                                            "or the date and time for which the data applies", ))
 
     class Meta:
+        verbose_name = _("Layer Raster File")
+        verbose_name_plural = _("Layer Raster Files")
         ordering = ["time"]
         unique_together = ('layer', 'time')
 
@@ -228,6 +234,10 @@ class RasterUpload(TimeStampedModel):
     dataset = models.ForeignKey(Dataset, blank=True, null=True, on_delete=models.SET_NULL, verbose_name=_("dataset"))
     file = models.FileField(upload_to="raster_uploads", verbose_name=_("file"))
     raster_metadata = models.JSONField(blank=True, null=True)
+
+    class Meta:
+        verbose_name = _("Raster Upload")
+        verbose_name_plural = _("Raster Uploads")
 
     panels = [
         FieldPanel("layer"),
@@ -257,6 +267,10 @@ class RasterStyle(TimeStampedModel, ClusterableModel):
                                        help_text=_(
                                            "Color for values greater than the values defined above, "
                                            "as well as values greater than the maximum defined value"))
+
+    class Meta:
+        verbose_name = _("Raster Style")
+        verbose_name_plural = _("Raster Styles")
 
     def __str__(self):
         return self.name

@@ -32,6 +32,7 @@ class MBTSource(TimeStampedModel, ClusterableModel):
 
     class Meta:
         verbose_name = _("Basemap Source")
+        verbose_name_plural = _("Basemap Sources")
 
     def __str__(self):
         return self.name

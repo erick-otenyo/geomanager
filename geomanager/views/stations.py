@@ -6,6 +6,7 @@ from django.http import Http404, HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext as _
 from django.views import View
 from wagtail.admin import messages
 from wagtail.admin.auth import user_passes_test, user_has_any_page_permission
@@ -75,7 +76,7 @@ def load_stations(request):
                     context.update({"form": form})
                     return render(request, template_name=template, context=context)
 
-            messages.success(request, "Stations data loaded successfully")
+            messages.success(request, _("Stations data loaded successfully"))
 
             # clear wagtail cache
             clear_cache()
@@ -128,7 +129,7 @@ def preview_stations(request):
                 stations_settings.save()
                 # clear wagtail cache
                 clear_cache()
-            messages.success(request, "Stations columns updated successfully")
+            messages.success(request, _("Stations columns updated successfully"))
 
             # redirect
             return redirect(reverse("geomanager_preview_stations"))

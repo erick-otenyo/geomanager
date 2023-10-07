@@ -53,6 +53,10 @@ class VectorTileLayer(BaseTileLayer):
         ("text", TileTextVectorLayerBlock(label=_("Text Label Layer"))),
     ], use_json_field=True, null=True, blank=True, min_num=1, verbose_name=_("Render Layers"))
 
+    class Meta:
+        verbose_name = _("Vector Tile Layer")
+        verbose_name_plural = _("Vector Tile Layers")
+
     panels = [
         FieldPanel("dataset"),
         *BaseTileLayer.panels,

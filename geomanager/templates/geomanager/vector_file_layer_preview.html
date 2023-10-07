@@ -2,8 +2,11 @@
 {% load i18n %}
 {% load l10n %}
 {% load wagtailadmin_tags wagtailimages_tags static %}
-{% block titletag %}{% blocktrans with title=page.get_admin_display_title %}Preview Layers{{ title }}
-{% endblocktrans %}{% endblock %}
+{% block titletag %}
+    {% blocktranslate trimmed with title=page.get_admin_display_title %}
+        Preview Layers {{ title }}
+    {% endblocktranslate %}
+{% endblock %}
 
 {% block extra_css %}
     {{ block.super }}
@@ -14,25 +17,29 @@
 {% endblock %}
 
 {% block content %}
-    {% trans "Preview" as preview_str %}
+    {% translate "Preview" as preview_str %}
 
     {% include "wagtailadmin/shared/header.html" with title=preview_str|add:" - "|add:dataset.title subtitle=page.get_admin_display_title icon="view" %}
 
     <div class="nice-padding">
         <div class="go-to-datasets">
-            <a href="
-                    {% if selected_layer %}{{ vector_layer_list_url }}{% else %}{{ datasets_index_url }}{% endif %}"
+            <a href="{% if selected_layer %}{{ vector_layer_list_url }}{% else %}{{ datasets_index_url }}{% endif %}"
                class="button bicolor button--icon">
                 <span class="icon-wrapper">
                     <svg class="icon icon-plus icon" aria-hidden="true">
                         <use href="#icon-arrow-left"></use>
                     </svg>
-                </span>{% if selected_layer %}Back to Layers{% else %}Back to Datasets{% endif %}
+                </span>
+                {% if selected_layer %}
+                    {% translate "Back to Layers" %}
+                {% else %}
+                    {% translate "Back to Datasets" %}
+                {% endif %}
             </a>
         </div>
         <div class="w-field__input" data-field-input="" style="display: none">
             <label class="w-field__label" for="layer_select" id="layer_select-label">
-                Select Layer
+                {% translate "Select Layer" %}
             </label>
             <select name="select" id="layer_select">
                 {% for layer in dataset.vector_file_layers.all %}
@@ -45,7 +52,7 @@
             <div class="layer-timestamps-wrapper" style="display: none">
                 <div class="w-field__input">
                     <label class="w-field__label" for="vector_table_select" id="vector_table_select-label">
-                        Datasets
+                        {% translate "Datasets" %}
                     </label>
                     <select name="select" id="vector_table_select">
                     </select>
@@ -55,13 +62,21 @@
 
         {% if data_table and data_table.properties %}
             <div style="margin-top: 20px;">
-                <h2 class="title">Data Fields</h2>
+                <h2 class="title">
+                    {% translate "Data Fields" %}
+                </h2>
                 <table class="listing">
                     <thead>
                     <tr>
-                        <th style="font-weight: 700">Field</th>
-                        <th style="font-weight: 700">Label</th>
-                        <th style="font-weight: 700">Show in Popup</th>
+                        <th style="font-weight: 700">
+                            {% translate "Field" %}
+                        </th>
+                        <th style="font-weight: 700">
+                            {% translate "Label" %}
+                        </th>
+                        <th style="font-weight: 700">
+                            {% translate "Show in Popup" %}
+                        </th>
                     </tr>
                     </thead>
                     <tbody>
@@ -103,7 +118,9 @@
                             {% endif %}
                         {% endfor %}
                         <li>
-                            <button type="submit" class="button"> {% trans 'Save' %}</button>
+                            <button type="submit" class="button">
+                                {% translate "Save" %}
+                            </button>
                         </li>
                     </ul>
                 </form>

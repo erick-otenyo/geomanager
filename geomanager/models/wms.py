@@ -30,11 +30,11 @@ class WmsLayer(TimeStampedModel, ClusterableModel, BaseLayer):
     )
 
     DATE_FORMAT_CHOICES = (
-        ("yyyy-mm-dd HH:MM", "Hourly - (E.g 2023-01-01 00:00)"),
-        ("yyyy-mm-dd", "Daily - (E.g 2023-01-01)"),
-        ("yyyy-mm", "Monthly - (E.g 2023-01)"),
-        ("mmmm yyyy", "Monthly - (E.g January 2023)"),
-        ("pentadal", "Pentadal - (E.g Jan 2023 - P1 1-5th)")
+        ("yyyy-mm-dd HH:MM", _("Hourly - (E.g 2023-01-01 00:00)")),
+        ("yyyy-mm-dd", _("Daily - (E.g 2023-01-01)")),
+        ("yyyy-mm", _("Monthly - (E.g 2023-01)")),
+        ("mmmm yyyy", _("Monthly - (E.g January 2023)")),
+        ("pentadal", _("Pentadal - (E.g Jan 2023 - P1 1-5th)"))
     )
 
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, related_name="wms_layers", verbose_name=_("dataset"))
@@ -82,6 +82,10 @@ class WmsLayer(TimeStampedModel, ClusterableModel, BaseLayer):
         'more_info': {'max_num': 1},
     }, use_json_field=True, null=True, blank=True, max_num=1, verbose_name=_("More Info"), )
 
+    class Meta:
+        verbose_name = _("WMS Layer")
+        verbose_name_plural = _("WMS Layers")
+
     panels = [
         FieldPanel("dataset"),
         FieldPanel("title"),
@@ -104,12 +108,12 @@ class WmsLayer(TimeStampedModel, ClusterableModel, BaseLayer):
             InlinePanel("wms_request_params", heading=_("WMS Request Additional Parameters"),
                         label=_("WMS Request Param")),
             FieldPanel("wms_query_params_selectable"),
-        ], heading="WMS GetMap Configuration"),
+        ], heading=_("WMS GetMap Configuration")),
         MultiFieldPanel([
             FieldPanel("request_time_from_capabilities"),
             FieldPanel("custom_get_capabilities_url"),
             FieldPanel("get_capabilities_layer_name"),
-        ], heading="WMS GetCapabilities Configuration"),
+        ], heading=_("WMS GetCapabilities Configuration")),
         FieldPanel("params_selectors_side_by_side"),
         FieldPanel("legend"),
         FieldPanel("more_info"),
@@ -328,6 +332,10 @@ class WmsRequestLayer(Orderable):
                                         "name in the LAYERS parameter of a "
                                         "GetMap request."))
 
+    class Meta:
+        verbose_name = _("WMS Request Layer")
+        verbose_name_plural = _("WMS Request Layers")
+
 
 class WmsRequestStyle(Orderable):
     layer = ParentalKey(WmsLayer, on_delete=models.CASCADE,
@@ -336,6 +344,10 @@ class WmsRequestStyle(Orderable):
                             verbose_name=_("name"),
                             help_text=_("The style's Name is used in the Map request STYLES parameter"))
 
+    class Meta:
+        verbose_name = _("WMS Request Style")
+        verbose_name_plural = _("WMS Request Styles")
+
 
 class WmsRequestParam(Orderable):
     layer = ParentalKey(WmsLayer, on_delete=models.CASCADE, related_name="wms_request_params",
@@ -343,3 +355,7 @@ class WmsRequestParam(Orderable):
     name = models.CharField(max_length=250, null=False, blank=False, verbose_name=_("name"),
                             help_text=_("Name of the parameter"))
     value = models.CharField(max_length=250, null=False, blank=False, help_text=_("Value of the parameter"))
+
+    class Meta:
+        verbose_name = _("WMS Request Parameter")
+        verbose_name_plural = _("WMS Request Parameters")

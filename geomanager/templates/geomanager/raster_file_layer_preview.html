@@ -2,8 +2,12 @@
 {% load i18n %}
 {% load l10n %}
 {% load wagtailadmin_tags wagtailimages_tags static %}
-{% block titletag %}{% blocktrans with title=page.get_admin_display_title %}Preview Layers{{ title }}
-{% endblocktrans %}{% endblock %}
+
+{% block titletag %}
+    {% blocktranslate trimmed with title=page.get_admin_display_title %}
+        Preview Layer {{ title }}
+    {% endblocktranslate %}
+{% endblock %}
 
 {% block extra_css %}
     {{ block.super }}
@@ -16,26 +20,31 @@
 
 
 {% block content %}
-    {% trans "Preview" as preview_str %}
+    {% translate "Preview" as preview_str %}
 
     {% include "wagtailadmin/shared/header.html" with title=preview_str|add:" - "|add:dataset.title subtitle=page.get_admin_display_title icon="view" %}
 
     <div class="nice-padding">
         <div class="go-to-datasets">
-            <a href="
-                    {% if selected_layer %}{{ image_file_layer_list_url }}{% else %}{{ datasets_index_url }}{% endif %}"
+            <a href="{% if selected_layer %}{{ image_file_layer_list_url }}
+                        {% else %}{{ datasets_index_url }}{% endif %}"
                class="button bicolor button--icon">
                 <span class="icon-wrapper">
                     <svg class="icon icon-plus icon" aria-hidden="true">
                         <use href="#icon-arrow-left"></use>
                     </svg>
-                </span>{% if selected_layer %}Back to Layers{% else %}Back to Datasets{% endif %}
+                </span>
+                {% if selected_layer %}
+                    {% translate "Back to Layers" %}
+                {% else %}
+                    {% translate "Back to Datasets" %}
+                {% endif %}
             </a>
         </div>
 
         <div class="w-field__input" data-field-input="" style="display: none">
             <label class="w-field__label" for="layer_select" id="layer_select-label">
-                Select Layer
+                {% translate "Select Layer" %}
             </label>
             <select name="select" id="layer_select">
                 {% for layer in dataset.raster_file_layers.all %}
@@ -48,7 +57,7 @@
             <div class="layer-timestamps-wrapper">
                 <div class="w-field__input">
                     <label class="w-field__label" for="timestamps_select" id="timestamps_select-label">
-                        Time
+                        {% translate "Time" %}
                     </label>
                     <select name="select" id="timestamps_select">
                     </select>
@@ -57,7 +66,7 @@
             <div class="colorscale-control-wrapper">
                 <div class="w-field__input">
                     <label class="w-field__label" for="colorscale_select" id="colorscale_select-label">
-                        Color Scale
+                        {% translate "Color Scale" %}
                     </label>
                     <select name="select" id="colorscale_select">
                     </select>

@@ -25,5 +25,9 @@ class AreaOfInterest(TimeStampedModel):
     tags = models.TextField(blank=True, null=True, verbose_name=_("Tags"))
     webhook_url = models.URLField(blank=True, null=True, verbose_name=_("Webhook Url"))
 
+    class Meta:
+        verbose_name = _("Area of Interest")
+        verbose_name_plural = _("Areas of Interest")
+
     def __str__(self):
         return self.name

@@ -2,8 +2,12 @@
 {% load i18n %}
 {% load l10n %}
 {% load wagtailadmin_tags wagtailimages_tags static %}
-{% block titletag %}{% blocktrans with title=page.get_admin_display_title %}Upload Raster{{ title }}
-{% endblocktrans %}{% endblock %}
+
+{% block titletag %}
+    {% blocktranslate trimmed with title=page.get_admin_display_title %}
+        Upload Raster {{ title }}
+    {% endblocktranslate %}
+{% endblock %}
 
 {% block extra_css %}
     {{ block.super }}
@@ -30,23 +34,31 @@
                         <svg class="icon icon-arrow-left icon" aria-hidden="true">
                             <use href="#icon-arrow-left"></use>
                         </svg>
-                    </span>{% if layers_index_url %}Back to Layers{% else %}Back to Datasets{% endif %}
+                    </span>
+                    {% if layers_index_url %}
+                        {% translate "Back to Layers" %}
+                    {% else %}
+                        {% translate "Back to Datasets" %}
+                    {% endif %}
                 </a>
             </div>
             <div class="preview">
-                <a href="
-                        {% if layer_preview_url %}{{ layer_preview_url }}{% else %}{{ dataset_preview_url }}{% endif %}"
+                <a href="{% if layer_preview_url %}{{ layer_preview_url }}
+                         {% else %}{{ dataset_preview_url }}{% endif %}"
                    class="button bicolor button--icon">
                     <span class="icon-wrapper">
                         <svg class="icon icon-view icon" aria-hidden="true">
                             <use href="#icon-view"></use>
                         </svg>
-                    </span>Go to Map preview
+                    </span>
+                    {% translate "Go to Map preview" %}
                 </a>
             </div>
         </div>
         <div class="drop-zone">
-            <p>{% trans "Drag and drop a raster file into this area to upload immediately." %}</p>
+            <p>
+                {% translate "Drag and drop a raster file into this area to upload immediately" %}.
+            </p>
             <p>{{ help_text }}</p>
 
             {% if layer %}
@@ -58,7 +70,7 @@
             <form action="{{ upload_url }}" method="POST" enctype="multipart/form-data">
                 <div class="replace-file-input">
                     <button class="button bicolor button--icon">
-                        {% icon name="plus" wrapped=1 %}{% trans "Or choose from your computer" %}</button>
+                        {% icon name="plus" wrapped=1 %}{% translate "Or choose from your computer" %}</button>
                     <input id="fileupload" type="file" name="files[]" data-url="{{ upload_url }}">
                 </div>
                 {% csrf_token %}
@@ -66,7 +78,9 @@
         </div>
 
         <div id="overall-progress" class="progress progress-secondary">
-            <div class="bar" style="width: 0%;">0%</div>
+            <div class="bar" style="width: 0%;">
+                0%
+            </div>
         </div>
 
         <ul id="upload-list" class="upload-list multiple"></ul>
@@ -83,14 +97,20 @@
                 </div>
             </div>
             <div class="right col9">
-                <p class="status-msg success">{% trans "Upload successful. Please update this file with required details and publish. You may also delete the file completely if the upload wasn't required." %}</p>
-                <p class="status-msg failure">{% trans "Sorry, upload failed." %}</p>
+                <p class="status-msg success">
+                    {% translate "Upload successful. Please update this file with required details and publish. You may also delete the file completely if the upload wasn't required." %}
+                </p>
+                <p class="status-msg failure">
+                    {% translate "Sorry, upload failed." %}
+                </p>
                 <p class="status-msg server-error">
-                    <strong>{% trans "Server Error" %}</strong>
-                    {% trans "Report this error to your website administrator with the following information:" %}
+                    <strong>
+                        {% translate "Server Error" %}
+                    </strong>
+                    {% translate "Report this error to your website administrator with the following information:" %}
                     <br/><span class="error-text"></span> - <span class="error-code"></span>
                 </p>
-                <p class="status-msg update-success">{% trans "File updated." %}</p>
+                <p class="status-msg update-success">{% translate "File updated." %}</p>
                 <p class="status-msg failure error_messages"></p>
             </div>
         </li>

@@ -1,4 +1,4 @@
-{% load wagtailadmin_tags %}
+{% load wagtailadmin_tags i18n %}
 <style>
 
 
@@ -84,12 +84,16 @@
         <button id="style-button" type="button" data-a11y-dialog-show="dialog-raster-style" style="padding: 0">
         </button>
 
-        {% dialog icon_name="doc-full-inverse" id="dialog-raster-style" title="Select Color" %}
+        {% translate "Select Color" as select_color_title %}
+
+        {% dialog icon_name="doc-full-inverse" id="dialog-raster-style" title=select_color_title %}
             <div id="color-options"></div>
         {% enddialog %}
     </div>
     <div class="legend-preview">
-        <div class="legend-preview-title">Legend Preview</div>
+        <div class="legend-preview-title">
+            {% translate "Legend Preview" %}
+        </div>
         <div id="legend-content" class="legend-content"></div>
     </div>
 </div>
