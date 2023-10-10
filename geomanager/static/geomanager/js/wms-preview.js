@@ -154,6 +154,7 @@ $((async function () {
                     const timeValue = timDimension.values
                     let dateRange = timeValue.split("/")
 
+
                     if (!!dateRange.length && dateRange.length > 1) {
                         return getValidTimestamps(timeValue)
                     }
@@ -200,12 +201,10 @@ $((async function () {
 
     const setTimestamps = async (layerId) => {
         const selectedLayer = window.geomanager_opts.dataLayers.find(l => l.id === layerId)
-
-
-        const {getCapabilitiesUrl, layerName} = selectedLayer
+        const {getCapabilitiesUrl, layerName, getCapabilitiesLayerName} = selectedLayer
 
         $timestampsSelect.empty();
-        const timestamps = await getTimeStamps(getCapabilitiesUrl, layerName) || []
+        const timestamps = await getTimeStamps(getCapabilitiesUrl, getCapabilitiesLayerName || layerName) || []
 
         $.each(timestamps.reverse().slice(0, 10), function (index, timestamp) {
             const optionEl = new Option(timestamp, timestamp)

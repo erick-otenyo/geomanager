@@ -191,8 +191,10 @@ class WmsLayer(TimeStampedModel, ClusterableModel, BaseLayer):
     @property
     def get_capabilities_url(self):
         if self.request_time_from_capabilities:
+            capabilities_url = self.base_url
+
             if self.custom_get_capabilities_url:
-                return self.custom_get_capabilities_url
+                capabilities_url = self.custom_get_capabilities_url
 
             params = {
                 "SERVICE": "WMS",
@@ -200,7 +202,7 @@ class WmsLayer(TimeStampedModel, ClusterableModel, BaseLayer):
                 "REQUEST": "GetCapabilities",
             }
             query_str = '&'.join([f"{key}={value}" for key, value in params.items()])
-            request_url = f"{self.base_url}?{query_str}"
+            request_url = f"{capabilities_url}?{query_str}"
             return request_url
         return None
 
