@@ -4,7 +4,7 @@
 
 {% if data_variable %}
     <h2 style="margin-top: 40px;margin-bottom: 10px">
-        {% blocktranslate trimmed data_var=data_variable %}
+        {% blocktranslate trimmed with data_var=data_variable %}
             Data Variable : {{ data_var }}
         {% endblocktranslate %}
     </h2>
