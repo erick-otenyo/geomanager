@@ -1,6 +1,9 @@
+import base64
+import json
 import uuid
 
 from django.db import models
+from django.urls.base import get_script_prefix, reverse
 from django.utils.translation import gettext_lazy as _
 from django_extensions.db.models import TimeStampedModel
 from modelcluster.fields import ParentalKey
@@ -12,13 +15,13 @@ from wagtail.admin.panels import (
     ObjectList,
     InlinePanel
 )
-from wagtail_modeladmin.helpers import AdminURLHelper
 from wagtail.contrib.settings.models import BaseSiteSetting
 from wagtail.contrib.settings.registry import register_setting
 from wagtail.fields import StreamField, RichTextField
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.models import Orderable, Page
 from wagtail_adminsortable.models import AdminSortable
+from wagtail_modeladmin.helpers import AdminURLHelper
 from wagtailiconchooser.widgets import IconChooserWidget
 
 from geomanager.helpers import (
@@ -28,6 +31,7 @@ from geomanager.helpers import (
 )
 from .tile_gl import MBTSource
 from ..blocks import NavigationItemsBlock
+from ..utils import UUIDEncoder
 
 DEFAULT_RASTER_MAX_UPLOAD_SIZE_MB = 10
 
@@ -63,6 +67,28 @@ class Category(TimeStampedModel, AdminSortable, ClusterableModel):
         dataset_admin_helper = AdminURLHelper(Dataset)
         dataset_create_url = dataset_admin_helper.get_action_url("create")
         return dataset_create_url + f"?category_id={self.pk}"
+
+    @property
+    def mapviewer_map_url(self):
+        base_mapviewer_url = reverse("mapview")
+
+        map_config = {
+            "datasets": [{"dataset": "political-boundaries", "layers": ["political-boundaries"], "visibility": True}]
+        }
+
+        map_str = json.dumps(map_config, separators=(',', ':'))
+
+        map_bytes = map_str.encode()
+        map_base64_bytes = base64.b64encode(map_bytes)
+        map_byte_str = map_base64_bytes.decode()
+
+        menu_config = {"menuSection": "datasets", "datasetCategory": self.title}
+        menu_str = json.dumps(menu_config, separators=(',', ':'))
+        menu_bytes = menu_str.encode()
+        menu_base64_bytes = base64.b64encode(menu_bytes)
+        menu_byte_str = menu_base64_bytes.decode()
+
+        return base_mapviewer_url + f"?map={map_byte_str}&mapMenu={menu_byte_str}"
 
 
 class SubCategory(Orderable):
@@ -173,6 +199,37 @@ class Dataset(TimeStampedModel):
         return self.title
 
     @property
+    def mapviewer_map_url(self):
+        base_mapviewer_url = reverse("mapview")
+
+        layers = []
+
+        layer = self.layers.first()
+
+        if layer:
+            layers.append(layer.pk)
+
+        map_config = {
+            "datasets": [
+                {"dataset": self.pk, "visibility": True, "layers": layers},
+                {"dataset": "political-boundaries", "layers": ["political-boundaries"], "visibility": True}]
+        }
+
+        map_str = json.dumps(map_config, cls=UUIDEncoder, separators=(',', ':'))
+
+        map_bytes = map_str.encode()
+        map_base64_bytes = base64.b64encode(map_bytes)
+        map_byte_str = map_base64_bytes.decode()
+
+        menu_config = {"menuSection": "datasets", "datasetCategory": self.category.title}
+        menu_str = json.dumps(menu_config, separators=(',', ':'))
+        menu_bytes = menu_str.encode()
+        menu_base64_bytes = base64.b64encode(menu_bytes)
+        menu_byte_str = menu_base64_bytes.decode()
+
+        return base_mapviewer_url + f"?map={map_byte_str}&mapMenu={menu_byte_str}"
+
+    @property
     def auto_update_interval_milliseconds(self):
         if self.auto_update_interval:
             return self.auto_update_interval * 60000
@@ -245,6 +302,10 @@ class Dataset(TimeStampedModel):
     @property
     def preview_url(self):
         return get_preview_url(self.layer_type, self.pk)
+
+    @property
+    def layers(self):
+        return self.get_layers_rel()
 
     def has_layers(self):
         layers = self.get_layers_rel()
@@ -372,6 +433,31 @@ class BaseLayer(models.Model):
     @property
     def preview_url(self):
         return get_preview_url(layer_type=self.dataset.layer_type, dataset_id=self.dataset.pk, layer_id=self.pk)
+
+    @property
+    def mapviewer_map_url(self):
+        base_mapviewer_url = reverse("mapview")
+
+        map_config = {
+            "datasets": [
+                {"dataset": self.dataset.pk, "visibility": True, "layers": [self.pk]},
+                {"dataset": "political-boundaries", "layers": ["political-boundaries"], "visibility": True}
+            ]
+        }
+
+        map_str = json.dumps(map_config, cls=UUIDEncoder, separators=(',', ':'))
+
+        map_bytes = map_str.encode()
+        map_base64_bytes = base64.b64encode(map_bytes)
+        map_byte_str = map_base64_bytes.decode()
+
+        menu_config = {"menuSection": "datasets", "datasetCategory": self.dataset.category.title}
+        menu_str = json.dumps(menu_config, separators=(',', ':'))
+        menu_bytes = menu_str.encode()
+        menu_base64_bytes = base64.b64encode(menu_bytes)
+        menu_byte_str = menu_base64_bytes.decode()
+
+        return base_mapviewer_url + f"?map={map_byte_str}&mapMenu={menu_byte_str}"
 
     class Meta:
         abstract = True

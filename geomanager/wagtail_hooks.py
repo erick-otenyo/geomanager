@@ -99,9 +99,24 @@ class CategoryModelAdmin(SortableAdminMixin, ModelAdminCanHide):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.list_display = (list(self.list_display) or []) + ["create_dataset", 'view_datasets', ]
+        self.list_display = (list(self.list_display) or []) + ["create_dataset", 'view_datasets', "mapviewer_map_url"]
         self.create_dataset.__func__.short_description = _('Create Dataset')
         self.view_datasets.__func__.short_description = _('View Datasets')
+        self.mapviewer_map_url.__func__.short_description = _("View on MapViewer")
+
+    def mapviewer_map_url(self, obj):
+        label = _("View on MapViewer")
+        button_html = f"""
+                <a href="{obj.mapviewer_map_url}" target="_blank" rel="noopener noreferrer" class="button button-small button--icon button-secondary">
+                    <span class="icon-wrapper">
+                        <svg class="icon icon-plus icon" aria-hidden="true">
+                            <use href="#icon-view"></use>
+                        </svg>
+                    </span>
+                    {label}
+                </a>
+            """
+        return mark_safe(button_html)
 
     def create_dataset(self, obj):
         label = _("Create Dataset")
@@ -176,10 +191,26 @@ class DatasetModelAdmin(ModelAdminCanHide):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.list_display = (list(self.list_display) or []) + ['category_link', 'view_layers', 'upload_files']
+        self.list_display = (list(self.list_display) or []) + ['category_link', 'view_layers', 'upload_files',
+                                                               'mapviewer_map_url']
         self.category_link.__func__.short_description = _('Category')
         self.view_layers.__func__.short_description = _('View Layers')
         self.upload_files.__func__.short_description = _('Upload Files')
+        self.mapviewer_map_url.__func__.short_description = _("View on MapViewer")
+
+    def mapviewer_map_url(self, obj):
+        label = _("View on MapViewer")
+        button_html = f"""
+                    <a href="{obj.mapviewer_map_url}" target="_blank" rel="noopener noreferrer" class="button button-small button--icon button-secondary">
+                        <span class="icon-wrapper">
+                            <svg class="icon icon-plus icon" aria-hidden="true">
+                                <use href="#icon-view"></use>
+                            </svg>
+                        </span>
+                        {label}
+                    </a>
+                """
+        return mark_safe(button_html)
 
     def category_link(self, obj):
         label = _("Edit Category")
@@ -297,11 +328,26 @@ class RasterFileLayerModelAdmin(ModelAdminCanHide):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.list_display = (list(self.list_display) or []) + ["dataset_link", "upload_files", "uploaded_files",
-                                                               "preview_layer"]
+                                                               "preview_layer", "mapviewer_map_url"]
         self.dataset_link.__func__.short_description = _("Dataset")
         self.uploaded_files.__func__.short_description = _("Uploaded Files")
         self.upload_files.__func__.short_description = _("Upload Raster Files")
         self.preview_layer.__func__.short_description = _("Preview on Map")
+        self.mapviewer_map_url.__func__.short_description = _("View on MapViewer")
+
+    def mapviewer_map_url(self, obj):
+        label = _("View on MapViewer")
+        button_html = f"""
+            <a href="{obj.mapviewer_map_url}" target="_blank" rel="noopener noreferrer" class="button button-small button--icon button-secondary">
+                <span class="icon-wrapper">
+                    <svg class="icon icon-plus icon" aria-hidden="true">
+                        <use href="#icon-view"></use>
+                    </svg>
+                </span>
+                {label}
+            </a>
+        """
+        return mark_safe(button_html)
 
     def dataset_link(self, obj):
         button_html = f"""
@@ -455,9 +501,24 @@ class WmsLayerModelAdmin(ModelAdminCanHide):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.list_display = (list(self.list_display) or []) + ['dataset_link', 'preview_layer']
+        self.list_display = (list(self.list_display) or []) + ['dataset_link', 'preview_layer', "mapviewer_map_url"]
         self.dataset_link.__func__.short_description = _('Dataset')
         self.preview_layer.__func__.short_description = _('Preview on Map')
+        self.mapviewer_map_url.__func__.short_description = _("View on MapViewer")
+
+    def mapviewer_map_url(self, obj):
+        label = _("View on MapViewer")
+        button_html = f"""
+            <a href="{obj.mapviewer_map_url}" target="_blank" rel="noopener noreferrer" class="button button-small button--icon button-secondary">
+                <span class="icon-wrapper">
+                    <svg class="icon icon-plus icon" aria-hidden="true">
+                        <use href="#icon-view"></use>
+                    </svg>
+                </span>
+                {label}
+            </a>
+        """
+        return mark_safe(button_html)
 
     def dataset_link(self, obj):
         button_html = f"""
@@ -506,9 +567,24 @@ class RasterTileLayerModelAdmin(ModelAdminCanHide):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.list_display = (list(self.list_display) or []) + ['dataset_link', 'preview_layer']
+        self.list_display = (list(self.list_display) or []) + ['dataset_link', 'preview_layer', "mapviewer_map_url"]
         self.dataset_link.__func__.short_description = _('Dataset')
         self.preview_layer.__func__.short_description = _('Preview on Map')
+        self.mapviewer_map_url.__func__.short_description = _("View on MapViewer")
+
+    def mapviewer_map_url(self, obj):
+        label = _("View on MapViewer")
+        button_html = f"""
+                <a href="{obj.mapviewer_map_url}" target="_blank" rel="noopener noreferrer" class="button button-small button--icon button-secondary">
+                    <span class="icon-wrapper">
+                        <svg class="icon icon-plus icon" aria-hidden="true">
+                            <use href="#icon-view"></use>
+                        </svg>
+                    </span>
+                    {label}
+                </a>
+            """
+        return mark_safe(button_html)
 
     def dataset_link(self, obj):
         button_html = f"""
@@ -556,9 +632,24 @@ class VectorTileLayerModelAdmin(ModelAdminCanHide):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.list_display = (list(self.list_display) or []) + ['dataset_link', 'preview_layer']
+        self.list_display = (list(self.list_display) or []) + ['dataset_link', 'preview_layer', 'mapviewer_map_url']
         self.dataset_link.__func__.short_description = _('Dataset')
         self.preview_layer.__func__.short_description = _('Preview on Map')
+        self.mapviewer_map_url.__func__.short_description = _("View on MapViewer")
+
+    def mapviewer_map_url(self, obj):
+        label = _("View on MapViewer")
+        button_html = f"""
+                    <a href="{obj.mapviewer_map_url}" target="_blank" rel="noopener noreferrer" class="button button-small button--icon button-secondary">
+                        <span class="icon-wrapper">
+                            <svg class="icon icon-plus icon" aria-hidden="true">
+                                <use href="#icon-view"></use>
+                            </svg>
+                        </span>
+                        {label}
+                    </a>
+                """
+        return mark_safe(button_html)
 
     def dataset_link(self, obj):
         button_html = f"""
@@ -618,11 +709,26 @@ class VectorFileLayerModelAdmin(ModelAdminCanHide):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.list_display = (list(self.list_display) or []) + ['dataset_link', "uploaded_files", "upload_files",
-                                                               'preview_layer']
+                                                               'preview_layer', 'mapviewer_map_url']
         self.dataset_link.__func__.short_description = _('Dataset')
         self.uploaded_files.__func__.short_description = _("View Uploaded Files")
         self.upload_files.__func__.short_description = _('Upload Vector Files')
         self.preview_layer.__func__.short_description = _('Preview on Map')
+        self.mapviewer_map_url.__func__.short_description = _("View on MapViewer")
+
+    def mapviewer_map_url(self, obj):
+        label = _("View on MapViewer")
+        button_html = f"""
+                        <a href="{obj.mapviewer_map_url}" target="_blank" rel="noopener noreferrer" class="button button-small button--icon button-secondary">
+                            <span class="icon-wrapper">
+                                <svg class="icon icon-plus icon" aria-hidden="true">
+                                    <use href="#icon-view"></use>
+                                </svg>
+                            </span>
+                            {label}
+                        </a>
+                    """
+        return mark_safe(button_html)
 
     def dataset_link(self, obj):
         button_html = f"""
