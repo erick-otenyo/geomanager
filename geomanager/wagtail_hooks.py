@@ -2,6 +2,7 @@ from adminboundarymanager.models import AdminBoundarySettings
 from django import forms
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import path, reverse
+from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from wagtail import hooks
@@ -9,7 +10,7 @@ from wagtail.admin.menu import MenuItem
 from wagtail_adminsortable.admin import SortableAdminMixin
 from wagtail_modeladmin.helpers import AdminURLHelper
 from wagtail_modeladmin.options import ModelAdminGroup, ModelAdmin, modeladmin_register
-from wagtail_modeladmin.views import CreateView, EditView, IndexView
+from wagtail_modeladmin.views import CreateView, EditView, IndexView, DeleteView
 
 from .helpers import (DatasetButtonHelper, CategoryButtonHelper, FileLayerButtonHelper)
 from .models import (
@@ -789,6 +790,20 @@ class MBTSourceModelAdmin(ModelAdminCanHide):
     form_view_extra_js = ["geomanager/js/mbt_source_extra.js"]
 
 
+class LayerFileDeleteView(DeleteView):
+    # update index url to add layer__id,
+    # so that we redirect to raster files list filtered to
+    # this instance's layer id, the url probably used to arrive to this list
+    @cached_property
+    def index_url(self):
+        index_url = self.url_helper.index_url
+        if self.instance:
+            layer_id = str(self.instance.layer.pk)
+            index_url += f"?layer__id={layer_id}"
+
+        return index_url
+
+
 class LayerRasterFileModelAdmin(ModelAdminCanHide):
     model = LayerRasterFile
     exclude_from_explorer = True
@@ -796,6 +811,7 @@ class LayerRasterFileModelAdmin(ModelAdminCanHide):
     list_display = ("__str__", "layer", "time",)
     list_filter = ("layer",)
     index_template_name = "modeladmin/index_without_custom_create.html"
+    delete_view_class = LayerFileDeleteView
 
 
 class PgVectorTableModelAdmin(ModelAdminCanHide):
@@ -805,6 +821,7 @@ class PgVectorTableModelAdmin(ModelAdminCanHide):
     list_filter = ("layer",)
     index_template_name = "modeladmin/index_without_custom_create.html"
     inspect_view_enabled = True
+    delete_view_class = LayerFileDeleteView
 
 
 class GeoManagerAdminGroup(ModelAdminGroupWithHiddenItems):
