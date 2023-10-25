@@ -215,19 +215,21 @@ class LayerRasterFile(TimeStampedModel):
     time = models.DateTimeField(verbose_name=_("time"),
                                 help_text=_("Time for the raster file. This can be the time the data was acquired, "
                                             "or the date and time for which the data applies", ))
+    raster_metadata = models.JSONField(blank=True, null=True)
 
     class Meta:
         verbose_name = _("Layer Raster File")
         verbose_name_plural = _("Layer Raster Files")
-        ordering = ["time"]
+        ordering = ["-time"]
         unique_together = ('layer', 'time')
 
     panels = [
         FieldPanel("time"),
+        FieldPanel("raster_metadata", read_only=True),
     ]
 
     def __str__(self):
-        return f"{self.time}"
+        return f"{self.layer.title} - {self.time}"
 
 
 class RasterUpload(TimeStampedModel):

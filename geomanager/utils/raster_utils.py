@@ -258,6 +258,15 @@ def create_layer_raster_file(layer, upload, time, band_index=None, data_variable
             if data_variable:
                 file_name = f"{data_variable}_{file_name}"
             raster.file.save(file_name, file_content)
+
+            try:
+                source = get_tile_source(raster.file)
+                metadata = source.getMetadata()
+                if metadata:
+                    raster.raster_metadata = metadata
+            except Exception:
+                pass
+
             raster.save()
 
 
