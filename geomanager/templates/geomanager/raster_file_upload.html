@@ -86,7 +86,7 @@
         <ul id="upload-list" class="upload-list multiple"></ul>
     </div>
 
-    <script id="upload-list-item" type="text/template">
+    <template id="upload-list-item">
         <li class="row">
             <div class="left col3">
                 <div class="preview">
@@ -114,7 +114,7 @@
                 <p class="status-msg failure error_messages"></p>
             </div>
         </li>
-    </script>
+    </template>
 {% endblock %}
 
 {% block extra_js %}

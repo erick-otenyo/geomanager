@@ -18,8 +18,6 @@ $((function () {
             maxFileSize: window.fileupload_opts.errormessages.max_file_size
         },
         add: function (e, a) {
-            $(".messages").empty();
-
             const t = $(this)
             const s = t.data("blueimp-fileupload") || t.data("fileupload")
             const o = $($("#upload-list-item").html()).addClass("upload-uploading")
@@ -35,10 +33,6 @@ $((function () {
                 a.context.find(".left").each((function (e, t) {
                     $(t).append(escapeHtml(a.files[e].name))
                 }));
-                // a.context.find(".preview .thumb").each((function (e, t) {
-                //     $(t).addClass("hasthumb");
-                //     $(t).append(a.files[e].preview)
-                // }))
             })).done((function () {
                 a.context.find(".start").prop("disabled", !1);
                 !1 !== s._trigger("added", e, a) && (i.autoUpload || a.autoUpload) && !1 !== a.autoUpload && a.submit()
