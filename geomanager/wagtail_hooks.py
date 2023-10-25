@@ -105,12 +105,12 @@ class CategoryModelAdmin(SortableAdminMixin, ModelAdminCanHide):
         self.mapviewer_map_url.__func__.short_description = _("View on MapViewer")
 
     def mapviewer_map_url(self, obj):
-        label = _("View on MapViewer")
+        label = _("MapViewer")
         button_html = f"""
                 <a href="{obj.mapviewer_map_url}" target="_blank" rel="noopener noreferrer" class="button button-small button--icon button-secondary">
                     <span class="icon-wrapper">
-                        <svg class="icon icon-plus icon" aria-hidden="true">
-                            <use href="#icon-view"></use>
+                        <svg class="icon icon-map icon" aria-hidden="true">
+                            <use href="#icon-map"></use>
                         </svg>
                     </span>
                     {label}
@@ -191,20 +191,19 @@ class DatasetModelAdmin(ModelAdminCanHide):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.list_display = (list(self.list_display) or []) + ['category_link', 'view_layers', 'upload_files',
-                                                               'mapviewer_map_url']
-        self.category_link.__func__.short_description = _('Category')
+        self.list_display = (list(self.list_display) or []) + ['view_layers', 'upload_files', 'mapviewer_map_url']
+
         self.view_layers.__func__.short_description = _('View Layers')
         self.upload_files.__func__.short_description = _('Upload Files')
         self.mapviewer_map_url.__func__.short_description = _("View on MapViewer")
 
     def mapviewer_map_url(self, obj):
-        label = _("View on MapViewer")
+        label = _("MapViewer")
         button_html = f"""
                     <a href="{obj.mapviewer_map_url}" target="_blank" rel="noopener noreferrer" class="button button-small button--icon button-secondary">
                         <span class="icon-wrapper">
-                            <svg class="icon icon-plus icon" aria-hidden="true">
-                                <use href="#icon-view"></use>
+                            <svg class="icon icon-map icon" aria-hidden="true">
+                                <use href="#icon-map"></use>
                             </svg>
                         </span>
                         {label}
@@ -333,15 +332,15 @@ class RasterFileLayerModelAdmin(ModelAdminCanHide):
         self.uploaded_files.__func__.short_description = _("Uploaded Files")
         self.upload_files.__func__.short_description = _("Upload Raster Files")
         self.preview_layer.__func__.short_description = _("Preview on Map")
-        self.mapviewer_map_url.__func__.short_description = _("View on MapViewer")
+        self.mapviewer_map_url.__func__.short_description = _("MapViewer")
 
     def mapviewer_map_url(self, obj):
-        label = _("View on MapViewer")
+        label = _("MapViewer")
         button_html = f"""
             <a href="{obj.mapviewer_map_url}" target="_blank" rel="noopener noreferrer" class="button button-small button--icon button-secondary">
                 <span class="icon-wrapper">
-                    <svg class="icon icon-plus icon" aria-hidden="true">
-                        <use href="#icon-view"></use>
+                    <svg class="icon icon-map icon" aria-hidden="true">
+                        <use href="#icon-map"></use>
                     </svg>
                 </span>
                 {label}
@@ -507,12 +506,12 @@ class WmsLayerModelAdmin(ModelAdminCanHide):
         self.mapviewer_map_url.__func__.short_description = _("View on MapViewer")
 
     def mapviewer_map_url(self, obj):
-        label = _("View on MapViewer")
+        label = _("MapViewer")
         button_html = f"""
             <a href="{obj.mapviewer_map_url}" target="_blank" rel="noopener noreferrer" class="button button-small button--icon button-secondary">
                 <span class="icon-wrapper">
-                    <svg class="icon icon-plus icon" aria-hidden="true">
-                        <use href="#icon-view"></use>
+                    <svg class="icon icon-map icon" aria-hidden="true">
+                        <use href="#icon-map"></use>
                     </svg>
                 </span>
                 {label}
@@ -573,12 +572,12 @@ class RasterTileLayerModelAdmin(ModelAdminCanHide):
         self.mapviewer_map_url.__func__.short_description = _("View on MapViewer")
 
     def mapviewer_map_url(self, obj):
-        label = _("View on MapViewer")
+        label = _("MapViewer")
         button_html = f"""
                 <a href="{obj.mapviewer_map_url}" target="_blank" rel="noopener noreferrer" class="button button-small button--icon button-secondary">
                     <span class="icon-wrapper">
-                        <svg class="icon icon-plus icon" aria-hidden="true">
-                            <use href="#icon-view"></use>
+                        <svg class="icon icon-map icon" aria-hidden="true">
+                            <use href="#icon-map"></use>
                         </svg>
                     </span>
                     {label}
@@ -638,12 +637,12 @@ class VectorTileLayerModelAdmin(ModelAdminCanHide):
         self.mapviewer_map_url.__func__.short_description = _("View on MapViewer")
 
     def mapviewer_map_url(self, obj):
-        label = _("View on MapViewer")
+        label = _("MapViewer")
         button_html = f"""
                     <a href="{obj.mapviewer_map_url}" target="_blank" rel="noopener noreferrer" class="button button-small button--icon button-secondary">
                         <span class="icon-wrapper">
-                            <svg class="icon icon-plus icon" aria-hidden="true">
-                                <use href="#icon-view"></use>
+                            <svg class="icon icon-map icon" aria-hidden="true">
+                                <use href="#icon-map"></use>
                             </svg>
                         </span>
                         {label}
@@ -717,12 +716,12 @@ class VectorFileLayerModelAdmin(ModelAdminCanHide):
         self.mapviewer_map_url.__func__.short_description = _("View on MapViewer")
 
     def mapviewer_map_url(self, obj):
-        label = _("View on MapViewer")
+        label = _("MapViewer")
         button_html = f"""
                         <a href="{obj.mapviewer_map_url}" target="_blank" rel="noopener noreferrer" class="button button-small button--icon button-secondary">
                             <span class="icon-wrapper">
-                                <svg class="icon icon-plus icon" aria-hidden="true">
-                                    <use href="#icon-view"></use>
+                                <svg class="icon icon-map icon" aria-hidden="true">
+                                    <use href="#icon-map"></use>
                                 </svg>
                             </span>
                             {label}

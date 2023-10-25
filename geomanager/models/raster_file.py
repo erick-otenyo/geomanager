@@ -418,7 +418,7 @@ class ColorValue(TimeStampedModel, Orderable):
     threshold = models.FloatField(verbose_name=_("Threshold value"), help_text=_(
         "Values less than or equal to the input value, will be assigned the chosen color"))
     color = ColorField(default="#ff0000", verbose_name=_("color"))
-    label = models.CharField(max_length=100, blank=True, null=True, verbose_name=_('Label for Legend'))
+    label = models.CharField(max_length=100, blank=True, null=True, verbose_name=_('Optional Label'))
 
     class Meta:
         verbose_name = _("Color Value")
