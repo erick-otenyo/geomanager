@@ -20,12 +20,16 @@ from geomanager.blocks import (
 from geomanager.forms import RasterStyleModelForm
 from geomanager.helpers import get_raster_layer_files_url
 from geomanager.models.core import Dataset, BaseLayer
+from geomanager.utils import DATE_FORMAT_CHOICES
 from geomanager.widgets import RasterStyleWidget
 
 
 class RasterFileLayer(TimeStampedModel, BaseLayer):
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, related_name="raster_file_layers",
                                 verbose_name=_("dataset"))
+    date_format = models.CharField(max_length=100, choices=DATE_FORMAT_CHOICES, blank=True, null=True,
+                                   default="yyyy-MM-dd HH:mm",
+                                   verbose_name=_("Display Format for DateTime Selector"))
     style = models.ForeignKey("RasterStyle", null=True, blank=True, on_delete=models.SET_NULL, verbose_name=_("style"))
 
     analysis = StreamField([
@@ -42,6 +46,7 @@ class RasterFileLayer(TimeStampedModel, BaseLayer):
         FieldPanel("dataset"),
         FieldPanel("title"),
         FieldPanel("default"),
+        FieldPanel("date_format"),
         FieldPanel("style"),
         FieldPanel("analysis")
     ]
@@ -115,15 +120,29 @@ class RasterFileLayer(TimeStampedModel, BaseLayer):
 
     @property
     def param_selector_config(self):
-        config = {
+        time_config = {
             "key": "time",
             "required": True,
             "sentence": "{selector}",
             "type": "datetime",
-            "dateFormat": {"currentTime": "yyyy-MM-dd HH:mm"},
             "availableDates": [],
         }
-        return [config]
+
+        if self.date_format:
+            if self.date_format == "pentadal":
+                time_config.update({
+                    "dateFormat": {"currentTime": "MMM yyyy", "asPeriod": "pentadal"},
+                })
+            else:
+                time_config.update({
+                    "dateFormat": {"currentTime": self.date_format},
+                })
+        else:
+            time_config.update({
+                "dateFormat": {"currentTime": "yyyy-MM-dd HH:mm"},
+            })
+
+        return [time_config]
 
     def get_legend_config(self):
         if self.style:

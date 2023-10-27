@@ -15,6 +15,7 @@ from geomanager.blocks import (
     QueryParamSelectableBlock
 )
 from geomanager.models.core import Dataset, BaseLayer
+from geomanager.utils import DATE_FORMAT_CHOICES
 
 
 class WmsLayer(TimeStampedModel, ClusterableModel, BaseLayer):
@@ -27,14 +28,6 @@ class WmsLayer(TimeStampedModel, ClusterableModel, BaseLayer):
     VERSION_CHOICES = (
         ("1.1.1", "1.1.1"),
         ("1.3.0", "1.3.0"),
-    )
-
-    DATE_FORMAT_CHOICES = (
-        ("yyyy-MM-dd HH:mm", _("Hourly - (E.g 2023-01-01 00:00)")),
-        ("yyyy-MM-dd", _("Daily - (E.g 2023-01-01)")),
-        ("yyyy-MM", _("Monthly - (E.g 2023-01)")),
-        ("MMMM yyyy", _("Monthly - (E.g January 2023)")),
-        ("pentadal", _("Pentadal - (E.g Jan 2023 - P1 1-5th)"))
     )
 
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, related_name="wms_layers", verbose_name=_("dataset"))
@@ -67,7 +60,8 @@ class WmsLayer(TimeStampedModel, ClusterableModel, BaseLayer):
         ('legend', InlineLegendBlock(label=_("Custom Legend")),),
         ('legend_image', ImageChooserBlock(label=_("Custom Image")),),
     ], use_json_field=True, null=True, blank=True, max_num=1, verbose_name=_("Legend"), )
-    date_format = models.CharField(max_length=100, choices=DATE_FORMAT_CHOICES, blank=True, null=True)
+    date_format = models.CharField(max_length=100, choices=DATE_FORMAT_CHOICES, blank=True, null=True,
+                                   verbose_name=_("Display Format for DateTime Selector"))
     custom_get_capabilities_url = models.URLField(blank=True, null=True, verbose_name=_("Get Capabilities URL"),
                                                   help_text=_("Alternative URL for the GetCapabilities request. "
                                                               "Used when 'Request time from capabilities' "
