@@ -120,7 +120,7 @@ class RasterFileLayer(TimeStampedModel, BaseLayer):
             "required": True,
             "sentence": "{selector}",
             "type": "datetime",
-            "dateFormat": {"currentTime": "yyyy-mm-dd HH:MM"},
+            "dateFormat": {"currentTime": "yyyy-MM-dd HH:mm"},
             "availableDates": [],
         }
         return [config]

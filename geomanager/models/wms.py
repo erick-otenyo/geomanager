@@ -30,10 +30,10 @@ class WmsLayer(TimeStampedModel, ClusterableModel, BaseLayer):
     )
 
     DATE_FORMAT_CHOICES = (
-        ("yyyy-mm-dd HH:MM", _("Hourly - (E.g 2023-01-01 00:00)")),
-        ("yyyy-mm-dd", _("Daily - (E.g 2023-01-01)")),
-        ("yyyy-mm", _("Monthly - (E.g 2023-01)")),
-        ("mmmm yyyy", _("Monthly - (E.g January 2023)")),
+        ("yyyy-MM-dd HH:mm", _("Hourly - (E.g 2023-01-01 00:00)")),
+        ("yyyy-MM-dd", _("Daily - (E.g 2023-01-01)")),
+        ("yyyy-MM", _("Monthly - (E.g 2023-01)")),
+        ("MMMM yyyy", _("Monthly - (E.g January 2023)")),
         ("pentadal", _("Pentadal - (E.g Jan 2023 - P1 1-5th)"))
     )
 
@@ -258,7 +258,7 @@ class WmsLayer(TimeStampedModel, ClusterableModel, BaseLayer):
             if self.date_format:
                 if self.date_format == "pentadal":
                     time_config.update({
-                        "dateFormat": {"currentTime": "mmm yyyy", "asPeriod": "pentadal"},
+                        "dateFormat": {"currentTime": "MMM yyyy", "asPeriod": "pentadal"},
                     })
                 else:
                     time_config.update({
@@ -266,7 +266,7 @@ class WmsLayer(TimeStampedModel, ClusterableModel, BaseLayer):
                     })
             else:
                 time_config.update({
-                    "dateFormat": {"currentTime": "yyyy-mm-dd HH:MM"},
+                    "dateFormat": {"currentTime": "yyyy-MM-dd HH:mm"},
                 })
 
             config.append(time_config)

@@ -166,7 +166,7 @@ class BaseTileLayer(TimeStampedModel, ClusterableModel, BaseLayer):
             }
 
             time_config.update({
-                "dateFormat": {"currentTime": "yyyy-mm-dd HH:MM"},
+                "dateFormat": {"currentTime": "yyyy-MM-dd HH:mm"},
             })
             config.append(time_config)
 
