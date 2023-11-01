@@ -39,7 +39,7 @@ from geomanager.models import (
     RasterFileLayer,
     LayerRasterFile, Geostore
 )
-from geomanager.models.core import GeomanagerSettings
+from geomanager.models.core import GeomanagerSettings, Category
 from geomanager.serializers import RasterFileLayerSerializer
 from geomanager.utils import UUIDEncoder
 from geomanager.utils.raster_utils import (
@@ -60,6 +60,8 @@ def upload_raster_file(request, dataset_id=None, layer_id=None):
     permission = get_permission_name('change', Dataset)
     if not request.user.has_perm(permission):
         return permission_denied(request)
+
+    edit_form_template = "geomanager/raster_file/raster_file_edit_form.html"
 
     site = Site.objects.get(is_default_site=True)
     layer_manager_settings = GeomanagerSettings.for_site(site)
@@ -90,6 +92,9 @@ def upload_raster_file(request, dataset_id=None, layer_id=None):
 
     dataset = get_object_or_404(Dataset, pk=dataset_id)
 
+    category_admin_helper = AdminURLHelper(Category)
+    categories_url = category_admin_helper.get_action_url("index")
+
     admin_url_helper = AdminURLHelper(Dataset)
     dataset_list_url = admin_url_helper.get_action_url("index")
     layer_list_url = None
@@ -101,13 +106,21 @@ def upload_raster_file(request, dataset_id=None, layer_id=None):
         layer_list_url = layer_admin_url_helper.get_action_url("index") + f"?dataset__id__exact={dataset.pk}"
         layer_preview_url = layer.preview_url
 
+    navigation_items = [
+        {"url": categories_url, "label": Category._meta.verbose_name_plural},
+        {"url": dataset_list_url, "label": Dataset._meta.verbose_name_plural},
+        {"url": layer_list_url, "label": RasterFileLayer._meta.verbose_name_plural},
+        {"url": "#", "label": _("Upload Raster Files")},
+    ]
+
     context.update({
         "dataset": dataset,
         "layer": layer,
         "datasets_index_url": dataset_list_url,
         "layers_index_url": layer_list_url,
         "dataset_preview_url": dataset.preview_url,
-        "layer_preview_url": layer_preview_url
+        "layer_preview_url": layer_preview_url,
+        "navigation_items": navigation_items,
     })
 
     gm_settings = GeomanagerSettings.for_request(request)
@@ -229,24 +242,16 @@ def upload_raster_file(request, dataset_id=None, layer_id=None):
             forms = []
             for form in layer_forms:
                 ctx.update({**form})
-                forms.append(render_to_string(
-                    "geomanager/raster_file_edit_form.html",
-                    ctx,
-                    request=request,
-                ))
+                forms.append(render_to_string(edit_form_template, ctx, request=request, ))
             response.update({"forms": forms})
         else:
             ctx.update({"form": layer_form})
-            form = render_to_string(
-                "geomanager/raster_file_edit_form.html",
-                ctx,
-                request=request,
-            )
+            form = render_to_string(edit_form_template, ctx, request=request)
             response.update({"form": form})
 
         return JsonResponse(response)
 
-    return render(request, 'geomanager/raster_file_upload.html', context)
+    return render(request, 'geomanager/raster_file/raster_file_upload.html', context)
 
 
 @user_passes_test(user_has_any_page_permission)
@@ -291,11 +296,7 @@ def publish_raster(request, upload_id):
     def get_response():
         return {
             "success": False,
-            "form": render_to_string(
-                "geomanager/raster_file_edit_form.html",
-                ctx,
-                request=request,
-            ),
+            "form": render_to_string("geomanager/raster_file/raster_file_edit_form.html", ctx, request=request, ),
         }
 
     if layer_form.is_valid():
@@ -385,11 +386,15 @@ def preview_raster_layers(request, dataset_id, layer_id=None):
 
     base_absolute_url = request.scheme + '://' + request.get_host()
 
-    dataset_admin_helper = AdminURLHelper(Dataset)
-    dataset_list_url = dataset_admin_helper.get_action_url("index")
+    category_admin_helper = AdminURLHelper(Category)
+    categories_url = category_admin_helper.get_action_url("index")
 
-    image_file_layer_admin_helper = AdminURLHelper(RasterFileLayer)
-    image_file_layer_list_url = image_file_layer_admin_helper.get_action_url("index")
+    dataset_admin_helper = AdminURLHelper(Dataset)
+    dataset_list_url = dataset_admin_helper.get_action_url("index") + f"?id={dataset_id}"
+
+    raster_file_layer_admin_helper = AdminURLHelper(RasterFileLayer)
+    raster_file_layer_list_url = raster_file_layer_admin_helper.get_action_url("index")
+    raster_file_layer_list_url = raster_file_layer_list_url + f"?dataset__id__exact={dataset_id}"
 
     dataset_layers = RasterFileLayerSerializer(dataset.raster_file_layers, many=True, context={"request": request}).data
 
@@ -398,21 +403,38 @@ def preview_raster_layers(request, dataset_id, layer_id=None):
     if layer_id:
         selected_layer = dataset.raster_file_layers.get(pk=layer_id)
 
+    navigation_items = [
+        {"url": categories_url, "label": Category._meta.verbose_name_plural},
+        {"url": dataset_list_url, "label": Dataset._meta.verbose_name_plural},
+        {"url": raster_file_layer_list_url, "label": RasterFileLayer._meta.verbose_name_plural},
+        {"url": "#", "label": _("Preview")},
+    ]
+
     context = {
         "dataset": dataset,
         "dataset_layers": json.dumps(dataset_layers, cls=UUIDEncoder),
         "selected_layer": selected_layer,
         "datasets_index_url": dataset_list_url,
-        "image_file_layer_list_url": image_file_layer_list_url,
+        "image_file_layer_list_url": raster_file_layer_list_url,
         "file_raster_list_url": request.build_absolute_uri(reverse("file-raster-list")),
         "large_image_color_maps_url": request.build_absolute_uri(reverse("large-image-colormaps")),
         "file_raster_metadata_url": request.build_absolute_uri(reverse("file-raster-metadata", args=("0",))),
         "base_absolute_url": base_absolute_url,
+        "navigation_items": navigation_items,
     }
-    return render(request, 'geomanager/raster_file_layer_preview.html', context)
+    return render(request, 'geomanager/raster_file/raster_file_layer_preview.html', context)
 
 
 class RasterDataMixin:
+    def get_raster_file_by_id(self, request: Request, file_id) -> LayerRasterFile:
+        raster_file = LayerRasterFile.objects.filter(pk=file_id)
+
+        if raster_file.exists():
+            return raster_file.first()
+
+        error_message = _("File not found matching 'id': %(file_id)s") % {"file_id": file_id}
+        raise RasterFileNotFound(error_message)
+
     def get_single_raster_file(self, request: Request, layer_id) -> LayerRasterFile:
         time = self.get_query_param(request, "time")
 
@@ -547,6 +569,57 @@ class RasterTileView(RasterDataMixin, APIView):
         mime_type = source.getTileMimeType()
 
         return HttpResponse(tile_binary, content_type=mime_type)
+
+
+@method_decorator(cache_page, name='get')
+class RasterThumbnailView(RasterDataMixin, APIView):
+    def get(self, request, file_id):
+        try:
+            raster_file = self.get_raster_file_by_id(request, file_id)
+        except QueryParamRequired as e:
+            return HttpResponse(e.message, status=400)
+        except RasterFileNotFound as e:
+            return HttpResponse(e, status=404)
+
+        fmt = self.get_query_param(request, "format", "png")
+        projection = self.get_query_param(request, "projection", "EPSG:3857")
+        style = self.get_query_param(request, "style")
+        width = int(self.get_query_param(request, 'width', 256))
+        height = int(self.get_query_param(request, 'height', 256))
+
+        if style:
+            # explict request to use layer defined style. Mostly used for admin previews
+            if style == "layer-style":
+                layer_style = raster_file.layer.style
+                if layer_style:
+                    style = layer_style.get_style_as_json()
+                else:
+                    style = None
+            else:
+                # try validating style
+                # TODO: do more thorough validation
+                try:
+                    style = json.loads(style)
+                except Exception:
+                    style = None
+        else:
+            layer_style = raster_file.layer.style
+            if layer_style:
+                style = layer_style.get_style_as_json()
+
+        encoding = tilesource.format_to_encoding(fmt, pil_safe=True)
+
+        options = {
+            "encoding": encoding,
+            "projection": projection,
+            "style": style,
+        }
+
+        source = get_tile_source(path=raster_file.file, options=options)
+
+        thumb_data, mime_type = source.getThumbnail(encoding=encoding, width=width, height=height)
+
+        return HttpResponse(thumb_data, content_type=mime_type)
 
 
 @method_decorator(cache_page, name='get')

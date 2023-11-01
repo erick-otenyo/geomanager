@@ -129,7 +129,8 @@ class Dataset(TimeStampedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=255, verbose_name=_("title"),
                              help_text=_("The Dataset title as will appear to the public"))
-    category = models.ForeignKey(Category, verbose_name=_("category"), on_delete=models.PROTECT)
+    category = models.ForeignKey(Category, verbose_name=_("category"), on_delete=models.PROTECT,
+                                 related_name="datasets")
     sub_category = models.ForeignKey(SubCategory, verbose_name=_("Subcategory"), on_delete=models.PROTECT)
     summary = models.CharField(max_length=100, null=True, blank=True,
                                verbose_name=_("summary"),

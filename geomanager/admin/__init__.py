@@ -1,0 +1,84 @@
+from adminboundarymanager.models import AdminBoundarySettings
+from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
+from wagtail.admin.menu import MenuItem
+from wagtail_modeladmin.options import ModelAdminGroup
+
+from geomanager.admin.category import CategoryModelAdmin
+from geomanager.admin.dataset import DatasetModelAdmin
+from geomanager.admin.mbt_source import MBTSourceModelAdmin
+from geomanager.admin.metadata import MetadataModelAdmin
+from geomanager.admin.raster_file import RasterFileLayerModelAdmin, RasterFileModelAdmin, urls as raster_file_urls
+from geomanager.admin.raster_style import RasterStyleModelAdmin
+from geomanager.admin.raster_tile import RasterTileLayerModelAdmin, urls as raster_tile_urls
+from geomanager.admin.stations import urls as station_urls
+from geomanager.admin.vector_file import VectorFileLayerModelAdmin, VectorTableModelAdmin, urls as vector_file_urls
+from geomanager.admin.vector_tile import VectorTileLayerModelAdmin, urls as vector_tile_urls
+from geomanager.admin.wms import WmsLayerModelAdmin, urls as wms_urls
+from geomanager.models import GeomanagerSettings
+
+urls = raster_file_urls + raster_tile_urls + vector_file_urls + vector_tile_urls + wms_urls + station_urls
+
+
+class ModelAdminGroupWithHiddenItems(ModelAdminGroup):
+    def get_submenu_items(self):
+        menu_items = []
+        item_order = 1
+        for model_admin in self.modeladmin_instances:
+            if not model_admin.hidden:
+                menu_items.append(model_admin.get_menu_item(order=item_order))
+                item_order += 1
+        return menu_items
+
+
+class GeoManagerAdminGroup(ModelAdminGroupWithHiddenItems):
+    menu_label = _('Geo Manager')
+    menu_icon = 'layer-group'
+    menu_order = 700
+    items = (
+        CategoryModelAdmin,
+        DatasetModelAdmin,
+        MetadataModelAdmin,
+        RasterFileLayerModelAdmin,
+        RasterStyleModelAdmin,
+        VectorFileLayerModelAdmin,
+        WmsLayerModelAdmin,
+        RasterTileLayerModelAdmin,
+        VectorTileLayerModelAdmin,
+        MBTSourceModelAdmin,
+        RasterFileModelAdmin,
+        VectorTableModelAdmin
+    )
+
+    def get_submenu_items(self):
+        menu_items = super().get_submenu_items()
+
+        try:
+            settings_url = reverse(
+                "wagtailsettings:edit",
+                args=[AdminBoundarySettings._meta.app_label, AdminBoundarySettings._meta.model_name, ],
+            )
+            abm_settings_menu = MenuItem(label=_("Boundary Settings"), url=settings_url, icon_name="cog")
+            menu_items.append(abm_settings_menu)
+        except Exception:
+            pass
+
+        boundary_loader = MenuItem(label=_("Boundary Data"), url=reverse("adminboundarymanager_preview_boundary"),
+                                   icon_name="map")
+        menu_items.append(boundary_loader)
+
+        stations_data = MenuItem(label=_("Stations Data"), url=reverse("geomanager_preview_stations"),
+                                 icon_name="map")
+        menu_items.append(stations_data)
+
+        try:
+            settings_url = reverse(
+                "wagtailsettings:edit",
+                args=[GeomanagerSettings._meta.app_label, GeomanagerSettings._meta.model_name, ],
+            )
+            gm_settings_menu = MenuItem(label=_("Settings"), url=settings_url, icon_name="cog")
+            menu_items.append(gm_settings_menu)
+        except Exception:
+            pass
+
+        return menu_items

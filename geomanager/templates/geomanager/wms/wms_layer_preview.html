@@ -1,7 +1,7 @@
 {% extends "wagtailadmin/base.html" %}
 {% load i18n %}
 {% load l10n %}
-{% load wagtailadmin_tags wagtailimages_tags static %}
+{% load wagtailadmin_tags wagtailimages_tags static geomanager_tags %}
 {% block titletag %}
     {% blocktranslate trimmed with title=page.get_admin_display_title %}
         Preview Layers {{ title }}
@@ -17,41 +17,31 @@
     <link rel="stylesheet" href="{% static 'geomanager/css/preview-map.css' %}">
 {% endblock %}
 
+
 {% block content %}
+    {% if navigation_items %}
+        {% breadcrumbs_component navigation_items %}
+    {% endif %}
+
     {% trans "Preview" as preview_str %}
 
     {% include "wagtailadmin/shared/header.html" with title=preview_str|add:" - "|add:dataset.title subtitle=page.get_admin_display_title icon="view" %}
 
     <div class="nice-padding">
-        <div class="go-to-datasets">
-            <a href="{% if selected_layer %}{{ raster_tile_layer_list_url }}
-                        {% else %}{{ datasets_index_url }}{% endif %}"
-               class="button bicolor button--icon">
-                <span class="icon-wrapper">
-                    <svg class="icon icon-plus icon" aria-hidden="true">
-                        <use href="#icon-arrow-left"></use>
-                    </svg>
-                </span>
-                {% if selected_layer %}
-                    {% translate "Back to Layers" %}
-                {% else %}
-                    {% translate "Back to Datasets" %}
-                {% endif %}
-            </a>
-        </div>
-        <div class="w-field__input" data-field-input="" style="display: none">
+
+        <div class="w-field__input" data-field-input="">
             <label class="w-field__label" for="layer_select" id="layer_select-label">
                 {% translate "Select Layer" %}
             </label>
             <select name="select" id="layer_select">
-                {% for layer in dataset.raster_tile_layers.all %}
+                {% for layer in dataset.wms_layers.all %}
                     <option value="{{ layer.pk }}"
                             {% if selected_layer and selected_layer.pk == layer.pk %}selected{% endif %}>{{ layer.title }}</option>
                 {% endfor %}
             </select>
         </div>
         <div id="preview-map" style="position: relative">
-            <div class="layer-timestamps-wrapper" style="display: none" id="timestamps_wrapper">
+            <div class="layer-timestamps-wrapper">
                 <div class="w-field__input">
                     <label class="w-field__label" for="timestamps_select" id="timestamps_select-label">
                         {% translate "Time" %}
@@ -70,6 +60,7 @@
 
     {{ form_media.js }}
     <script src="{% static 'geomanager/js/vendor/maplibre-gl.js' %}"></script>
+    <script src="{% static 'geomanager/js/vendor/ol.min.js' %}"></script>
 
     <script>
         let dataLayers = '{{ dataset_layers|escapejs }}';
@@ -77,11 +68,11 @@
             dataLayers = JSON.parse(dataLayers)
         }
         window.geomanager_opts = {
-            dataLayers: dataLayers,
+            dataLayers: dataLayers
         }
     </script>
 
     <!-- Main script -->
-    <script src="{% static 'geomanager/js/raster-tile-preview.js' %}"></script>
+    <script src="{% static 'geomanager/js/wms-preview.js' %}"></script>
 
 {% endblock %}

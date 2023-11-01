@@ -54,6 +54,10 @@ class RasterFileLayer(TimeStampedModel, BaseLayer):
     def __str__(self):
         return f"{self.dataset.title} - {self.title}"
 
+    @property
+    def raster_files_count(self):
+        return self.raster_files.count()
+
     def get_uploads_list_url(self):
         url = get_raster_layer_files_url(self.pk)
         return url
@@ -249,6 +253,11 @@ class LayerRasterFile(TimeStampedModel):
 
     def __str__(self):
         return f"{self.layer.title} - {self.time}"
+
+    @property
+    def thumbnail_url(self):
+        url = reverse("raster_file_thumbnail", kwargs={"file_id": self.pk})
+        return url
 
 
 class RasterUpload(TimeStampedModel):

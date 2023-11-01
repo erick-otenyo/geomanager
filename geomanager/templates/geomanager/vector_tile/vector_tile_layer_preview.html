@@ -1,17 +1,15 @@
 {% extends "wagtailadmin/base.html" %}
 {% load i18n %}
 {% load l10n %}
-{% load wagtailadmin_tags wagtailimages_tags static %}
-
+{% load wagtailadmin_tags wagtailimages_tags static geomanager_tags %}
 {% block titletag %}
     {% blocktranslate trimmed with title=page.get_admin_display_title %}
-        Preview Layer {{ title }}
+        Preview Layers {{ title }}
     {% endblocktranslate %}
 {% endblock %}
 
 {% block extra_css %}
     {{ block.super }}
-
     {{ form_media.css }}
 
     <link rel="stylesheet" href="{% static 'geomanager/css/vendor/maplibre-gl.css' %}">
@@ -20,55 +18,33 @@
 
 
 {% block content %}
-    {% translate "Preview" as preview_str %}
+    {% if navigation_items %}
+        {% breadcrumbs_component navigation_items %}
+    {% endif %}
+
+    {% trans "Preview" as preview_str %}
 
     {% include "wagtailadmin/shared/header.html" with title=preview_str|add:" - "|add:dataset.title subtitle=page.get_admin_display_title icon="view" %}
 
     <div class="nice-padding">
-        <div class="go-to-datasets">
-            <a href="{% if selected_layer %}{{ image_file_layer_list_url }}
-                        {% else %}{{ datasets_index_url }}{% endif %}"
-               class="button bicolor button--icon">
-                <span class="icon-wrapper">
-                    <svg class="icon icon-plus icon" aria-hidden="true">
-                        <use href="#icon-arrow-left"></use>
-                    </svg>
-                </span>
-                {% if selected_layer %}
-                    {% translate "Back to Layers" %}
-                {% else %}
-                    {% translate "Back to Datasets" %}
-                {% endif %}
-            </a>
-        </div>
-
         <div class="w-field__input" data-field-input="" style="display: none">
             <label class="w-field__label" for="layer_select" id="layer_select-label">
                 {% translate "Select Layer" %}
             </label>
             <select name="select" id="layer_select">
-                {% for layer in dataset.raster_file_layers.all %}
-                    <option value="{{ layer.pk }}" {% if layer.style %}data-hasstyle="1"{% endif %}
+                {% for layer in dataset.vector_tile_layers.all %}
+                    <option value="{{ layer.pk }}"
                             {% if selected_layer and selected_layer.pk == layer.pk %}selected{% endif %}>{{ layer.title }}</option>
                 {% endfor %}
             </select>
         </div>
         <div id="preview-map" style="position: relative">
-            <div class="layer-timestamps-wrapper">
+            <div class="layer-timestamps-wrapper" style="display: none" id="timestamps_wrapper">
                 <div class="w-field__input">
                     <label class="w-field__label" for="timestamps_select" id="timestamps_select-label">
                         {% translate "Time" %}
                     </label>
                     <select name="select" id="timestamps_select">
-                    </select>
-                </div>
-            </div>
-            <div class="colorscale-control-wrapper">
-                <div class="w-field__input">
-                    <label class="w-field__label" for="colorscale_select" id="colorscale_select-label">
-                        {% translate "Color Scale" %}
-                    </label>
-                    <select name="select" id="colorscale_select">
                     </select>
                 </div>
             </div>
@@ -89,14 +65,15 @@
             dataLayers = JSON.parse(dataLayers)
         }
 
+        let iconImages = {{ icon_images|safe }};
+
         window.geomanager_opts = {
             dataLayers: dataLayers,
-            fileRasterMetadataUrl: "{{ file_raster_metadata_url }}",
-            fileRasterListUrl: "{{ file_raster_list_url }}",
-            layerImageColorMapsUrl: "{{ large_image_color_maps_url }}",
+            iconImages: iconImages
         }
     </script>
 
     <!-- Main script -->
-    <script src="{% static 'geomanager/js/raster-file-preview.js' %}"></script>
+    <script src="{% static 'geomanager/js/vector-tile-preview.js' %}"></script>
+
 {% endblock %}

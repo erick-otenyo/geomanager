@@ -1,7 +1,7 @@
 {% extends "wagtailadmin/base.html" %}
 {% load i18n %}
 {% load l10n %}
-{% load wagtailadmin_tags wagtailimages_tags static %}
+{% load wagtailadmin_tags wagtailimages_tags static geomanager_tags %}
 {% block titletag %}
     {% blocktranslate trimmed with title=page.get_admin_display_title %}
         Preview Layers {{ title }}
@@ -17,26 +17,15 @@
 {% endblock %}
 
 {% block content %}
+    {% if navigation_items %}
+        {% breadcrumbs_component navigation_items %}
+    {% endif %}
+
     {% translate "Preview" as preview_str %}
 
     {% include "wagtailadmin/shared/header.html" with title=preview_str|add:" - "|add:dataset.title subtitle=page.get_admin_display_title icon="view" %}
 
     <div class="nice-padding">
-        <div class="go-to-datasets">
-            <a href="{% if selected_layer %}{{ vector_layer_list_url }}{% else %}{{ datasets_index_url }}{% endif %}"
-               class="button bicolor button--icon">
-                <span class="icon-wrapper">
-                    <svg class="icon icon-plus icon" aria-hidden="true">
-                        <use href="#icon-arrow-left"></use>
-                    </svg>
-                </span>
-                {% if selected_layer %}
-                    {% translate "Back to Layers" %}
-                {% else %}
-                    {% translate "Back to Datasets" %}
-                {% endif %}
-            </a>
-        </div>
         <div class="w-field__input" data-field-input="" style="display: none">
             <label class="w-field__label" for="layer_select" id="layer_select-label">
                 {% translate "Select Layer" %}
