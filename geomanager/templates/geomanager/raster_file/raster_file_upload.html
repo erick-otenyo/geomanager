@@ -1,7 +1,7 @@
 {% extends "wagtailadmin/base.html" %}
 {% load i18n %}
 {% load l10n %}
-{% load wagtailadmin_tags wagtailimages_tags static %}
+{% load wagtailadmin_tags wagtailimages_tags static geomanager_tags %}
 
 {% block titletag %}
     {% blocktranslate trimmed with title=page.get_admin_display_title %}
@@ -18,6 +18,11 @@
 
 
 {% block content %}
+
+    {% if navigation_items %}
+        {% breadcrumbs_component navigation_items %}
+    {% endif %}
+
     {% trans "Upload Raster Files" as upload_str %}
 
     {% if dataset %}
@@ -27,21 +32,6 @@
     {% endif %}
     <div class="nice-padding">
         <div class="action-buttons">
-            <div class="go-to-datasets">
-                <a href="{% if layers_index_url %}{{ layers_index_url }}{% else %}{{ datasets_index_url }}{% endif %}"
-                   class="button bicolor button--icon button-secondary">
-                    <span class="icon-wrapper">
-                        <svg class="icon icon-arrow-left icon" aria-hidden="true">
-                            <use href="#icon-arrow-left"></use>
-                        </svg>
-                    </span>
-                    {% if layers_index_url %}
-                        {% translate "Back to Layers" %}
-                    {% else %}
-                        {% translate "Back to Datasets" %}
-                    {% endif %}
-                </a>
-            </div>
             <div class="preview">
                 <a href="{% if layer_preview_url %}{{ layer_preview_url }}
                          {% else %}{{ dataset_preview_url }}{% endif %}"
@@ -86,7 +76,7 @@
         <ul id="upload-list" class="upload-list multiple"></ul>
     </div>
 
-    <script id="upload-list-item" type="text/template">
+    <template id="upload-list-item">
         <li class="row">
             <div class="left col3">
                 <div class="preview">
@@ -114,7 +104,7 @@
                 <p class="status-msg failure error_messages"></p>
             </div>
         </li>
-    </script>
+    </template>
 {% endblock %}
 
 {% block extra_js %}

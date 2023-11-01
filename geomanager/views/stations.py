@@ -19,7 +19,7 @@ from geomanager.utils.vector_utils import ogr_db_import
 
 @user_passes_test(user_has_any_page_permission)
 def load_stations(request):
-    template = "geomanager/stations_upload.html"
+    template = "geomanager/stations/stations_upload.html"
 
     context = {}
     station_settings = StationSettings.for_request(request)
@@ -93,7 +93,7 @@ def load_stations(request):
 
 @user_passes_test(user_has_any_page_permission)
 def preview_stations(request):
-    template = "geomanager/stations_preview.html"
+    template = "geomanager/stations/stations_preview.html"
 
     stations_settings = StationSettings.for_request(request)
     stations_vector_tiles_url = request.scheme + '://' + request.get_host() + \

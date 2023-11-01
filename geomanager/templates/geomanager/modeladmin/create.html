@@ -1,0 +1,9 @@
+{% extends "modeladmin/create.html" %}
+{% load geomanager_tags %}
+
+{% block header %}
+    {% if navigation_items %}
+        {% breadcrumbs_component navigation_items %}
+    {% endif %}
+    {{ block.super }}
+{% endblock %}

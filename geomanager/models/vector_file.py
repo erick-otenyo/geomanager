@@ -270,6 +270,8 @@ class PgVectorTable(TimeStampedModel):
     class Meta:
         ordering = ["-time"]
         unique_together = ('layer', 'time')
+        verbose_name = _("Vector Upload")
+        verbose_name_plural = _("Vector Uploads")
 
     def __str__(self):
         return f"{self.layer}  - {self.geometry_type}"

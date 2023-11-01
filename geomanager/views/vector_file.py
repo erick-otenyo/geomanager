@@ -21,7 +21,7 @@ from wagtailcache.cache import cache_page, clear_cache
 
 from geomanager.forms import VectorLayerFileForm, VectorTableForm
 from geomanager.models import Dataset
-from geomanager.models.core import GeomanagerSettings
+from geomanager.models.core import GeomanagerSettings, Category
 from geomanager.models.geostore import Geostore
 from geomanager.models.vector_file import VectorUpload, PgVectorTable, VectorFileLayer, VectorLayerIcon
 from geomanager.serializers.vector_file import VectorFileLayerSerializer
@@ -108,7 +108,7 @@ def upload_vector_file(request, dataset_id=None, layer_id=None):
         }
 
         form = render_to_string(
-            "geomanager/vector_file_edit_form.html",
+            "geomanager/vector_file/vector_file_edit_form.html",
             ctx,
             request=request,
         )
@@ -116,7 +116,7 @@ def upload_vector_file(request, dataset_id=None, layer_id=None):
 
         return JsonResponse(response)
 
-    return render(request, 'geomanager/vector_file_upload.html', context)
+    return render(request, 'geomanager/vector_file/vector_file_upload.html', context)
 
 
 @user_passes_test(user_has_any_page_permission)
@@ -154,7 +154,7 @@ def publish_vector(request, upload_id):
         return {
             "success": False,
             "form": render_to_string(
-                "geomanager/vector_file_edit_form.html",
+                "geomanager/vector_file/vector_file_edit_form.html",
                 ctx,
                 request=request,
             ),
@@ -235,16 +235,20 @@ def delete_vector_upload(request, upload_id):
 
 @user_passes_test(user_has_any_page_permission)
 def preview_vector_layers(request, dataset_id, layer_id=None):
-    template_name = 'geomanager/vector_file_layer_preview.html'
+    template_name = 'geomanager/vector_file/vector_file_layer_preview.html'
     dataset = get_object_or_404(Dataset, pk=dataset_id)
 
     base_absolute_url = request.scheme + '://' + request.get_host()
 
+    category_admin_helper = AdminURLHelper(Category)
+    categories_url = category_admin_helper.get_action_url("index")
+
     dataset_admin_helper = AdminURLHelper(Dataset)
-    dataset_list_url = dataset_admin_helper.get_action_url("index")
+    dataset_list_url = dataset_admin_helper.get_action_url("index") + f"?id={dataset_id}"
 
     vector_layer_admin_helper = AdminURLHelper(VectorFileLayer)
     vector_layer_list_url = vector_layer_admin_helper.get_action_url("index")
+    vector_layer_list_url = vector_layer_list_url + f"?dataset__id__exact={dataset_id}"
 
     geojson_url = request.build_absolute_uri(
         reverse("feature_serv", args=("table_name",)).replace("table_name.geojson", ""))
@@ -268,6 +272,13 @@ def preview_vector_layers(request, dataset_id, layer_id=None):
     for icon in VectorLayerIcon.objects.filter(layer__in=layers_id):
         icon_images.append({"name": icon.name, "url": request.build_absolute_uri(icon.file.url)})
 
+    navigation_items = [
+        {"url": categories_url, "label": Category._meta.verbose_name_plural},
+        {"url": dataset_list_url, "label": Dataset._meta.verbose_name_plural},
+        {"url": vector_layer_list_url, "label": VectorFileLayer._meta.verbose_name_plural},
+        {"url": "#", "label": _("Preview")},
+    ]
+
     context = {
         "dataset": dataset,
         "dataset_layers": json.dumps(dataset_layers, cls=UUIDEncoder),
@@ -278,7 +289,8 @@ def preview_vector_layers(request, dataset_id, layer_id=None):
         "vector_tiles_url": base_absolute_url + "/api/vector-tiles/{z}/{x}/{y}",
         "geojson_url": geojson_url,
         "data_table": data_table,
-        "icon_images": icon_images
+        "icon_images": icon_images,
+        "navigation_items": navigation_items,
     }
 
     if request.POST:

@@ -14,6 +14,7 @@ from geomanager.blocks import (
     QueryParamStaticBlock, InlineIconLegendBlock
 )
 from geomanager.models.core import BaseLayer
+from geomanager.utils import DATE_FORMAT_CHOICES
 
 
 class BaseTileLayer(TimeStampedModel, ClusterableModel, BaseLayer):
@@ -53,6 +54,8 @@ class BaseTileLayer(TimeStampedModel, ClusterableModel, BaseLayer):
     timestamps_response_object_key = models.CharField(max_length=100, blank=True, null=True, default="timestamps",
                                                       verbose_name=_("Timestamps response object key"),
                                                       help_text=_("Key for timestamps values in response object"))
+    date_format = models.CharField(max_length=100, choices=DATE_FORMAT_CHOICES, blank=True, null=True,
+                                   verbose_name=_("Display Format for DateTime Selector"))
 
     panels = [
         FieldPanel("title"),
@@ -63,6 +66,7 @@ class BaseTileLayer(TimeStampedModel, ClusterableModel, BaseLayer):
             FieldPanel("get_time_from_tile_json"),
             FieldPanel("tile_json_url", classname="show_if_get_time_checked"),
             FieldPanel("timestamps_response_object_key", classname="show_if_get_time_checked"),
+            FieldPanel("date_format", classname="show_if_get_time_checked"),
         ], heading=_("TileJson Settings")),
 
         FieldPanel("query_params_static"),
@@ -165,9 +169,20 @@ class BaseTileLayer(TimeStampedModel, ClusterableModel, BaseLayer):
                 "availableDates": [],
             }
 
-            time_config.update({
-                "dateFormat": {"currentTime": "yyyy-mm-dd HH:MM"},
-            })
+            if self.date_format:
+                if self.date_format == "pentadal":
+                    time_config.update({
+                        "dateFormat": {"currentTime": "MMM yyyy", "asPeriod": "pentadal"},
+                    })
+                else:
+                    time_config.update({
+                        "dateFormat": {"currentTime": self.date_format},
+                    })
+            else:
+                time_config.update({
+                    "dateFormat": {"currentTime": "yyyy-MM-dd HH:mm"},
+                })
+
             config.append(time_config)
 
         selectable_params_config = self.get_selectable_params_config()

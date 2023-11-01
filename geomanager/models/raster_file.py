@@ -20,12 +20,16 @@ from geomanager.blocks import (
 from geomanager.forms import RasterStyleModelForm
 from geomanager.helpers import get_raster_layer_files_url
 from geomanager.models.core import Dataset, BaseLayer
+from geomanager.utils import DATE_FORMAT_CHOICES
 from geomanager.widgets import RasterStyleWidget
 
 
 class RasterFileLayer(TimeStampedModel, BaseLayer):
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, related_name="raster_file_layers",
                                 verbose_name=_("dataset"))
+    date_format = models.CharField(max_length=100, choices=DATE_FORMAT_CHOICES, blank=True, null=True,
+                                   default="yyyy-MM-dd HH:mm",
+                                   verbose_name=_("Display Format for DateTime Selector"))
     style = models.ForeignKey("RasterStyle", null=True, blank=True, on_delete=models.SET_NULL, verbose_name=_("style"))
 
     analysis = StreamField([
@@ -42,12 +46,17 @@ class RasterFileLayer(TimeStampedModel, BaseLayer):
         FieldPanel("dataset"),
         FieldPanel("title"),
         FieldPanel("default"),
+        FieldPanel("date_format"),
         FieldPanel("style"),
         FieldPanel("analysis")
     ]
 
     def __str__(self):
         return f"{self.dataset.title} - {self.title}"
+
+    @property
+    def raster_files_count(self):
+        return self.raster_files.count()
 
     def get_uploads_list_url(self):
         url = get_raster_layer_files_url(self.pk)
@@ -115,15 +124,29 @@ class RasterFileLayer(TimeStampedModel, BaseLayer):
 
     @property
     def param_selector_config(self):
-        config = {
+        time_config = {
             "key": "time",
             "required": True,
             "sentence": "{selector}",
             "type": "datetime",
-            "dateFormat": {"currentTime": "yyyy-mm-dd HH:MM"},
             "availableDates": [],
         }
-        return [config]
+
+        if self.date_format:
+            if self.date_format == "pentadal":
+                time_config.update({
+                    "dateFormat": {"currentTime": "MMM yyyy", "asPeriod": "pentadal"},
+                })
+            else:
+                time_config.update({
+                    "dateFormat": {"currentTime": self.date_format},
+                })
+        else:
+            time_config.update({
+                "dateFormat": {"currentTime": "yyyy-MM-dd HH:mm"},
+            })
+
+        return [time_config]
 
     def get_legend_config(self):
         if self.style:
@@ -215,19 +238,26 @@ class LayerRasterFile(TimeStampedModel):
     time = models.DateTimeField(verbose_name=_("time"),
                                 help_text=_("Time for the raster file. This can be the time the data was acquired, "
                                             "or the date and time for which the data applies", ))
+    raster_metadata = models.JSONField(blank=True, null=True)
 
     class Meta:
         verbose_name = _("Layer Raster File")
         verbose_name_plural = _("Layer Raster Files")
-        ordering = ["time"]
+        ordering = ["-time"]
         unique_together = ('layer', 'time')
 
     panels = [
         FieldPanel("time"),
+        FieldPanel("raster_metadata", read_only=True),
     ]
 
     def __str__(self):
-        return f"{self.time}"
+        return f"{self.layer.title} - {self.time}"
+
+    @property
+    def thumbnail_url(self):
+        url = reverse("raster_file_thumbnail", kwargs={"file_id": self.pk})
+        return url
 
 
 class RasterUpload(TimeStampedModel):

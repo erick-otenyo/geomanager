@@ -1,0 +1,8 @@
+{% extends "modeladmin/index.html" %}
+{% load wagtailadmin_tags geomanager_tags %}
+
+{% block breadcrumb %}
+    {% if navigation_items %}
+        {% breadcrumbs_component navigation_items %}
+    {% endif %}
+{% endblock %}

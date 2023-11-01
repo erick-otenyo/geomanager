@@ -29,7 +29,7 @@ from .views.raster_file import (
     RasterDataPixelView,
     RasterDataPixelTimeseriesView,
     RasterDataGeostoreView,
-    RasterDataGeostoreTimeseriesView, raster_file_as_tile_json
+    RasterDataGeostoreTimeseriesView, raster_file_as_tile_json, RasterThumbnailView
 )
 from .views.stations import StationsTileView
 from .viewsets import (
@@ -110,6 +110,10 @@ urlpatterns = [
                        name="raster_tiles"),
                   path(r'api/vector-tiles/<int:z>/<int:x>/<int:y>', VectorTileView.as_view(), name="vector_tiles"),
                   path(r'api/station-tiles/<int:z>/<int:x>/<int:y>', StationsTileView.as_view(), name="station_tiles"),
+
+                  # Thumbnail
+                  path(r'api/raster-file-thumbnail/<int:file_id>.png', RasterThumbnailView.as_view(),
+                       name="raster_file_thumbnail"),
 
                   # Data
                   path(r'api/raster-data/pixel/<uuid:layer_id>', RasterDataPixelView.as_view(),
