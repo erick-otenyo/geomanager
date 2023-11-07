@@ -254,7 +254,7 @@ def create_layer_raster_file(layer, upload, time, band_index=None, data_variable
         with open(f.name, mode='rb') as file:
             file_content = File(file)
             raster = LayerRasterFile(layer=layer, time=time)
-            file_name = f"{time.isoformat()}.tif"
+            file_name = f"{raster.time_str}.tif"
             if data_variable:
                 file_name = f"{data_variable}_{file_name}"
             raster.file.save(file_name, file_content)
