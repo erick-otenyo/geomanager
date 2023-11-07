@@ -264,10 +264,8 @@ APPEND_SLASH = True
 
 FORCE_SCRIPT_NAME = env.str("FORCE_SCRIPT_NAME", None)
 
-GEOMANAGER_SETTINGS = {
-    "vector_db_schema": env.str("GEOMANAGER_VECTOR_DB_SCHEMA", "vectordata"),
-    "auto_ingest_raster_data_dir": env.str("GEOMANAGER_AUTO_INGEST_RASTER_DATA_DIR", ""),
-}
+GEOMANAGER_VECTOR_DB_SCHEMA = env.str("GEOMANAGER_VECTOR_DB_SCHEMA", "vectordata")
+GEOMANAGER_AUTO_INGEST_RASTER_DATA_DIR = env.str("GEOMANAGER_VECTOR_DB_SCHEMA", "")
 
 LOGGING = {
     'version': 1,

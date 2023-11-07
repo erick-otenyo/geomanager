@@ -1,6 +1,10 @@
+import os
+
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django_extensions.db.models import TimeStampedModel
@@ -20,6 +24,7 @@ from geomanager.blocks import (
 from geomanager.forms import RasterStyleModelForm
 from geomanager.helpers import get_raster_layer_files_url
 from geomanager.models.core import Dataset, BaseLayer
+from geomanager.settings import geomanager_settings
 from geomanager.utils import DATE_FORMAT_CHOICES
 from geomanager.widgets import RasterStyleWidget
 
@@ -31,6 +36,8 @@ class RasterFileLayer(TimeStampedModel, BaseLayer):
                                    default="yyyy-MM-dd HH:mm",
                                    verbose_name=_("Display Format for DateTime Selector"))
     style = models.ForeignKey("RasterStyle", null=True, blank=True, on_delete=models.SET_NULL, verbose_name=_("style"))
+
+    auto_ingest_from_directory = models.BooleanField(default=False, verbose_name=_("Auto ingest from directory"))
 
     analysis = StreamField([
         ('point_analysis', FileLayerPointAnalysisBlock(label=_("Point Analysis")),),
@@ -48,7 +55,8 @@ class RasterFileLayer(TimeStampedModel, BaseLayer):
         FieldPanel("default"),
         FieldPanel("date_format"),
         FieldPanel("style"),
-        FieldPanel("analysis")
+        FieldPanel("auto_ingest_from_directory"),
+        FieldPanel("analysis"),
     ]
 
     def __str__(self):
@@ -259,6 +267,10 @@ class LayerRasterFile(TimeStampedModel):
         url = reverse("raster_file_thumbnail", kwargs={"file_id": self.pk})
         return url
 
+    @property
+    def time_str(self):
+        return self.time.strftime("%Y-%m-%dT%H:%M:%S.000Z")
+
 
 class RasterUpload(TimeStampedModel):
     dataset = models.ForeignKey(Dataset, blank=True, null=True, on_delete=models.SET_NULL, verbose_name=_("dataset"))
@@ -467,3 +479,20 @@ class ColorValue(TimeStampedModel, Orderable):
             "color": self.color,
             "label": self.label
         }
+
+
+@receiver(post_save, sender=RasterFileLayer)
+def create_auto_ingest_directory(sender, instance, created, **kwargs):
+    if instance.auto_ingest_from_directory:
+        auto_ingest_raster_data_dir = geomanager_settings.get("auto_ingest_raster_data_dir")
+
+        if auto_ingest_raster_data_dir and os.path.isabs(auto_ingest_raster_data_dir):
+            if not os.path.exists(auto_ingest_raster_data_dir):
+                os.makedirs(auto_ingest_raster_data_dir)
+
+            dir_name = str(instance.pk)
+            directory_path = os.path.join(auto_ingest_raster_data_dir, dir_name)
+
+            # Create the directory if it doesn't exist
+            if not os.path.exists(directory_path):
+                os.makedirs(directory_path)
