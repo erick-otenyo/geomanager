@@ -118,6 +118,8 @@ def get_geostore_data(file: FileField, geostore, value_type=None):
 
 
 def get_no_data_val(val):
+    if not val:
+        return None
     if math.isnan(val):
         return None
     return val
