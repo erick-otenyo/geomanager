@@ -1,6 +1,5 @@
 import logging
 
-from django.db.models.signals import post_save
 from wagtailcache.cache import clear_cache
 
 from .aoi import *
@@ -9,7 +8,6 @@ from .geostore import *
 from .profile import *
 from .raster_file import *
 from .raster_tile import *
-from .stations import *
 from .tile_gl import *
 from .vector_file import *
 from .vector_tile import *
