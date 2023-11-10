@@ -3,7 +3,7 @@ import json
 import uuid
 
 from django.db import models
-from django.urls.base import get_script_prefix, reverse
+from django.urls.base import reverse
 from django.utils.translation import gettext_lazy as _
 from django_extensions.db.models import TimeStampedModel
 from modelcluster.fields import ParentalKey

@@ -3,11 +3,14 @@ from django.utils.decorators import method_decorator
 from rest_framework import mixins, viewsets
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
+from wagtail import hooks
 from wagtailcache.cache import cache_page
 
 from geomanager import serializers
 from geomanager.models import Dataset
 from geomanager.models.core import GeomanagerSettings, Metadata
+
+geomanager_register_datasets_hook_name = "register_geomanager_datasets"
 
 
 class DatasetViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -54,6 +57,11 @@ class DatasetViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.
                     "refreshInterval": lm_settings.cap_auto_refresh_interval_milliseconds,
                     "metadata": lm_settings.cap_metadata.pk if lm_settings.cap_metadata else None
                 }})
+
+        for fn in hooks.get_hooks(geomanager_register_datasets_hook_name):
+            hook_datasets = fn(request)
+            for dataset in hook_datasets:
+                datasets.append(dataset)
 
         return Response({"datasets": datasets, "config": config})
 

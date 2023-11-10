@@ -1,0 +1,302 @@
+{% extends "wagtailadmin/base.html" %}
+{% load i18n %}
+{% load l10n %}
+{% load wagtailadmin_tags wagtailimages_tags static %}
+{% block titletag %}
+    {% blocktranslate trimmed with title=page.get_admin_display_title %}
+        Stations Data {{ title }}
+    {% endblocktranslate %}
+{% endblock %}
+{% block extra_css %}
+    {{ block.super }}
+    <link href="https://unpkg.com/maplibre-gl@3.1.0/dist/maplibre-gl.css" rel="stylesheet"/>
+    <link href="{% static "stations/css/stations_preview.css" %}" rel="stylesheet"/>
+{% endblock %}
+
+{% block content %}
+    {% translate "Stations Data" as header_str %}
+    {% translate "Load Stations" as action_text_trans %}
+
+    {% include "wagtailadmin/shared/header.html" with title=header_str icon="map" action_url=load_stations_url action_text=action_text_trans %}
+
+    <div class="nice-padding">
+        {% if station_columns %}
+            <div style="margin-top: 40px;">
+                <div id="preview-map" style="height: 600px;width: 100%"></div>
+            </div>
+            <div style="margin-top: 20px;">
+                <h2 class="title">
+                    {% translate "Data Fields" %}
+                </h2>
+                <table class="listing">
+                    <thead>
+                    <tr>
+                        <th style="font-weight: 700">
+                            {% translate "Field" %}
+                        </th>
+                        <th style="font-weight: 700">
+                            {% translate "Label" %}
+                        </th>
+                        <th style="font-weight: 700">
+                            {% translate "Show in Table" %}
+                        </th>
+                        <th style="font-weight: 700">
+                            {% translate "Show in Map Popup" %}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for column in station_columns %}
+                        <tr>
+                            <td>{{ column.name }}</td>
+                            <td>
+                                <input class="station_input" style="max-width: 300px;" type="text"
+                                       name="{{ column.name }}_label"
+                                       data-column="{{ column.name }}"
+                                       data-updatetype="label"
+                                       value="{{ column.label }}"
+                                       id="{{ column.name }}_label">
+                            </td>
+                            <td>
+                                <input class="station_input" type="checkbox" name="{{ column.name }}_popup"
+                                       id="{{ column.name }}_table" data-column="{{ column.name }}"
+                                        {% if column.table %} checked{% endif %}
+                                       data-updatetype="table">
+                            </td>
+                            <td>
+                                <input class="station_input" type="checkbox" name="{{ column.name }}_popup"
+                                       id="{{ column.name }}_popup" data-column="{{ column.name }}"
+                                        {% if column.popup %} checked{% endif %}
+                                       data-updatetype="popup">
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+                <form action="{% url 'preview_stations' %}" method="POST"
+                      enctype="multipart/form-data">
+                    {% if form.non_field_errors %}
+                        <div class="non-field_errors" style="margin-bottom: 20px">
+                            {% include "wagtailadmin/shared/non_field_errors.html" with form=form %}
+                        </div>
+                    {% endif %}
+                    <ul class="fields">
+                        {% csrf_token %}
+                        {% for field in form %}
+                            {% if field.is_hidden %}
+                                {{ field }}
+                            {% else %}
+                                {% include "wagtailadmin/shared/field_as_li.html" %}
+                            {% endif %}
+                        {% endfor %}
+                        <li>
+                            <button type="submit" class="button">
+                                {% translate 'Save' %}
+                            </button>
+                        </li>
+                    </ul>
+                </form>
+            </div>
+            </div>
+        {% else %}
+
+            <div class="help-block help-info">
+                <svg class="icon icon-help icon" aria-hidden="true">
+                    <use href="#icon-help"></use>
+                </svg>
+                <p>
+                    {% translate "No station data loaded." %}
+                    {% translate "Please " %}
+                    <a href="{{ load_stations_url }}">
+                        {% translate "load station data" %}
+                    </a>
+                    {% translate "to preview" %}
+                </p>
+
+            </div>
+        {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+    {{ block.super }}
+    {% if station_columns %}
+        <script src="https://unpkg.com/maplibre-gl@3.1.0/dist/maplibre-gl.js"></script>
+        <script>
+
+            const mapConfigObj = {{ mapConfig | safe }};
+            const {stationBounds, stationsVectorTilesUrl} = mapConfigObj
+
+            const bounds = [[stationBounds[0], stationBounds[1]], [stationBounds[2], stationBounds[3]]]
+
+            const defaultStyle = {
+                'version': 8,
+                'sources': {
+                    'carto-dark': {
+                        'type': 'raster',
+                        'tiles': [
+                            "https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png",
+                            "https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png",
+                            "https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png",
+                            "https://d.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png"
+                        ]
+                    },
+                    'carto-light': {
+                        'type': 'raster',
+                        'tiles': [
+                            "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
+                            "https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
+                            "https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
+                            "https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png"
+                        ]
+                    },
+                    'wikimedia': {
+                        'type': 'raster',
+                        'tiles': [
+                            "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png"
+                        ]
+                    }
+                },
+                'layers': [{
+                    'id': 'carto-light-layer',
+                    'source': 'carto-light',
+                    'type': 'raster',
+                    'minzoom': 0,
+                    'maxzoom': 22
+                }]
+            }
+
+
+            $(document).ready(async function () {
+                const $columnsInput = $("#id_columns")
+
+                const map = new maplibregl.Map({
+                    container: "preview-map",
+                    style: defaultStyle,
+                    doubleClickZoom: false,
+                });
+
+                await new Promise((resolve) => map.on("load", resolve));
+
+                if (bounds) {
+                    map.fitBounds(bounds, {padding: 20})
+                }
+
+
+                // add source
+                map.addSource("stations-source", {
+                        type: "vector",
+                        tiles: [stationsVectorTilesUrl],
+                    }
+                )
+
+                // add layer
+                map.addLayer({
+                    'id': 'stations-circle',
+                    'type': 'circle',
+                    'source': 'stations-source',
+                    "source-layer": "default",
+                    'paint': {
+                        'circle-color': "red",
+                        'circle-radius': 10,
+                    }
+                });
+
+
+                const $stationLabelInput = $(".station_input")
+
+                $stationLabelInput.on("change", function () {
+                    const $this = $(this)
+                    const inputType = $this.attr('type')
+
+                    const columnName = $this.data("column")
+                    const updateType = $this.data("updatetype")
+
+                    if (columnName && updateType) {
+                        let inputValue = $this.val()
+
+                        if (inputType === "checkbox") {
+                            inputValue = $this.is(':checked')
+                        }
+                        updateColumnsData(columnName, updateType, inputValue)
+                    }
+                })
+
+                const getColumnsData = () => {
+                    let columnsData = $columnsInput.val()
+
+                    if (columnsData) {
+                        columnsData = JSON.parse(columnsData)
+
+                        return columnsData
+                    }
+
+                    return []
+                }
+
+                const getPopupFields = () => {
+                    const allFields = getColumnsData()
+                    return allFields.filter(c => c && c.popup)
+                }
+
+                const updateColumnsData = (columnName, updateType, value) => {
+                    let columnsData = getColumnsData()
+
+
+                    columnsData = columnsData.reduce((all, item) => {
+                        if (item.name && item.name === columnName) {
+                            item[updateType] = value
+                        }
+
+                        all.push(item)
+
+                        return all
+                    }, [])
+
+                    if (columnsData) {
+                        $columnsInput.val(JSON.stringify(columnsData))
+                    }
+                }
+
+                function featureHtml(f) {
+                    const p = f.properties;
+                    const popupFields = getPopupFields()
+
+
+                    const popupProps = Object.keys(p).reduce((all, key) => {
+                        if (popupFields.find(f => f.name === key)) {
+                            all[key] = p[key]
+                        }
+                        return all
+                    }, {})
+
+                    if (popupProps && !!Object.keys(popupProps).length) {
+                        let h = "<div class='station-popup-content'>";
+                        for (let k in popupProps) {
+                            const column = popupFields.find(f => f.name === k)
+                            h += "<p><b>" + `${column.label ? column.label : k}` + ":</b> " + popupProps[k] + "<br/></p>"
+                        }
+                        h += "</div>";
+                        return h
+                    }
+
+                    return null
+                }
+
+
+                map.on('click', "stations-circle", function (e) {
+                    const popContent = featureHtml(e.features[0])
+                    if (popContent) {
+                        new maplibregl.Popup()
+                            .setLngLat(e.lngLat)
+                            .setHTML(popContent)
+                            .addTo(map);
+                    }
+                });
+
+
+            })
+
+        </script>
+    {% endif %}
+{% endblock %}
