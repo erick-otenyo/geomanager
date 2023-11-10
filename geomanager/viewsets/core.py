@@ -6,7 +6,7 @@ from wagtail import hooks
 
 from geomanager import serializers
 from geomanager.models import Dataset
-from geomanager.models.core import GeomanagerSettings, Metadata
+from geomanager.models.core import Metadata
 
 geomanager_register_datasets_hook_name = "register_geomanager_datasets"
 
@@ -33,7 +33,6 @@ class DatasetViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.
 
         serializer = self.get_serializer(dataset_with_layers, many=True)
 
-        lm_settings = GeomanagerSettings.for_request(request)
         abm_settings = AdminBoundarySettings.for_request(request)
         datasets = serializer.data
         config = {}
@@ -42,18 +41,6 @@ class DatasetViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.
         boundary_tiles_url = abm_settings.boundary_tiles_url
         boundary_tiles_url = request.scheme + '://' + request.get_host() + boundary_tiles_url
         config.update({"boundaryTilesUrl": boundary_tiles_url})
-
-        # set cap layer configuration. This will be used to create cap layer
-        if lm_settings.cap_base_url and lm_settings.cap_sub_category:
-            config.update({
-                "capConfig": {
-                    "initialVisible": lm_settings.cap_shown_by_default,
-                    "baseUrl": lm_settings.cap_base_url,
-                    "category": lm_settings.cap_sub_category.category.pk,
-                    "subCategory": lm_settings.cap_sub_category.pk,
-                    "refreshInterval": lm_settings.cap_auto_refresh_interval_milliseconds,
-                    "metadata": lm_settings.cap_metadata.pk if lm_settings.cap_metadata else None
-                }})
 
         for fn in hooks.get_hooks(geomanager_register_datasets_hook_name):
             hook_datasets = fn(request)

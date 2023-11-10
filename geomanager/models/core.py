@@ -33,7 +33,7 @@ from .tile_gl import MBTSource
 from ..blocks import NavigationItemsBlock
 from ..utils import UUIDEncoder
 
-DEFAULT_RASTER_MAX_UPLOAD_SIZE_MB = 10
+DEFAULT_RASTER_MAX_UPLOAD_SIZE_MB = 100
 
 
 class Category(TimeStampedModel, AdminSortable, ClusterableModel):
@@ -466,35 +466,14 @@ class BaseLayer(models.Model):
 
 @register_setting
 class GeomanagerSettings(BaseSiteSetting):
-    GADM_VERSION = (
-        ("4.1", "4.1"),
-    )
-
     max_upload_size_mb = models.IntegerField(default=DEFAULT_RASTER_MAX_UPLOAD_SIZE_MB,
                                              verbose_name=_("Maximum upload size in MegaBytes"),
                                              help_text=_(
                                                  "Maximum raster file size that can be uploaded in MegaBytes. "
-                                                 "Default is 10Mbs."))
+                                                 "Default is 100Mbs."))
     crop_raster_to_country = models.BooleanField(default=True, verbose_name=_("Crop raster to country"),
                                                  help_text=_("Crop the uploaded raster file to the country boundaries"))
 
-    cap_base_url = models.URLField(max_length=256, null=True, blank=True, verbose_name=_("cap base url"))
-    cap_sub_category = models.ForeignKey(SubCategory, null=True, blank=True, verbose_name=_("cap layer sub category"),
-                                         on_delete=models.SET_NULL)
-    cap_auto_refresh_interval = models.IntegerField(blank=True, null=True,
-                                                    verbose_name=_("Auto Refresh interval in minutes"),
-                                                    help_text=_(
-                                                        "Refresh cap alerts on the map after this minutes. Leave blank "
-                                                        "to disable auto refreshing"))
-    cap_shown_by_default = models.BooleanField(default=True, verbose_name=_("CAP layer shown by default"),
-                                               help_text=_("CAP Layer shown on map by default"))
-    cap_metadata = models.ForeignKey(Metadata, on_delete=models.SET_NULL, blank=True, null=True,
-                                     verbose_name=_("Metadata"))
-    gadm_version = models.CharField(max_length=50, choices=GADM_VERSION, default="4.1",
-                                    verbose_name=_("GADM Boundary Data Version"),
-                                    help_text=_(
-                                        "It is encouraged to use the latest version. "
-                                        "See available versions here: https://gadm.org/old_versions.html"))
     tile_gl_fonts_url = models.URLField(max_length=256,
                                         default="https://fonts.openmaptiles.org/{fontstack}/{range}.pbf",
                                         verbose_name=_("GL Styles Font Url"),
@@ -572,13 +551,6 @@ class GeomanagerSettings(BaseSiteSetting):
             FieldPanel("base_maps"),
         ], heading=_("Basemap TileServer Settings")),
         ObjectList([
-            FieldPanel("cap_base_url"),
-            FieldPanel("cap_sub_category"),
-            FieldPanel("cap_auto_refresh_interval"),
-            FieldPanel("cap_shown_by_default"),
-            FieldPanel("cap_metadata"),
-        ], heading=_("CAP Layer Settings")),
-        ObjectList([
             FieldPanel("logo"),
             FieldPanel("logo_page"),
             FieldPanel("logo_external_link"),
@@ -587,12 +559,6 @@ class GeomanagerSettings(BaseSiteSetting):
             FieldPanel("navigation"),
         ], heading=_("Navigation Settings")),
     ])
-
-    @property
-    def cap_auto_refresh_interval_milliseconds(self):
-        if self.cap_auto_refresh_interval:
-            return self.cap_auto_refresh_interval * 60000
-        return None
 
     @property
     def max_upload_size_bytes(self):
