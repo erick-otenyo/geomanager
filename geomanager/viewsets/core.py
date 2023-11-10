@@ -1,10 +1,8 @@
 from adminboundarymanager.models import AdminBoundarySettings
-from django.utils.decorators import method_decorator
 from rest_framework import mixins, viewsets
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from wagtail import hooks
-from wagtailcache.cache import cache_page
 
 from geomanager import serializers
 from geomanager.models import Dataset
@@ -24,7 +22,6 @@ class DatasetViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.
         context.update({'request': self.request})
         return context
 
-    @method_decorator(cache_page)
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         dataset_with_layers = []
@@ -66,7 +63,6 @@ class DatasetViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.
         return Response({"datasets": datasets, "config": config})
 
 
-@method_decorator(cache_page, name="retrieve")
 class MetadataViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Metadata.objects.all()
     serializer_class = serializers.MetadataSerialiazer
