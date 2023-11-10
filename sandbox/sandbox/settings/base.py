@@ -82,6 +82,8 @@ INSTALLED_APPS = [
     "rest_framework",
     "corsheaders",
     "wagtail_modeladmin",
+    "django_tables2",
+    "django_tables2_bulma_template",
 
     "django.contrib.admin",
     "django.contrib.gis",
@@ -262,6 +264,8 @@ FORCE_SCRIPT_NAME = env.str("FORCE_SCRIPT_NAME", None)
 
 GEOMANAGER_VECTOR_DB_SCHEMA = env.str("GEOMANAGER_VECTOR_DB_SCHEMA", "vectordata")
 GEOMANAGER_AUTO_INGEST_RASTER_DATA_DIR = env.str("GEOMANAGER_AUTO_INGEST_RASTER_DATA_DIR", "")
+
+DJANGO_TABLES2_TEMPLATE = "django-tables2/bulma.html"
 
 LOGGING = {
     'version': 1,

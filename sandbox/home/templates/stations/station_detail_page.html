@@ -1,57 +1,65 @@
 {% extends "base.html" %}
-{% load static geomanager_tags %}
+{% load static geomanager_tags i18n %}
 
 {% block body_class %}station-detail-page{% endblock %}
 
 {% block extra_css %}
     {{ block.super }}
     <link href="https://unpkg.com/maplibre-gl@3.1.0/dist/maplibre-gl.css" rel="stylesheet"/>
-    <link href="{% static "css/stations_page.css" %}" rel="stylesheet"/>
+    <link href="{% static 'stations/css/stations_detail_page.css' %}" rel="stylesheet"/>
 {% endblock %}
 
 {% block content %}
-    <main>
-        <section class="container" style="margin-top: 100px">
+    <main style="margin-top: 100px">
+        <section class="container">
             {% if station %}
-
                 <div style="padding: 20px 0;">
-                    <a href="{{ page.url }}" class="button">Back to all Stations</a>
+                    <a href="{{ page.url }}" class="more">
+                        <span class="icon">
+                            <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                        </span>
+                        {% translate "Back to stations list" %}
+                    </a>
                 </div>
-                <h3 class="title">Station Detail</h3>
+                <h3 class="title">
+                    {% translate "Station Detail" %}
+                </h3>
                 {% if station_name_column %}
                     {% get_object_attr station station_name_column as attr_val %}
 
                     {% if attr_val %}
-                        <div style="margin-bottom: 20px;font-weight: 600">Station Name : {{ attr_val }}</div>
+                        <div style="margin-bottom: 20px;font-weight: 600">
+                            {% translate "Station Name" %}: {{ attr_val }}</div>
                     {% endif %}
                 {% endif %}
-
-
-                <div class="columns">
-                    <div class="column is-full-mobile is-two-thirds-desktop">
-                        <table class="table is-bordered is-striped is-narrow is-fullwidth">
-                            <tbody>
-                            {% for column in columns %}
-                                <tr>
-                                    <th>{{ column.label }}</th>
-                                    {% get_object_attr station column.name as attr_val %}
-                                    <td> {% if attr_val %} {{ attr_val }} {% else %}--{% endif %} </td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
+                <div class="columns is-multiline is-mobile">
+                    <div class="column is-two-thirds-desktop is-full-mobile">
+                        <div class="table-container">
+                            <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+                                <tbody>
+                                {% for column in columns %}
+                                    <tr>
+                                        <th>{{ column.label }}</th>
+                                        {% get_object_attr station column.name as attr_val %}
+                                        <td> {% if attr_val %} {{ attr_val }} {% else %}--{% endif %} </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div class="column is-full-mobile is-one-third-desktop">
-                        <div id="station-map" style="height: 400px;width: 100%"></div>
+                    <div class="column is-one-third-desktop is-full-mobile ">
+                        <div id="station-map" class="elevation-2" style="height: 400px;width: 100%"></div>
                     </div>
                 </div>
 
             {% else %}
                 <article class="message is-danger">
                     <div class="message-header">
-                        <p>Station Not Found</p>
+                        <p>{% translate "Station Not Found" %} </p>
                     </div>
-                    <div class="message-body">Station with provided ID can not be found
+                    <div class="message-body">
+                        {% translate "Station with provided ID can not be found" %}
                     </div>
                 </article>
             {% endif %}
@@ -115,6 +123,8 @@
                     doubleClickZoom: false,
                 });
 
+                map.scrollZoom.disable();
+
                 map.addControl(
                     new maplibregl.NavigationControl({
                         visualizePitch: true,
@@ -146,8 +156,10 @@
                     'type': 'circle',
                     'source': 'station-source',
                     'paint': {
-                        'circle-color': "red",
-                        'circle-radius': 10,
+                        'circle-color': "#ADEFD1FF",
+                        'circle-radius': 8,
+                        "circle-stroke-width": 4,
+                        "circle-stroke-color": "#00203FFF",
                     }
                 });
 

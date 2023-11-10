@@ -17,6 +17,8 @@ urlpatterns = [
     path('auth/', include('allauth.urls')),
 
     path("", include("geomanager.urls")),
+
+    path("", include("home.urls"), name="stations"),
 ]
 
 if settings.DEBUG:

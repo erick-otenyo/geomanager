@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static i18n %}
 {% load render_table from django_tables2 %}
 
 {% block body_class %}stations-page{% endblock %}
@@ -7,24 +7,24 @@
 {% block extra_css %}
     {{ block.super }}
     <link href="https://unpkg.com/maplibre-gl@3.1.0/dist/maplibre-gl.css" rel="stylesheet"/>
-    <link href="{% static "css/stations_page.css" %}" rel="stylesheet"/>
+    <link href="{% static 'css/stations_list_page.css' %}" rel="stylesheet"/>
 {% endblock %}
 
 {% block content %}
-    <main>
+    <main style="margin-top: 100px">
         <section class="container">
-            <div style="margin-top: 40px;">
-                <div id="stations-map" style="height: 600px;width: 100%;margin-bottom: 20px"></div>
-            </div>
+            <div id="stations-map" class="stations-map elevation-2"></div>
         </section>
-        <section class="container" style="margin-top: 40px">
-            <div class="title">Stations List</div>
-            {% render_table stations_table %}
+        <section class="container stations-list" style="padding-top: 0">
+            <h2 class="title">
+                {% translate "Stations List" %}
+            </h2>
+            {% if stations_table %}
+                {% render_table stations_table %}
+            {% endif %}
         </section>
     </main>
-
 {% endblock content %}
-
 
 {% block extra_js %}
     {{ block.super }}
@@ -35,8 +35,12 @@
         const mapConfigObj = {{ mapConfig | safe }};
         const popupFields = {{ popup_fields | safe }};
         const {stationBounds, stationsVectorTilesUrl} = mapConfigObj
+        let bounds = null;
 
-        const bounds = [[stationBounds[0], stationBounds[1]], [stationBounds[2], stationBounds[3]]]
+        if (stationBounds && !!stationBounds.length) {
+            bounds = [[stationBounds[0], stationBounds[1]], [stationBounds[2], stationBounds[3]]]
+        }
+
 
         const defaultStyle = {
             'version': 8,
@@ -82,6 +86,8 @@
                 doubleClickZoom: false,
             });
 
+            map.scrollZoom.disable();
+
             map.addControl(
                 new maplibregl.NavigationControl({
                     visualizePitch: true,
@@ -93,6 +99,7 @@
             map.addControl(new maplibregl.FullscreenControl());
 
             await new Promise((resolve) => map.on("load", resolve));
+
 
             if (bounds) {
                 map.fitBounds(bounds, {padding: 20})
@@ -112,10 +119,19 @@
                 'source': 'stations-source',
                 "source-layer": "default",
                 'paint': {
-                    'circle-color': "red",
-                    'circle-radius': 10,
+                    'circle-color': "#ADEFD1FF",
+                    'circle-radius': 8,
+                    "circle-stroke-width": 4,
+                    "circle-stroke-color": "#00203FFF",
                 }
             });
+
+            map.on('mouseenter', 'stations-circle', () => {
+                map.getCanvas().style.cursor = 'pointer'
+            })
+            map.on('mouseleave', 'stations-circle', () => {
+                map.getCanvas().style.cursor = ''
+            })
 
 
             function featureHtml(f) {
