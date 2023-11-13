@@ -113,12 +113,14 @@ class RasterStyleModelForm(WagtailAdminModelForm):
 
             for form in color_values_formset:
                 threshold = form.cleaned_data.get("threshold")
-                if threshold < min_value:
-                    form.add_error("threshold", _("Value must be greater than minimum defined value"))
-                    return False
-                if threshold > max_value:
-                    form.add_error("threshold", _("Value must be less than or equal to the maximum defined value"))
-                    return False
+
+                if threshold and min_value and max_value:
+                    if threshold < min_value:
+                        form.add_error("threshold", _("Value must be greater than minimum defined value"))
+                        return False
+                    if threshold > max_value:
+                        form.add_error("threshold", _("Value must be less than or equal to the maximum defined value"))
+                        return False
         return True
 
 
