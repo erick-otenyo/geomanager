@@ -1,4 +1,3 @@
-from adminboundarymanager.models import AdminBoundarySettings
 from rest_framework import mixins, viewsets
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
@@ -33,21 +32,15 @@ class DatasetViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.
 
         serializer = self.get_serializer(dataset_with_layers, many=True)
 
-        abm_settings = AdminBoundarySettings.for_request(request)
         datasets = serializer.data
-        config = {}
 
-        # set boundaries url. This will be used to create base boundary layer
-        boundary_tiles_url = abm_settings.boundary_tiles_url
-        boundary_tiles_url = request.scheme + '://' + request.get_host() + boundary_tiles_url
-        config.update({"boundaryTilesUrl": boundary_tiles_url})
-
+        # get datasets from registered hooks
         for fn in hooks.get_hooks(geomanager_register_datasets_hook_name):
             hook_datasets = fn(request)
             for dataset in hook_datasets:
                 datasets.append(dataset)
 
-        return Response({"datasets": datasets, "config": config})
+        return Response(datasets)
 
 
 class MetadataViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
