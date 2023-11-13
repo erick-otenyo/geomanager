@@ -12,33 +12,34 @@ class RasterStyleCreateView(CreateView):
     def get_form(self):
         form = super().get_form()
 
-        layer_id = self.request.GET.get("layer_id")
+        try:
+            # check if we have layer_id in GET
+            layer_id = self.request.GET.get("layer_id")
 
-        # add hidden layer_id field to form. We will use it later to update the layer style
-        if layer_id:
-            try:
+            # add hidden layer_id field to form. We will use it later to update the layer style
+            if layer_id:
                 layer = RasterFileLayer.objects.get(pk=layer_id)
                 form.fields["layer_id"] = forms.CharField(required=False, widget=forms.HiddenInput())
                 form.initial.update({"layer_id": layer.pk})
-            except ObjectDoesNotExist:
-                pass
+        except Exception:
+            pass
 
         return form
 
     def form_valid(self, form):
         response = super().form_valid(form)
 
-        # check if we have layer_id in data
-        layer_id = form.data.get("layer_id")
+        try:
+            # check if we have layer_id in data
+            layer_id = form.data.get("layer_id")
 
-        if layer_id:
-            try:
+            if layer_id:
                 # assign this layer the just created style
                 layer = RasterFileLayer.objects.get(pk=layer_id)
                 layer.style = self.instance
                 layer.save()
-            except ObjectDoesNotExist:
-                pass
+        except Exception:
+            pass
 
         return response
 
