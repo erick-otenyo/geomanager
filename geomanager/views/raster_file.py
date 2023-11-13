@@ -31,6 +31,7 @@ from wagtail.snippets.permissions import get_permission_name
 from wagtail_modeladmin.helpers import AdminURLHelper
 from wagtailcache.cache import cache_page
 
+from geomanager.decorators import revalidate_cache
 from geomanager.errors import RasterFileNotFound, QueryParamRequired, GeostoreNotFound
 from geomanager.forms import LayerRasterFileForm
 from geomanager.models import (
@@ -513,6 +514,7 @@ class RasterDataMixin:
         return request.query_params.get(key, str(default))
 
 
+@method_decorator(revalidate_cache, name='get')
 @method_decorator(cache_page, name='get')
 class RasterTileView(RasterDataMixin, APIView):
     # TODO: Validate style query param thoroughly. If not validated, the whole app just exits without warning.
@@ -571,6 +573,7 @@ class RasterTileView(RasterDataMixin, APIView):
         return HttpResponse(tile_binary, content_type=mime_type)
 
 
+@method_decorator(revalidate_cache, name='get')
 @method_decorator(cache_page, name='get')
 class RasterThumbnailView(RasterDataMixin, APIView):
     def get(self, request, file_id):
@@ -622,6 +625,7 @@ class RasterThumbnailView(RasterDataMixin, APIView):
         return HttpResponse(thumb_data, content_type=mime_type)
 
 
+@method_decorator(revalidate_cache, name='get')
 @method_decorator(cache_page, name='get')
 class RasterDataPixelView(RasterDataMixin, APIView):
     renderer_classes = [JSONRenderer]
@@ -637,6 +641,7 @@ class RasterDataPixelView(RasterDataMixin, APIView):
         return Response(pixel_data)
 
 
+@method_decorator(revalidate_cache, name='get')
 @method_decorator(cache_page, name='get')
 class RasterDataPixelTimeseriesView(RasterDataMixin, APIView):
     renderer_classes = [JSONRenderer]
@@ -659,6 +664,7 @@ class RasterDataPixelTimeseriesView(RasterDataMixin, APIView):
         return Response(timeseries_data)
 
 
+@method_decorator(revalidate_cache, name='get')
 @method_decorator(cache_page, name='get')
 class RasterDataGeostoreView(RasterDataMixin, APIView):
     renderer_classes = [JSONRenderer]
@@ -676,6 +682,7 @@ class RasterDataGeostoreView(RasterDataMixin, APIView):
         return Response(data)
 
 
+@method_decorator(revalidate_cache, name='get')
 @method_decorator(cache_page, name='get')
 class RasterDataGeostoreTimeseriesView(RasterDataMixin, APIView):
     renderer_classes = [JSONRenderer]

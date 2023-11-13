@@ -19,6 +19,7 @@ from wagtail.snippets.permissions import get_permission_name
 from wagtail_modeladmin.helpers import AdminURLHelper
 from wagtailcache.cache import cache_page, clear_cache
 
+from geomanager.decorators import revalidate_cache
 from geomanager.forms import VectorLayerFileForm, VectorTableForm
 from geomanager.models import Dataset
 from geomanager.models.core import GeomanagerSettings, Category
@@ -316,6 +317,7 @@ def preview_vector_layers(request, dataset_id, layer_id=None):
     return render(request, template_name=template_name, context=context)
 
 
+@method_decorator(revalidate_cache, name='get')
 @method_decorator(cache_page, name='get')
 class VectorTileView(View):
     def get(self, request, z, x, y):
@@ -382,10 +384,10 @@ class VectorTileView(View):
                     return HttpResponse("Tile not found", status=404)
                 return HttpResponse(tile, content_type="application/x-protobuf")
             except Exception as e:
-                print("Error", e)
                 return HttpResponse(f"Error while fetching tile: {e}", status=500)
 
 
+@method_decorator(revalidate_cache, name='get')
 @method_decorator(cache_page, name='get')
 class GeoJSONPgTableView(View):
     def get(self, request, table_name):

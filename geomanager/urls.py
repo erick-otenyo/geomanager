@@ -2,7 +2,6 @@ from django.urls import include, path
 from rest_framework.routers import SimpleRouter
 from rest_framework_simplejwt.views import (
     TokenRefreshView, )
-from wagtailcache.cache import nocache_page
 
 from geomanager.viewsets.aoi import AoiViewSet
 from .views import (
@@ -66,8 +65,8 @@ urlpatterns = [
                   path('api/auth/register/', RegisterView.as_view(), name='auth_register'),
                   path('api/auth/reset-password/', ResetPasswordView.as_view(), name='auth_password_reset'),
                   path('api/auth/token/', EmailTokenObtainPairView.as_view(), name='token_obtain_pair'),
-                  path('api/auth/token/verify/', nocache_page(UserTokenVerifyView.as_view()), name='token_verify'),
-                  path('api/auth/token/refresh/', nocache_page(TokenRefreshView.as_view()), name='token_refresh'),
+                  path('api/auth/token/verify/', UserTokenVerifyView.as_view(), name='token_verify'),
+                  path('api/auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
                   # User Profile
                   path('api/geomanager-profile/<int:user_id>', get_geomanager_user_profile,
@@ -126,8 +125,7 @@ urlpatterns = [
                        name="raster_data_geostore_timeseries"),
 
                   # FeatureServ
-                  path(r'api/feature-serv/<str:table_name>.geojson', GeoJSONPgTableView.as_view(),
-                       name="feature_serv"),
+                  path(r'api/feature-serv/<str:table_name>.geojson', GeoJSONPgTableView.as_view(), name="feature_serv"),
 
                   # Tiles GL
                   path(r'api/tile-gl/tile/<str:source_slug>/<int:z>/<int:x>/<int:y>.pbf', tile_gl, name="tile_gl"),
