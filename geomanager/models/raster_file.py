@@ -11,6 +11,7 @@ from django_extensions.db.models import TimeStampedModel
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, MultiFieldPanel, InlinePanel
+from wagtail.api.v2.utils import get_full_url
 from wagtail.fields import StreamField
 from wagtail.models import Orderable
 from wagtail_color_panel.edit_handlers import NativeColorPanel
@@ -93,16 +94,14 @@ class RasterFileLayer(TimeStampedModel, BaseLayer):
     def get_tile_json_url(self, request=None):
         tile_json_url = reverse("raster_file_tile_json", args=(self.id,))
         if request:
-            base_absolute_url = request.scheme + '://' + request.get_host()
-            tile_json_url = base_absolute_url + tile_json_url
+            tile_json_url = get_full_url(request, tile_json_url)
 
         return tile_json_url
 
     def layer_config(self, request=None):
         base_tile_url = self.base_tile_url
         if request:
-            base_absolute_url = request.scheme + '://' + request.get_host()
-            base_tile_url = base_absolute_url + base_tile_url
+            base_tile_url = get_full_url(request, base_tile_url)
 
         tile_url = f"{base_tile_url}?time={{time}}"
 
@@ -209,8 +208,7 @@ class RasterFileLayer(TimeStampedModel, BaseLayer):
         timestamps = list(self.raster_files.all().values_list("time", flat=True))
 
         if request:
-            base_absolute_url = request.scheme + '://' + request.get_host()
-            base_tile_url = base_absolute_url + base_tile_url
+            base_tile_url = get_full_url(request, base_tile_url)
 
         tile_json = {
             "tilejson": "3.0.0",

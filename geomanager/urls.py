@@ -45,7 +45,7 @@ router.register(r'api/datasets', DatasetViewSet)
 router.register(r'api/metadata', MetadataViewSet)
 
 router.register(r'api/file-raster', RasterLayerRasterFileDetailViewSet, basename="file-raster")
-router.register(r'api/vector-data', VectorTableFileDetailViewSet)
+router.register(r'api/vector-data', VectorTableFileDetailViewSet, basename="vector-data")
 
 router.register(r'api/aoi', AoiViewSet)
 

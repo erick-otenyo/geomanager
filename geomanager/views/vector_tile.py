@@ -6,6 +6,7 @@ from wagtail.admin.auth import (
     user_passes_test,
     user_has_any_page_permission
 )
+from wagtail.api.v2.utils import get_full_url
 from wagtail_modeladmin.helpers import AdminURLHelper
 
 from geomanager.models import (
@@ -40,7 +41,7 @@ def preview_vector_tile_layers(request, dataset_id, layer_id=None):
     icon_images = []
     layers_id = [layer.get("id") for layer in dataset_layers]
     for icon in VectorTileLayerIcon.objects.filter(layer__in=layers_id):
-        icon_images.append({"name": icon.name, "url": request.build_absolute_uri(icon.file.url)})
+        icon_images.append({"name": icon.name, "url": get_full_url(request, icon.file.url)})
 
     navigation_items = [
         {"url": categories_url, "label": Category._meta.verbose_name_plural},

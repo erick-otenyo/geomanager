@@ -8,6 +8,8 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
 from django.views import View
+from wagtail.api.v2.utils import get_full_url
+
 from geomanager.utils.vector_utils import ogr_db_import
 from wagtail.admin import messages
 from wagtail.admin.auth import user_passes_test, user_has_any_page_permission
@@ -96,8 +98,7 @@ def preview_stations(request):
     template = "stations/stations_preview.html"
 
     stations_settings = StationSettings.for_request(request)
-    stations_vector_tiles_url = request.scheme + '://' + request.get_host() + \
-                                stations_settings.stations_vector_tiles_url
+    stations_vector_tiles_url = get_full_url(request, stations_settings.stations_vector_tiles_url)
 
     context = {
         "mapConfig": {

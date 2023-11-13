@@ -26,6 +26,7 @@ from wagtail.admin.auth import (
     user_has_any_page_permission,
     permission_denied
 )
+from wagtail.api.v2.utils import get_full_url
 from wagtail.models import Site
 from wagtail.snippets.permissions import get_permission_name
 from wagtail_modeladmin.helpers import AdminURLHelper
@@ -385,7 +386,7 @@ def delete_raster_upload(request, upload_id):
 def preview_raster_layers(request, dataset_id, layer_id=None):
     dataset = get_object_or_404(Dataset, pk=dataset_id)
 
-    base_absolute_url = request.scheme + '://' + request.get_host()
+    base_absolute_url = get_full_url(request, "")
 
     category_admin_helper = AdminURLHelper(Category)
     categories_url = category_admin_helper.get_action_url("index")
@@ -417,9 +418,9 @@ def preview_raster_layers(request, dataset_id, layer_id=None):
         "selected_layer": selected_layer,
         "datasets_index_url": dataset_list_url,
         "image_file_layer_list_url": raster_file_layer_list_url,
-        "file_raster_list_url": request.build_absolute_uri(reverse("file-raster-list")),
-        "large_image_color_maps_url": request.build_absolute_uri(reverse("large-image-colormaps")),
-        "file_raster_metadata_url": request.build_absolute_uri(reverse("file-raster-metadata", args=("0",))),
+        "file_raster_list_url": get_full_url(request, reverse("file-raster-list")),
+        "large_image_color_maps_url": get_full_url(request, reverse("large-image-colormaps")),
+        "file_raster_metadata_url": get_full_url(request, reverse("file-raster-metadata", args=("0",))),
         "base_absolute_url": base_absolute_url,
         "navigation_items": navigation_items,
     }

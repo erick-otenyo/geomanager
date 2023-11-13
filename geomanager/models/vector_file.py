@@ -11,6 +11,7 @@ from django_extensions.db.models import TimeStampedModel
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
 from wagtail.admin.panels import FieldPanel
+from wagtail.api.v2.utils import get_full_url
 from wagtail.fields import StreamField
 from wagtail.images.blocks import ImageChooserBlock
 
@@ -86,8 +87,7 @@ class VectorFileLayer(TimeStampedModel, ClusterableModel, BaseLayer):
         base_tiles_url = base_tiles_url.replace("/0/0/0", r"/{z}/{x}/{y}")
 
         if request:
-            base_absolute_url = request.scheme + '://' + request.get_host()
-            base_tiles_url = base_absolute_url + base_tiles_url
+            base_tiles_url = get_full_url(request, base_tiles_url)
 
         tile_url = f"{base_tiles_url}?table_name={{table_name}}"
 
@@ -149,7 +149,7 @@ class VectorFileLayer(TimeStampedModel, ClusterableModel, BaseLayer):
             if legend_block.block_type == "legend_image":
                 image_url = legend_block.value.file.url
                 if request:
-                    image_url = request.build_absolute_uri(image_url)
+                    image_url = get_full_url(request, image_url)
                 config.update({"type": "image", "imageUrl": image_url})
                 return config
 
