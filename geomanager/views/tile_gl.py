@@ -1,5 +1,6 @@
 from django.http import HttpResponse, JsonResponse
 from django.urls import reverse
+from wagtail.api.v2.utils import get_full_url
 from wagtailcache.cache import cache_page
 
 from geomanager.errors import MissingTileError
@@ -76,7 +77,7 @@ def tile_json_gl(request, source_slug):
         )
 
         # Tile
-        tile_url = request.build_absolute_uri(reverse("tile_gl", args=(source.slug, 0, 0, 0)))
+        tile_url = get_full_url(request, (reverse("tile_gl", args=(source.slug, 0, 0, 0))))
         tile_url = tile_url.replace("/0/0/0.pbf", r"/{z}/{x}/{y}.pbf")
         spec["tiles"] = [tile_url]
 
@@ -89,7 +90,7 @@ def tile_json_gl(request, source_slug):
 @cache_page
 def style_json_gl(request, source_slug):
     source = MBTSource.objects.get(slug=source_slug)
-    tilejson_url = request.build_absolute_uri(reverse("tile_json_gl", args=[source.slug]))
+    tilejson_url = get_full_url(request, reverse("tile_json_gl", args=[source.slug]))
 
     style_config = source.json_style
 

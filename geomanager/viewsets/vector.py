@@ -14,6 +14,7 @@ from rest_framework.response import Response
 from wagtailcache.cache import cache_page
 
 from geomanager import serializers
+from geomanager.decorators import revalidate_cache
 from geomanager.models import Geostore
 from geomanager.models.vector_file import PgVectorTable
 from geomanager.serializers.geostore import GeostoreSerializer
@@ -32,6 +33,7 @@ class AdminBoundaryViewSet(viewsets.ViewSet):
     renderer_classes = [JSONRenderer]
 
     @action(detail=True, methods=['get'])
+    @method_decorator(revalidate_cache)
     @method_decorator(cache_page)
     def get(self, request):
         countries = AdminBoundary.objects.filter(level=0)
@@ -39,6 +41,7 @@ class AdminBoundaryViewSet(viewsets.ViewSet):
         return Response(data)
 
     @action(detail=True, methods=['get'])
+    @method_decorator(revalidate_cache)
     @method_decorator(cache_page)
     def get_regions(self, request, gid_0):
         countries = AdminBoundary.objects.filter(level=1, gid_0=gid_0)
@@ -46,6 +49,7 @@ class AdminBoundaryViewSet(viewsets.ViewSet):
         return Response(data)
 
     @action(detail=True, methods=['get'])
+    @method_decorator(revalidate_cache)
     @method_decorator(cache_page)
     def get_sub_regions(self, request, gid_0, gid_1):
         countries = AdminBoundary.objects.filter(level=2, gid_0=gid_0, gid_1=gid_1)
@@ -79,6 +83,7 @@ class GeostoreViewSet(viewsets.ViewSet):
         return Response(res_data)
 
     @action(detail=True, methods=['get'])
+    @method_decorator(revalidate_cache)
     @method_decorator(cache_page)
     def get(self, request, geostore_id):
         try:
@@ -89,6 +94,7 @@ class GeostoreViewSet(viewsets.ViewSet):
             raise NotFound(detail='Geostore not found')
 
     @action(detail=True, methods=['get'])
+    @method_decorator(revalidate_cache)
     @method_decorator(cache_page)
     def get_by_admin(self, request, gid_0, gid_1=None, gid_2=None):
         abm_settings = AdminBoundarySettings.for_request(request)

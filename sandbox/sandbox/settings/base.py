@@ -95,7 +95,6 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    "wagtailcache.cache.UpdateCacheMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -105,7 +104,6 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
-    "wagtailcache.cache.FetchFromCacheMiddleware",
 ]
 
 ROOT_URLCONF = "sandbox.urls"

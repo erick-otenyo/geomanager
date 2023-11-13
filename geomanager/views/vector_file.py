@@ -14,11 +14,13 @@ from django.utils.translation import gettext as _
 from django.views import View
 from wagtail.admin import messages
 from wagtail.admin.auth import user_passes_test, user_has_any_page_permission, permission_denied
+from wagtail.api.v2.utils import get_full_url
 from wagtail.models import Site
 from wagtail.snippets.permissions import get_permission_name
 from wagtail_modeladmin.helpers import AdminURLHelper
 from wagtailcache.cache import cache_page, clear_cache
 
+from geomanager.decorators import revalidate_cache
 from geomanager.forms import VectorLayerFileForm, VectorTableForm
 from geomanager.models import Dataset
 from geomanager.models.core import GeomanagerSettings, Category
@@ -238,8 +240,6 @@ def preview_vector_layers(request, dataset_id, layer_id=None):
     template_name = 'geomanager/vector_file/vector_file_layer_preview.html'
     dataset = get_object_or_404(Dataset, pk=dataset_id)
 
-    base_absolute_url = request.scheme + '://' + request.get_host()
-
     category_admin_helper = AdminURLHelper(Category)
     categories_url = category_admin_helper.get_action_url("index")
 
@@ -250,8 +250,7 @@ def preview_vector_layers(request, dataset_id, layer_id=None):
     vector_layer_list_url = vector_layer_admin_helper.get_action_url("index")
     vector_layer_list_url = vector_layer_list_url + f"?dataset__id__exact={dataset_id}"
 
-    geojson_url = request.build_absolute_uri(
-        reverse("feature_serv", args=("table_name",)).replace("table_name.geojson", ""))
+    geojson_url = get_full_url(request, reverse("feature_serv", args=("table_name",)).replace("table_name.geojson", ""))
 
     data_table = PgVectorTable.objects.filter(layer__id=layer_id)
 
@@ -270,7 +269,7 @@ def preview_vector_layers(request, dataset_id, layer_id=None):
     icon_images = []
     layers_id = [layer.get("id") for layer in dataset_layers]
     for icon in VectorLayerIcon.objects.filter(layer__in=layers_id):
-        icon_images.append({"name": icon.name, "url": request.build_absolute_uri(icon.file.url)})
+        icon_images.append({"name": icon.name, "url": get_full_url(request, icon.file.url)})
 
     navigation_items = [
         {"url": categories_url, "label": Category._meta.verbose_name_plural},
@@ -279,14 +278,18 @@ def preview_vector_layers(request, dataset_id, layer_id=None):
         {"url": "#", "label": _("Preview")},
     ]
 
+    vector_tiles_url = reverse("vector_tiles", args=(0, 0, 0))
+    vector_tiles_url = vector_tiles_url.replace("/0/0/0", r"/{z}/{x}/{y}")
+    vector_tiles_url = get_full_url(request, vector_tiles_url)
+
     context = {
         "dataset": dataset,
         "dataset_layers": json.dumps(dataset_layers, cls=UUIDEncoder),
         "selected_layer": layer_id,
         "datasets_index_url": dataset_list_url,
         "vector_layer_list_url": vector_layer_list_url,
-        "data_vector_api_base_url": request.build_absolute_uri("/api/vector-data"),
-        "vector_tiles_url": base_absolute_url + "/api/vector-tiles/{z}/{x}/{y}",
+        "data_vector_api_base_url": get_full_url(request, reverse("vector-data-list")),
+        "vector_tiles_url": vector_tiles_url,
         "geojson_url": geojson_url,
         "data_table": data_table,
         "icon_images": icon_images,
@@ -316,6 +319,7 @@ def preview_vector_layers(request, dataset_id, layer_id=None):
     return render(request, template_name=template_name, context=context)
 
 
+@method_decorator(revalidate_cache, name='get')
 @method_decorator(cache_page, name='get')
 class VectorTileView(View):
     def get(self, request, z, x, y):
@@ -382,10 +386,10 @@ class VectorTileView(View):
                     return HttpResponse("Tile not found", status=404)
                 return HttpResponse(tile, content_type="application/x-protobuf")
             except Exception as e:
-                print("Error", e)
                 return HttpResponse(f"Error while fetching tile: {e}", status=500)
 
 
+@method_decorator(revalidate_cache, name='get')
 @method_decorator(cache_page, name='get')
 class GeoJSONPgTableView(View):
     def get(self, request, table_name):

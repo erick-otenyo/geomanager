@@ -6,6 +6,7 @@ from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from django_tables2 import tables, LazyPaginator, TemplateColumn
 from wagtail.admin.panels import FieldPanel
+from wagtail.api.v2.utils import get_full_url
 from wagtail.contrib.routable_page.models import path, RoutablePageMixin
 from wagtail.contrib.settings.models import BaseSiteSetting
 from wagtail.contrib.settings.registry import register_setting
@@ -141,7 +142,7 @@ class StationsPage(RoutablePageMixin, Page):
         context = {}
         station_settings = StationSettings.for_request(request)
 
-        stations_vector_tiles_url = request.scheme + '://' + request.get_host() + station_settings.stations_vector_tiles_url
+        stations_vector_tiles_url = get_full_url(request, station_settings.stations_vector_tiles_url)
 
         context.update({
             "mapConfig": {
@@ -158,7 +159,7 @@ class StationsPage(RoutablePageMixin, Page):
 
         table_fields = [field.get("name") for field in station_table_columns_list]
 
-        page_url = request.build_absolute_uri(self.url)
+        page_url = get_full_url(request, self.url)
 
         class StationTable(tables.Table):
             detail_url = TemplateColumn('<a href="" target="_blank"></a>')

@@ -26,11 +26,13 @@ from wagtail.admin.auth import (
     user_has_any_page_permission,
     permission_denied
 )
+from wagtail.api.v2.utils import get_full_url
 from wagtail.models import Site
 from wagtail.snippets.permissions import get_permission_name
 from wagtail_modeladmin.helpers import AdminURLHelper
 from wagtailcache.cache import cache_page
 
+from geomanager.decorators import revalidate_cache
 from geomanager.errors import RasterFileNotFound, QueryParamRequired, GeostoreNotFound
 from geomanager.forms import LayerRasterFileForm
 from geomanager.models import (
@@ -384,7 +386,7 @@ def delete_raster_upload(request, upload_id):
 def preview_raster_layers(request, dataset_id, layer_id=None):
     dataset = get_object_or_404(Dataset, pk=dataset_id)
 
-    base_absolute_url = request.scheme + '://' + request.get_host()
+    base_absolute_url = get_full_url(request, "")
 
     category_admin_helper = AdminURLHelper(Category)
     categories_url = category_admin_helper.get_action_url("index")
@@ -416,9 +418,9 @@ def preview_raster_layers(request, dataset_id, layer_id=None):
         "selected_layer": selected_layer,
         "datasets_index_url": dataset_list_url,
         "image_file_layer_list_url": raster_file_layer_list_url,
-        "file_raster_list_url": request.build_absolute_uri(reverse("file-raster-list")),
-        "large_image_color_maps_url": request.build_absolute_uri(reverse("large-image-colormaps")),
-        "file_raster_metadata_url": request.build_absolute_uri(reverse("file-raster-metadata", args=("0",))),
+        "file_raster_list_url": get_full_url(request, reverse("file-raster-list")),
+        "large_image_color_maps_url": get_full_url(request, reverse("large-image-colormaps")),
+        "file_raster_metadata_url": get_full_url(request, reverse("file-raster-metadata", args=("0",))),
         "base_absolute_url": base_absolute_url,
         "navigation_items": navigation_items,
     }
@@ -513,6 +515,7 @@ class RasterDataMixin:
         return request.query_params.get(key, str(default))
 
 
+@method_decorator(revalidate_cache, name='get')
 @method_decorator(cache_page, name='get')
 class RasterTileView(RasterDataMixin, APIView):
     # TODO: Validate style query param thoroughly. If not validated, the whole app just exits without warning.
@@ -571,6 +574,7 @@ class RasterTileView(RasterDataMixin, APIView):
         return HttpResponse(tile_binary, content_type=mime_type)
 
 
+@method_decorator(revalidate_cache, name='get')
 @method_decorator(cache_page, name='get')
 class RasterThumbnailView(RasterDataMixin, APIView):
     def get(self, request, file_id):
@@ -622,6 +626,7 @@ class RasterThumbnailView(RasterDataMixin, APIView):
         return HttpResponse(thumb_data, content_type=mime_type)
 
 
+@method_decorator(revalidate_cache, name='get')
 @method_decorator(cache_page, name='get')
 class RasterDataPixelView(RasterDataMixin, APIView):
     renderer_classes = [JSONRenderer]
@@ -637,6 +642,7 @@ class RasterDataPixelView(RasterDataMixin, APIView):
         return Response(pixel_data)
 
 
+@method_decorator(revalidate_cache, name='get')
 @method_decorator(cache_page, name='get')
 class RasterDataPixelTimeseriesView(RasterDataMixin, APIView):
     renderer_classes = [JSONRenderer]
@@ -659,6 +665,7 @@ class RasterDataPixelTimeseriesView(RasterDataMixin, APIView):
         return Response(timeseries_data)
 
 
+@method_decorator(revalidate_cache, name='get')
 @method_decorator(cache_page, name='get')
 class RasterDataGeostoreView(RasterDataMixin, APIView):
     renderer_classes = [JSONRenderer]
@@ -676,6 +683,7 @@ class RasterDataGeostoreView(RasterDataMixin, APIView):
         return Response(data)
 
 
+@method_decorator(revalidate_cache, name='get')
 @method_decorator(cache_page, name='get')
 class RasterDataGeostoreTimeseriesView(RasterDataMixin, APIView):
     renderer_classes = [JSONRenderer]

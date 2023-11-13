@@ -1,5 +1,6 @@
 from adminboundarymanager.models import AdminBoundarySettings
 from wagtail import hooks
+from wagtail.api.v2.utils import get_full_url
 from wagtail_modeladmin.options import modeladmin_register
 
 from .admin import GeoManagerAdminGroup, urls as geomanager_urls
@@ -38,7 +39,7 @@ def register_geomanager_datasets(request):
     abm_settings = AdminBoundarySettings.for_request(request)
 
     boundary_tiles_url = abm_settings.boundary_tiles_url
-    boundary_tiles_url = request.scheme + '://' + request.get_host() + boundary_tiles_url
+    boundary_tiles_url = get_full_url(request, boundary_tiles_url)
 
     # create boundary dataset
     boundary_dataset = create_boundary_dataset(boundary_tiles_url)

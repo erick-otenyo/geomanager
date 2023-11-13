@@ -3,6 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from django_extensions.db.models import TimeStampedModel
 from modelcluster.models import ClusterableModel
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
+from wagtail.api.v2.utils import get_full_url
 from wagtail.fields import StreamField
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.images.models import Image
@@ -208,7 +209,7 @@ class BaseTileLayer(TimeStampedModel, ClusterableModel, BaseLayer):
             if isinstance(legend_block.value, Image):
                 image_url = legend_block.value.file.url
                 if request:
-                    image_url = request.build_absolute_uri(image_url)
+                    image_url = get_full_url(request, image_url)
                 config.update({"type": "image", "imageUrl": image_url})
                 return config
 
