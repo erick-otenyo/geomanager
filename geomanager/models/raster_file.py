@@ -39,6 +39,10 @@ class RasterFileLayer(TimeStampedModel, BaseLayer):
     style = models.ForeignKey("RasterStyle", null=True, blank=True, on_delete=models.SET_NULL, verbose_name=_("style"))
 
     auto_ingest_from_directory = models.BooleanField(default=False, verbose_name=_("Auto ingest from directory"))
+    auto_ingest_nc_data_variable = models.CharField(max_length=100, blank=True, null=True,
+                                                    verbose_name=_("Data variable for netCDF data auto ingest"),
+                                                    help_text=_("The name of the data variable to use, "
+                                                                "if ingesting from netCDF files"))
 
     analysis = StreamField([
         ('point_analysis', FileLayerPointAnalysisBlock(label=_("Point Analysis")),),
@@ -57,6 +61,7 @@ class RasterFileLayer(TimeStampedModel, BaseLayer):
         FieldPanel("date_format"),
         FieldPanel("style"),
         FieldPanel("auto_ingest_from_directory"),
+        FieldPanel("auto_ingest_nc_data_variable"),
         FieldPanel("analysis"),
     ]
 

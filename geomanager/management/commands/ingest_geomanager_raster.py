@@ -26,13 +26,13 @@ class Command(BaseCommand):
         overwrite = options['overwrite']
         clip = options['clip']
 
-        logger.debug('[GEOMANAGER_INGEST] Starting auto ingest execution...')
+        logger.info('[GEOMANAGER_AUTO_INGEST]: Starting auto ingest execution...')
 
-        logger.info(f'[GEOMANAGER_INGEST] Event Type: {event_type}')
+        logger.info(f'[GEOMANAGER_AUTO_INGEST]: Event Type: {event_type}')
 
         # Check if event type is allowed
         if event_type not in ALLOWED_FILE_EVENTS:
-            logger.warning(f'[GEOMANAGER_INGEST] Event Type: {event_type} not in allowed file events.')
+            logger.warning(f'[GEOMANAGER_AUTO_INGEST]: Event Type: {event_type} not in allowed file events.')
             return
 
         # If event type is moved, use destination path
@@ -40,3 +40,5 @@ class Command(BaseCommand):
             src_path = dst_path
 
         ingest_raster_file(src_path, overwrite, clip)
+
+        logger.info(f'[GEOMANAGER_AUTO_INGEST]: {src_path} done...')

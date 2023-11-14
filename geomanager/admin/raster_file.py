@@ -15,6 +15,8 @@ from geomanager.views import (
 
 
 class RasterFileLayerCreateView(CreateView):
+    form_view_extra_js = ["geomanager/js/raster-file-conditional.js"]
+
     def get_form(self):
         form = super().get_form()
         form.fields["dataset"].queryset = Dataset.objects.filter(layer_type="raster_file")
@@ -117,6 +119,8 @@ class RasterFileLayerModelAdmin(BaseModelAdmin, ModelAdminCanHide):
     index_view_class = LayerIndexView
     create_view_class = RasterFileLayerCreateView
     edit_view_class = RasterFileLayerEditView
+
+    form_view_extra_js = ["geomanager/js/raster-file-conditional.js"]
 
     def __init__(self, parent=None):
         super().__init__(parent)

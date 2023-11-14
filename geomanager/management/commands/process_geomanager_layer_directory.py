@@ -11,6 +11,8 @@ logger = logging.getLogger(__name__)
 
 ALLOWED_FILE_EVENTS = ["created", "moved"]
 
+RASTER_FILE_EXTENSIONS = ['.nc', '.tif']
+
 
 class Command(BaseCommand):
     help = 'Process a raster file layer directory'
@@ -28,27 +30,30 @@ class Command(BaseCommand):
         auto_ingest_raster_data_dir = geomanager_settings.get("auto_ingest_raster_data_dir", None)
 
         if not auto_ingest_raster_data_dir:
-            logger.error("Auto ingest raster data directory not configured.")
+            logger.error("[GEOMANAGER_AUTO_INGEST]: Auto ingest raster data directory not configured.")
             return
 
         if not is_valid_uuid(layer_id):
-            logger.error(f"Layer ID: {layer_id} is not a valid UUID.")
+            logger.error(f"[GEOMANAGER_AUTO_INGEST]: Layer ID: {layer_id} is not a valid UUID.")
             return
 
-        logger.debug('[GEOMANAGER_INGEST] Starting auto ingest execution...')
+        logger.debug('[GEOMANAGER_AUTO_INGEST]: Starting directory processing...')
 
         directory = os.path.join(auto_ingest_raster_data_dir, layer_id)
 
         if not os.path.isdir(directory):
-            logger.error(f"Directory: {directory} does not exist.")
+            logger.error(f"[GEOMANAGER_AUTO_INGEST]: Directory: {directory} does not exist.")
             return
 
-        geotiff_files = glob.glob(directory + "/*.tif")
+        for ext in RASTER_FILE_EXTENSIONS:
+            files = glob.glob(directory + f"/*{ext}")
 
-        if not geotiff_files:
-            logger.error(f"No GeoTIFF files found in directory: {directory}")
-            return
+            if not files:
+                logger.error(
+                    f"[GEOMANAGER_AUTO_INGEST]: No files found in directory: {directory} with extension: {ext}")
+                return
 
-        for file in geotiff_files:
-            logger.info(f'[GEOMANAGER_INGEST] Processing file: {file}')
-            ingest_raster_file(file, overwrite, clip)
+            for file in files:
+                logger.info(f'[GEOMANAGER_AUTO_INGEST]: Processing file: {file}')
+                ingest_raster_file(file, overwrite, clip)
+                logger.info(f'[GEOMANAGER_AUTO_INGEST]: {file} done...')

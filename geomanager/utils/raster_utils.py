@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import rasterio as rio
 import xarray as xr
+import rioxarray as rxr
 from django.core.files import File
 from django.forms import FileField
 from django_large_image import tilesource
@@ -204,7 +205,7 @@ def convert_upload_to_geotiff(upload, out_file_path, band_index=None, data_varia
 
             # make sure no data value is not nan
             nodata_value = rds.encoding.get('nodata', rds.encoding.get('_FillValue'))
-            if np.isnan(nodata_value):
+            if not nodata_value or np.isnan(nodata_value):
                 rds = rds.rio.write_nodata(-9999, encoded=True)
 
             netcdf_attrs = []

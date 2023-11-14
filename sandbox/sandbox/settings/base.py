@@ -268,55 +268,21 @@ DJANGO_TABLES2_TEMPLATE = "django-tables2/bulma.html"
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
-        }
-    },
     'formatters': {
-        'timestamp': {
-            'format': '{asctime} {levelname} {message}',
-            'style': '{',
+        'console': {
+            'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
         },
     },
     'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
-        },
-        'file': {
-            'level': 'ERROR',
-            'class': 'logging.FileHandler',
-            'filename': 'error.log',
-            'formatter': 'timestamp',
-        },
-        'debug_file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': 'debug.log',
-            'formatter': 'timestamp',
-        },
         'console': {
             'class': 'logging.StreamHandler',
-            'formatter': 'timestamp',
-        }
+            'formatter': 'console',
+        },
     },
     'loggers': {
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
-            'propagate': True,
+        '': {
+            'level': 'INFO',
+            'handlers': ['console'],
         },
-        'background_task': {
-            'handlers': ['debug_file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'django': {
-            'handlers': ['console', 'file'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
-    }
+    },
 }
