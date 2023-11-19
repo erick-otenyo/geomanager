@@ -132,6 +132,8 @@ $((async function () {
     const setLayer = (selectedLayer) => {
         const {id, layerConfig: {source: {tiles}, render}} = selectedLayer
 
+        const selectedTimestamp = $timestampsSelect.val()
+
 
         if (render && render.layers && !!render.layers.length) {
 
@@ -149,7 +151,9 @@ $((async function () {
                     map.removeSource(layerId);
                 }
 
-                const params = {}
+                const params = {
+                    time: selectedTimestamp
+                }
 
                 const tilesUrl = updateTileUrl(tiles[0], params)
 
@@ -169,9 +173,11 @@ $((async function () {
 
     const selectedLayerId = $layerSelect.val();
 
+
     if (selectedLayerId) {
         const selectedLayer = window.geomanager_opts.dataLayers.find(l => l.id === selectedLayerId)
         const {tileJsonUrl, timestampsResponseObjectKey} = selectedLayer
+
 
         if (tileJsonUrl) {
             const timestamps = await fetchTimestamps(tileJsonUrl, timestampsResponseObjectKey)

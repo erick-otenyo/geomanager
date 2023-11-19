@@ -3,6 +3,7 @@ from django.core.files.base import ContentFile
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from django_json_widget.widgets import JSONEditorWidget
 from modelcluster.fields import ParentalKey
 from wagtail import blocks
 from wagtail.admin.panels import FieldPanel
@@ -52,7 +53,10 @@ class VectorTileLayer(BaseTileLayer):
         ("circle", TileCircleVectorLayerBlock(label=_("Point Layer"))),
         ("icon", TileIconVectorLayerBlock(label=_("Icon Layer"))),
         ("text", TileTextVectorLayerBlock(label=_("Text Label Layer"))),
-    ], use_json_field=True, null=True, blank=True, min_num=1, verbose_name=_("Render Layers"))
+    ], use_json_field=True, null=True, blank=True, verbose_name=_("Render Layers"))
+
+    use_render_layers_json = models.BooleanField(default=False, verbose_name=_("Use Render Layers JSON"))
+    render_layers_json = models.JSONField(blank=True, null=True, verbose_name=_("Layers Configuration"))
 
     class Meta:
         verbose_name = _("Vector Tile Layer")
@@ -61,7 +65,9 @@ class VectorTileLayer(BaseTileLayer):
     panels = [
         FieldPanel("dataset"),
         *BaseTileLayer.panels,
+        FieldPanel("use_render_layers_json"),
         FieldPanel("render_layers"),
+        FieldPanel('render_layers_json', widget=JSONEditorWidget(width="100%")),
     ]
 
     def __str__(self):
@@ -86,6 +92,10 @@ class VectorTileLayer(BaseTileLayer):
                 "tiles": [tile_url]
             }
         }
+
+        if self.use_render_layers_json and self.render_layers_json:
+            layer_config.update({"render": {"layers": self.render_layers_json}})
+            return layer_config
 
         render_layers = get_vector_render_layers(self.render_layers)
 

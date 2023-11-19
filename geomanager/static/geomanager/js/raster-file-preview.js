@@ -43,6 +43,10 @@ $((async function () {
     })
     map.addControl(navControl, 'bottom-right')
 
+    // add scale control
+    map.addControl(new maplibregl.ScaleControl({position: 'bottom-right'}));
+
+
     // map layer id. Also used as source id
     const mapRasterLayerId = "rasterLayer"
 
