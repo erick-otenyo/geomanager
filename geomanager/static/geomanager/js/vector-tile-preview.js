@@ -76,10 +76,12 @@ $((async function () {
      * @param {string} sourceId - The ID of the map source to update.
      */
     const onTimeChange = (selectedTime, map, sourceId) => {
-        if (selectedTime && map && sourceId) {
-            const params = {time: selectedTime}
-            updateSourceTileUrl(map, sourceId, params)
-        }
+
+        const selectedLayerId = $layerSelect.val();
+        const selectedLayer = window.geomanager_opts.dataLayers.find(l => l.id === selectedLayerId)
+
+        setLayer(selectedLayer)
+
     };
 
 
@@ -108,6 +110,7 @@ $((async function () {
 
         // Get the source object from the map using the specified source ID.
         const source = map.getSource(sourceId);
+
         const sourceTileUrl = source.tiles[0]
         const newTileUrl = updateTileUrl(sourceTileUrl, params)
 
@@ -130,7 +133,7 @@ $((async function () {
 
 
     const setLayer = (selectedLayer) => {
-        const {id, layerConfig: {source: {tiles}, render}} = selectedLayer
+        const {id, layerConfig: {source: {tiles}, render}, paramsSelectorConfig} = selectedLayer
 
         const selectedTimestamp = $timestampsSelect.val()
 
@@ -151,9 +154,17 @@ $((async function () {
                     map.removeSource(layerId);
                 }
 
-                const params = {
-                    time: selectedTimestamp
+                const params = {}
+
+
+                const timeConfig = paramsSelectorConfig && paramsSelectorConfig.find(c => c.key === "time" && c.type === "datetime") || {}
+
+                const {url_param} = timeConfig
+
+                if (url_param && selectedTimestamp) {
+                    params[url_param] = selectedTimestamp
                 }
+
 
                 const tilesUrl = updateTileUrl(tiles[0], params)
 
@@ -172,7 +183,6 @@ $((async function () {
     }
 
     const selectedLayerId = $layerSelect.val();
-
 
     if (selectedLayerId) {
         const selectedLayer = window.geomanager_opts.dataLayers.find(l => l.id === selectedLayerId)

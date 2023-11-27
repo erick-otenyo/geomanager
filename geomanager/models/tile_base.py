@@ -167,9 +167,11 @@ class BaseTileLayer(TimeStampedModel, ClusterableModel, BaseLayer):
     @property
     def param_selector_config(self):
         config = []
+        time_param_name = self.time_parameter_name or "time"
         if self.has_time:
             time_config = {
                 "key": "time",
+                "url_param": time_param_name,
                 "required": True,
                 "sentence": "{selector}",
                 "type": "datetime",
