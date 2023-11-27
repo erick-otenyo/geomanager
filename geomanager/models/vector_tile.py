@@ -43,6 +43,17 @@ class TileTextVectorLayerBlock(TextVectorLayerBlock):
     source_layer = blocks.CharBlock(required=True, label=_("source layer"))
 
 
+class PopupFieldBlock(blocks.StructBlock):
+    DATA_TYPE_CHOICES = (
+        ("string", _("String")),
+        ("number", _("Number")),
+    )
+
+    data_key = blocks.CharBlock(required=True, label=_("Data Key"))
+    label = blocks.CharBlock(required=True, label=_("Popup Label"))
+    data_type = blocks.ChoiceBlock(choices=DATA_TYPE_CHOICES, default="string", label=_("Data Type"))
+
+
 class VectorTileLayer(BaseTileLayer):
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, related_name="vector_tile_layers",
                                 verbose_name=_("dataset"))
@@ -58,6 +69,10 @@ class VectorTileLayer(BaseTileLayer):
     use_render_layers_json = models.BooleanField(default=False, verbose_name=_("Use Render Layers JSON"))
     render_layers_json = models.JSONField(blank=True, null=True, verbose_name=_("Layers Configuration"))
 
+    popup_config = StreamField([
+        ("popup_fields", PopupFieldBlock(label=_("Popup Fields"))),
+    ], use_json_field=True, null=True, blank=True, verbose_name=_("Map Popup Configuration"))
+
     class Meta:
         verbose_name = _("Vector Tile Layer")
         verbose_name_plural = _("Vector Tile Layers")
@@ -68,6 +83,7 @@ class VectorTileLayer(BaseTileLayer):
         FieldPanel("use_render_layers_json"),
         FieldPanel("render_layers"),
         FieldPanel('render_layers_json', widget=JSONEditorWidget(width="100%")),
+        FieldPanel('popup_config'),
     ]
 
     def __str__(self):
@@ -102,6 +118,25 @@ class VectorTileLayer(BaseTileLayer):
         layer_config.update({"render": {"layers": render_layers}})
 
         return layer_config
+
+    @property
+    def interaction_config(self):
+        if not self.popup_config:
+            return None
+
+        config = {
+            "type": "intersection",
+            "output": []
+        }
+
+        for popup_field in self.popup_config:
+            config["output"].append({
+                "column": popup_field.value.get("data_key"),
+                "property": popup_field.value.get("label"),
+                "type": popup_field.value.get("data_type", "string"),
+            })
+
+        return config
 
     def save(self, *args, **kwargs):
         # remove existing icons for this layer.

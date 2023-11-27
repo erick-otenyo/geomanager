@@ -19,12 +19,17 @@ class VectorTileLayerSerializer(serializers.ModelSerializer):
     moreInfo = serializers.SerializerMethodField()
     tileJsonUrl = serializers.SerializerMethodField()
     timestampsResponseObjectKey = serializers.SerializerMethodField()
+    interactionConfig = serializers.SerializerMethodField()
 
     class Meta:
         model = VectorTileLayer
         fields = ["id", "dataset", "name", "isMultiLayer", "nestedLegend", "layerType", "layerConfig", "params",
                   "paramsSelectorConfig", "paramsSelectorColumnView", "legendConfig", "multiTemporal",
-                  "currentTimeMethod", "autoUpdateInterval", "moreInfo", "tileJsonUrl", "timestampsResponseObjectKey"]
+                  "currentTimeMethod", "autoUpdateInterval", "moreInfo", "tileJsonUrl", "timestampsResponseObjectKey",
+                  "interactionConfig"]
+
+    def get_interactionConfig(self, obj):
+        return obj.interaction_config
 
     def get_isMultiLayer(self, obj):
         return obj.dataset.multi_layer
