@@ -189,7 +189,7 @@ def convert_upload_to_geotiff(upload, out_file_path, band_index=None, data_varia
             if data_variable:
                 rds = rds[data_variable]
 
-            if timestamps and band_index:
+            if timestamps and band_index is not None:
                 rds = rds.isel(time=int(band_index))
 
             # write crs if not available

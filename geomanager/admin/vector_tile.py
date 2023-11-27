@@ -80,6 +80,8 @@ class VectorTileLayerModelAdmin(BaseModelAdmin, ModelAdminCanHide):
     index_view_class = LayerIndexView
     edit_view_class = VectorTileLayerEditView
 
+    form_view_extra_js = ["geomanager/js/vector-tile-conditional.js"]
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.list_display = (list(self.list_display) or []) + ['dataset_link', 'preview_layer', 'mapviewer_map_url']

@@ -57,6 +57,9 @@ class BaseTileLayer(TimeStampedModel, ClusterableModel, BaseLayer):
                                                       help_text=_("Key for timestamps values in response object"))
     date_format = models.CharField(max_length=100, choices=DATE_FORMAT_CHOICES, blank=True, null=True,
                                    verbose_name=_("Display Format for DateTime Selector"))
+    time_parameter_name = models.CharField(max_length=100, blank=True, null=True, default="time",
+                                           verbose_name=_("Time Parameter Name"),
+                                           help_text=_("Name of the time parameter in the url"))
 
     panels = [
         FieldPanel("title"),
@@ -67,8 +70,9 @@ class BaseTileLayer(TimeStampedModel, ClusterableModel, BaseLayer):
             FieldPanel("get_time_from_tile_json"),
             FieldPanel("tile_json_url", classname="show_if_get_time_checked"),
             FieldPanel("timestamps_response_object_key", classname="show_if_get_time_checked"),
+            FieldPanel("time_parameter_name", classname="show_if_get_time_checked"),
             FieldPanel("date_format", classname="show_if_get_time_checked"),
-        ], heading=_("TileJson Settings")),
+        ], heading=_("Time Settings")),
 
         FieldPanel("query_params_static"),
         FieldPanel("query_params_selectable"),
@@ -84,8 +88,9 @@ class BaseTileLayer(TimeStampedModel, ClusterableModel, BaseLayer):
         query_params = {}
 
         if self.has_time:
+            time_param_name = self.time_parameter_name or "time"
             query_params.update({
-                "time": "{{time}}"
+                time_param_name: "{{time}}"
             })
 
         static_params = self.get_static_params()
@@ -142,7 +147,8 @@ class BaseTileLayer(TimeStampedModel, ClusterableModel, BaseLayer):
     def params(self):
         params = {}
         if self.has_time:
-            params.update({"time": ""})
+            time_param_name = self.time_parameter_name or "time"
+            params.update({time_param_name: ""})
 
         selector_config = self.get_selectable_params_config()
 
@@ -161,9 +167,11 @@ class BaseTileLayer(TimeStampedModel, ClusterableModel, BaseLayer):
     @property
     def param_selector_config(self):
         config = []
+        time_param_name = self.time_parameter_name or "time"
         if self.has_time:
             time_config = {
                 "key": "time",
+                "url_param": time_param_name,
                 "required": True,
                 "sentence": "{selector}",
                 "type": "datetime",

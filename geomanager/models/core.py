@@ -121,9 +121,10 @@ class Dataset(TimeStampedModel):
     )
 
     CURRENT_TIME_METHOD_CHOICES = (
-        ("latest_from_source", _("Latest From Source")),
-        ("previous_to_now", _("Previous to now")),
-        ("next_to_now", _("Next to Now")),
+        ("latest_from_source", _("Latest available date from source")),
+        ("earliest_from_source", _("Earliest available date from source")),
+        ("previous_to_now", _("Date previous to current date time")),
+        ("next_to_now", _("Date next to current date time")),
     )
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

@@ -3,6 +3,7 @@ from django.core.files.base import ContentFile
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from django_json_widget.widgets import JSONEditorWidget
 from modelcluster.fields import ParentalKey
 from wagtail import blocks
 from wagtail.admin.panels import FieldPanel
@@ -42,6 +43,17 @@ class TileTextVectorLayerBlock(TextVectorLayerBlock):
     source_layer = blocks.CharBlock(required=True, label=_("source layer"))
 
 
+class PopupFieldBlock(blocks.StructBlock):
+    DATA_TYPE_CHOICES = (
+        ("string", _("String")),
+        ("number", _("Number")),
+    )
+
+    data_key = blocks.CharBlock(required=True, label=_("Data Key"))
+    label = blocks.CharBlock(required=True, label=_("Popup Label"))
+    data_type = blocks.ChoiceBlock(choices=DATA_TYPE_CHOICES, default="string", label=_("Data Type"))
+
+
 class VectorTileLayer(BaseTileLayer):
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, related_name="vector_tile_layers",
                                 verbose_name=_("dataset"))
@@ -52,7 +64,14 @@ class VectorTileLayer(BaseTileLayer):
         ("circle", TileCircleVectorLayerBlock(label=_("Point Layer"))),
         ("icon", TileIconVectorLayerBlock(label=_("Icon Layer"))),
         ("text", TileTextVectorLayerBlock(label=_("Text Label Layer"))),
-    ], use_json_field=True, null=True, blank=True, min_num=1, verbose_name=_("Render Layers"))
+    ], use_json_field=True, null=True, blank=True, verbose_name=_("Render Layers"))
+
+    use_render_layers_json = models.BooleanField(default=False, verbose_name=_("Use Render Layers JSON"))
+    render_layers_json = models.JSONField(blank=True, null=True, verbose_name=_("Layers Configuration"))
+
+    popup_config = StreamField([
+        ("popup_fields", PopupFieldBlock(label=_("Popup Fields"))),
+    ], use_json_field=True, null=True, blank=True, verbose_name=_("Map Popup Configuration"))
 
     class Meta:
         verbose_name = _("Vector Tile Layer")
@@ -61,7 +80,10 @@ class VectorTileLayer(BaseTileLayer):
     panels = [
         FieldPanel("dataset"),
         *BaseTileLayer.panels,
+        FieldPanel("use_render_layers_json"),
         FieldPanel("render_layers"),
+        FieldPanel('render_layers_json', widget=JSONEditorWidget(width="100%")),
+        FieldPanel('popup_config'),
     ]
 
     def __str__(self):
@@ -87,11 +109,34 @@ class VectorTileLayer(BaseTileLayer):
             }
         }
 
+        if self.use_render_layers_json and self.render_layers_json:
+            layer_config.update({"render": {"layers": self.render_layers_json}})
+            return layer_config
+
         render_layers = get_vector_render_layers(self.render_layers)
 
         layer_config.update({"render": {"layers": render_layers}})
 
         return layer_config
+
+    @property
+    def interaction_config(self):
+        if not self.popup_config:
+            return None
+
+        config = {
+            "type": "intersection",
+            "output": []
+        }
+
+        for popup_field in self.popup_config:
+            config["output"].append({
+                "column": popup_field.value.get("data_key"),
+                "property": popup_field.value.get("label"),
+                "type": popup_field.value.get("data_type", "string"),
+            })
+
+        return config
 
     def save(self, *args, **kwargs):
         # remove existing icons for this layer.

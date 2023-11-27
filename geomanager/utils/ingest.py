@@ -189,11 +189,14 @@ def raw_raster_file_to_layer_raster_file(layer_obj, file_path, time=None, overwr
                     d_time_unaware = datetime.fromisoformat(time_str)
                     d_time_aware = d_time_unaware.replace(tzinfo=pytz.UTC)
 
+                    logger.info(f'[GEOMANAGER_AUTO_INGEST]: Processing time : {time_str}')
+
                     create_raster(layer_obj, upload, d_time_aware, overwrite=overwrite, band_index=i,
                                   data_variable=data_variable)
 
             elif raster_driver == "GTiff":
                 if time:
+                    logger.info(f'[GEOMANAGER_AUTO_INGEST]: Processing time : {time}')
                     create_raster(layer_obj, upload, time, overwrite=overwrite)
 
         finally:

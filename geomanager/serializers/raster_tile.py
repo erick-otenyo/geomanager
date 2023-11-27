@@ -71,6 +71,11 @@ class RasterTileLayerSerializer(serializers.ModelSerializer):
             return obj.timestamps_response_object_key
         return None
 
+    def get_timestampsResponseObjectKey(self, obj):
+        if obj.has_time:
+            return obj.timestamps_response_object_key
+        return None
+
     def get_legendConfig(self, obj):
         request = self.context.get('request')
         return obj.get_legend_config(request)

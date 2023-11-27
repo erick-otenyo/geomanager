@@ -76,10 +76,12 @@ $((async function () {
      * @param {string} sourceId - The ID of the map source to update.
      */
     const onTimeChange = (selectedTime, map, sourceId) => {
-        if (selectedTime && map && sourceId) {
-            const params = {time: selectedTime}
-            updateSourceTileUrl(map, sourceId, params)
-        }
+
+        const selectedLayerId = $layerSelect.val();
+        const selectedLayer = window.geomanager_opts.dataLayers.find(l => l.id === selectedLayerId)
+
+        setLayer(selectedLayer)
+
     };
 
 
@@ -108,6 +110,7 @@ $((async function () {
 
         // Get the source object from the map using the specified source ID.
         const source = map.getSource(sourceId);
+
         const sourceTileUrl = source.tiles[0]
         const newTileUrl = updateTileUrl(sourceTileUrl, params)
 
@@ -130,7 +133,9 @@ $((async function () {
 
 
     const setLayer = (selectedLayer) => {
-        const {id, layerConfig: {source: {tiles}, render}} = selectedLayer
+        const {id, layerConfig: {source: {tiles}, render}, paramsSelectorConfig} = selectedLayer
+
+        const selectedTimestamp = $timestampsSelect.val()
 
 
         if (render && render.layers && !!render.layers.length) {
@@ -138,6 +143,7 @@ $((async function () {
             render.layers.forEach((layer, index) => {
 
                 const layerId = `${id}-${layer.type}-${index}`
+
 
                 // Check if the layer exists and remove it if it does
                 if (map.getLayer(layerId)) {
@@ -151,6 +157,16 @@ $((async function () {
 
                 const params = {}
 
+
+                const timeConfig = paramsSelectorConfig && paramsSelectorConfig.find(c => c.key === "time" && c.type === "datetime") || {}
+
+                const {url_param} = timeConfig
+
+                if (url_param && selectedTimestamp) {
+                    params[url_param] = selectedTimestamp
+                }
+
+
                 const tilesUrl = updateTileUrl(tiles[0], params)
 
                 map.addSource(layerId, {
@@ -163,6 +179,22 @@ $((async function () {
                     source: layerId,
                     ...layer
                 });
+
+
+                map.on('click', layerId, function (e) {
+
+                    const popContent = featureHtml(e.features[0])
+
+
+                    if (popContent) {
+                        new maplibregl.Popup()
+                            .setLngLat(e.lngLat)
+                            .setHTML(popContent)
+                            .addTo(map);
+                    }
+
+
+                });
             })
         }
     }
@@ -172,6 +204,7 @@ $((async function () {
     if (selectedLayerId) {
         const selectedLayer = window.geomanager_opts.dataLayers.find(l => l.id === selectedLayerId)
         const {tileJsonUrl, timestampsResponseObjectKey} = selectedLayer
+
 
         if (tileJsonUrl) {
             const timestamps = await fetchTimestamps(tileJsonUrl, timestampsResponseObjectKey)
@@ -186,6 +219,57 @@ $((async function () {
             setLayer(selectedLayer)
         }
     }
+
+
+    const getPopupFields = () => {
+        const selectedLayerId = $layerSelect.val();
+        const selectedLayer = window.geomanager_opts.dataLayers.find(l => l.id === selectedLayerId)
+
+        const {interactionConfig} = selectedLayer
+
+        if (!interactionConfig) return null
+
+        const {output} = interactionConfig
+
+        if (!output) return null
+
+        const fields = []
+
+        output.forEach(o => {
+            fields.push({name: o.column, label: o.property})
+
+        })
+
+        return fields
+    }
+
+    function featureHtml(f) {
+        const p = f.properties;
+        const popupFields = getPopupFields()
+
+        if (!popupFields) return null
+
+
+        const popupProps = Object.keys(p).reduce((all, key) => {
+            if (popupFields.find(f => f.name === key)) {
+                all[key] = p[key]
+            }
+            return all
+        }, {})
+
+        if (popupProps && !!Object.keys(popupProps).length) {
+            let h = "<div class='station-popup-content'>";
+            for (let k in popupProps) {
+                const column = popupFields.find(f => f.name === k)
+                h += "<p><b>" + `${column.label ? column.label : k}` + ":</b> " + popupProps[k] + "<br/></p>"
+            }
+            h += "</div>";
+            return h
+        }
+
+        return null
+    }
+
 
 }));
 
