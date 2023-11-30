@@ -18,12 +18,24 @@ class RasterFileLayerSerializer(serializers.ModelSerializer):
     canClip = serializers.SerializerMethodField()
     analysisConfig = serializers.SerializerMethodField()
     tileJsonUrl = serializers.SerializerMethodField()
+    isDefault = serializers.SerializerMethodField()
+    linkedLayers = serializers.SerializerMethodField()
+    showAllMultiLayer = serializers.SerializerMethodField()
 
     class Meta:
         model = RasterFileLayer
-        fields = ["id", "dataset", "name", "layerType", "multiTemporal", "isMultiLayer", "legendConfig", "nestedLegend",
-                  "layerConfig", "params", "paramsSelectorConfig", "currentTimeMethod", "autoUpdateInterval", "canClip",
-                  "analysisConfig", "tileJsonUrl"]
+        fields = ["id", "dataset", "isDefault", "name", "layerType", "multiTemporal", "isMultiLayer", "legendConfig",
+                  "nestedLegend", "layerConfig", "params", "paramsSelectorConfig", "currentTimeMethod",
+                  "autoUpdateInterval", "canClip", "analysisConfig", "tileJsonUrl", "linkedLayers", "showAllMultiLayer"]
+
+    def get_linkedLayers(self, obj):
+        return obj.linked_layers
+
+    def get_showAllMultiLayer(self, obj):
+        return obj.dataset.enable_all_multi_layers_on_add
+
+    def get_isDefault(self, obj):
+        return obj.default
 
     def get_isMultiLayer(self, obj):
         return obj.dataset.multi_layer
@@ -45,6 +57,7 @@ class RasterFileLayerSerializer(serializers.ModelSerializer):
 
     def get_layerConfig(self, obj):
         request = self.context.get('request')
+
         layer_config = obj.layer_config(request)
         return layer_config
 

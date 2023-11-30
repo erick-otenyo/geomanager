@@ -54,6 +54,7 @@ class VectorFileLayer(TimeStampedModel, ClusterableModel, BaseLayer):
     class Meta:
         verbose_name = _("Vector File Layer")
         verbose_name_plural = _("Vector File Layers")
+        ordering = ['order']
 
     def __str__(self):
         return self.title

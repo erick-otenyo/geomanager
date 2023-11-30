@@ -76,6 +76,7 @@ class VectorTileLayer(BaseTileLayer):
     class Meta:
         verbose_name = _("Vector Tile Layer")
         verbose_name_plural = _("Vector Tile Layers")
+        ordering = ['order']
 
     panels = [
         FieldPanel("dataset"),

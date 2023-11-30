@@ -165,9 +165,9 @@ class BaseTileLayer(TimeStampedModel, ClusterableModel, BaseLayer):
         return params
 
     @property
-    def param_selector_config(self):
-        config = []
+    def time_parameter_selector_config(self):
         time_param_name = self.time_parameter_name or "time"
+        time_config = None
         if self.has_time:
             time_config = {
                 "key": "time",
@@ -192,6 +192,14 @@ class BaseTileLayer(TimeStampedModel, ClusterableModel, BaseLayer):
                     "dateFormat": {"currentTime": "yyyy-MM-dd HH:mm"},
                 })
 
+        return time_config
+
+    @property
+    def param_selector_config(self):
+        config = []
+        time_config = self.time_parameter_selector_config
+
+        if time_config:
             config.append(time_config)
 
         selectable_params_config = self.get_selectable_params_config()

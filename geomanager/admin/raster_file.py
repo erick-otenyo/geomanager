@@ -1,10 +1,11 @@
 from django.urls import path
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
+from wagtail_adminsortable.admin import SortableAdminMixin
 from wagtail_modeladmin.helpers import AdminURLHelper, ButtonHelper
 from wagtail_modeladmin.views import CreateView, EditView, IndexView
 
-from geomanager.admin.base import BaseModelAdmin, ModelAdminCanHide, LayerIndexView, LayerFileDeleteView
+from geomanager.admin.base import BaseModelAdmin, ModelAdminCanHide, LayerFileDeleteView
 from geomanager.models import Dataset, RasterFileLayer, LayerRasterFile, Category
 from geomanager.views import (
     upload_raster_file,
@@ -105,7 +106,7 @@ class RasterFileLayerButtonHelper(ButtonHelper):
         return buttons
 
 
-class RasterFileLayerModelAdmin(BaseModelAdmin, ModelAdminCanHide):
+class RasterFileLayerModelAdmin(BaseModelAdmin, SortableAdminMixin, ModelAdminCanHide):
     model = RasterFileLayer
     hidden = True
     exclude_from_explorer = True
@@ -113,10 +114,9 @@ class RasterFileLayerModelAdmin(BaseModelAdmin, ModelAdminCanHide):
     button_helper_class = RasterFileLayerButtonHelper
     list_display = ("title",)
     list_filter = ("dataset",)
-    index_template_name = "geomanager/modeladmin/index_without_custom_create.html"
+    index_template_name = 'adminsortable/index.html'
     list_display_add_buttons = "title"
 
-    index_view_class = LayerIndexView
     create_view_class = RasterFileLayerCreateView
     edit_view_class = RasterFileLayerEditView
 

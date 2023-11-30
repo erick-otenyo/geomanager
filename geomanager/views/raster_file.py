@@ -330,8 +330,6 @@ def publish_raster(request, upload_id):
                 except Exception as e:
                     layer_form.add_error(None, _("Error occurred. Try again"))
                     return JsonResponse(get_response())
-            # cleanup upload
-            upload.delete()
             return JsonResponse({"success": True, })
         elif nc_data_variable:
             exists = LayerRasterFile.objects.filter(layer=db_layer, time=time).exists()
@@ -344,7 +342,6 @@ def publish_raster(request, upload_id):
 
             create_layer_raster_file(layer, upload, time, data_variable=nc_data_variable)
             # cleanup upload
-            upload.delete()
             return JsonResponse({"success": True, })
         else:
             exists = LayerRasterFile.objects.filter(layer=db_layer, time=time).exists()
@@ -357,7 +354,6 @@ def publish_raster(request, upload_id):
 
             create_layer_raster_file(layer, upload, time)
         # cleanup upload
-        upload.delete()
         return JsonResponse(
             {
                 "success": True,

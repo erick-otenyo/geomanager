@@ -183,7 +183,6 @@ class StationsPage(RoutablePageMixin, Page):
         try:
             stations_table.paginate(page=request.GET.get("page", 1), per_page=50, paginator_class=LazyPaginator)
         except Exception as e:
-            print(e)
             stations_table = None
 
         context.update({

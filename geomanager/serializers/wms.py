@@ -21,13 +21,25 @@ class WmsLayerSerializer(serializers.ModelSerializer):
     analysisConfig = serializers.SerializerMethodField()
     moreInfo = serializers.SerializerMethodField()
     getCapabilitiesLayerName = serializers.SerializerMethodField()
+    isDefault = serializers.SerializerMethodField()
+    linkedLayers = serializers.SerializerMethodField()
+    showAllMultiLayer = serializers.SerializerMethodField()
 
     class Meta:
         model = WmsLayer
-        fields = ["id", "dataset", "name", "isMultiLayer", "nestedLegend", "layerType", "layerConfig", "params",
-                  "paramsSelectorConfig", "paramsSelectorColumnView", "legendConfig", "getCapabilitiesUrl", "layerName",
-                  "multiTemporal", "currentTimeMethod", "autoUpdateInterval", "analysisConfig", "moreInfo",
-                  "getCapabilitiesLayerName"]
+        fields = ["id", "dataset", "isDefault", "name", "isMultiLayer", "nestedLegend", "layerType", "layerConfig",
+                  "params", "paramsSelectorConfig", "paramsSelectorColumnView", "legendConfig", "getCapabilitiesUrl",
+                  "layerName", "multiTemporal", "currentTimeMethod", "autoUpdateInterval", "analysisConfig", "moreInfo",
+                  "getCapabilitiesLayerName", "linkedLayers", "showAllMultiLayer"]
+
+    def get_showAllMultiLayer(self, obj):
+        return obj.dataset.enable_all_multi_layers_on_add
+
+    def get_linkedLayers(self, obj):
+        return obj.linked_layers
+
+    def get_isDefault(self, obj):
+        return obj.default
 
     def get_isMultiLayer(self, obj):
         return obj.dataset.multi_layer
