@@ -1,4 +1,5 @@
-from django_nextjs.render import render_nextjs_page_sync
+from asgiref.sync import async_to_sync
+from django_nextjs.render import render_nextjs_page
 from wagtail.api.v2.utils import get_full_url
 from wagtailiconchooser.utils import get_svg_sprite_for_icons
 
@@ -30,5 +31,4 @@ def map_view(request, location_type=None, adm0=None, adm1=None, adm2=None):
         if block.block_type == "menu_items":
             context.update({"menu_items": block.value})
 
-    return render_nextjs_page_sync(request, template_name="django_nextjs/mapviewer.html", context=context,
-                                   allow_redirects=True)
+    return async_to_sync(render_nextjs_page)(request, "django_nextjs/mapviewer.html", context, allow_redirects=True)
