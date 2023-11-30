@@ -17,11 +17,9 @@
 
 {% block content %}
     {% block header %}
-        {% fragment as breadcrumb %}{% block breadcrumb %}
             {% if navigation_items %}
                 {% breadcrumbs_component navigation_items %}
             {% endif %}
-        {% endblock %}{% endfragment %}
         {% fragment as heading %}{% block h1 %}{% endblock %}{% endfragment %}
         {% fragment as description %}{% include 'modeladmin/includes/result_count.html' %}{% endfragment %}
         {% fragment as extra_actions %}
