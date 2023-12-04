@@ -19,12 +19,25 @@ class RasterTileLayerSerializer(serializers.ModelSerializer):
     moreInfo = serializers.SerializerMethodField()
     tileJsonUrl = serializers.SerializerMethodField()
     timestampsResponseObjectKey = serializers.SerializerMethodField()
+    isDefault = serializers.SerializerMethodField()
+    linkedLayers = serializers.SerializerMethodField()
+    showAllMultiLayer = serializers.SerializerMethodField()
 
     class Meta:
         model = RasterTileLayer
-        fields = ["id", "dataset", "name", "isMultiLayer", "nestedLegend", "layerType", "layerConfig", "params",
-                  "paramsSelectorConfig", "paramsSelectorColumnView", "legendConfig", "multiTemporal",
-                  "currentTimeMethod", "autoUpdateInterval", "moreInfo", "tileJsonUrl", "timestampsResponseObjectKey"]
+        fields = ["id", "dataset", "isDefault", "name", "isMultiLayer", "nestedLegend", "layerType", "layerConfig",
+                  "params", "paramsSelectorConfig", "paramsSelectorColumnView", "legendConfig", "multiTemporal",
+                  "currentTimeMethod", "autoUpdateInterval", "moreInfo", "tileJsonUrl", "timestampsResponseObjectKey",
+                  "linkedLayers", "showAllMultiLayer"]
+
+    def get_showAllMultiLayer(self, obj):
+        return obj.dataset.enable_all_multi_layers_on_add
+
+    def get_linkedLayers(self, obj):
+        return obj.linked_layers
+
+    def get_isDefault(self, obj):
+        return obj.default
 
     def get_isMultiLayer(self, obj):
         return obj.dataset.multi_layer

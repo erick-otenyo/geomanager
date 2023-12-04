@@ -61,6 +61,7 @@ class WmsLayer(TimeStampedModel, ClusterableModel, BaseLayer):
         ('legend', InlineLegendBlock(label=_("Custom Legend")),),
         ('legend_image', ImageChooserBlock(label=_("Custom Image")),),
     ], use_json_field=True, null=True, blank=True, max_num=1, verbose_name=_("Legend"), )
+
     date_format = models.CharField(max_length=100, choices=DATE_FORMAT_CHOICES, blank=True, null=True,
                                    verbose_name=_("Display Format for DateTime Selector"))
     custom_get_capabilities_url = models.URLField(blank=True, null=True, verbose_name=_("Get Capabilities URL"),
@@ -80,6 +81,7 @@ class WmsLayer(TimeStampedModel, ClusterableModel, BaseLayer):
     class Meta:
         verbose_name = _("WMS Layer")
         verbose_name_plural = _("WMS Layers")
+        ordering = ['order']
 
     panels = [
         FieldPanel("dataset"),
@@ -238,9 +240,8 @@ class WmsLayer(TimeStampedModel, ClusterableModel, BaseLayer):
         return params
 
     @property
-    def param_selector_config(self):
-        config = []
-
+    def time_parameter_selector_config(self):
+        time_config = None
         if self.dataset.multi_temporal:
             time_config = {
                 "key": "time",
@@ -264,9 +265,17 @@ class WmsLayer(TimeStampedModel, ClusterableModel, BaseLayer):
                     "dateFormat": {"currentTime": "yyyy-MM-dd HH:mm"},
                 })
 
-            config.append(time_config)
-        selectable_params_config = self.get_selectable_params_config()
+        return time_config
 
+    @property
+    def param_selector_config(self):
+        config = []
+
+        time_config = self.time_parameter_selector_config
+        if time_config:
+            config.append(time_config)
+
+        selectable_params_config = self.get_selectable_params_config()
         config.extend(selectable_params_config)
 
         return config

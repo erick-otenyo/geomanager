@@ -13,6 +13,8 @@ from modelcluster.models import ClusterableModel
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, MultiFieldPanel, InlinePanel
 from wagtail.api.v2.utils import get_full_url
 from wagtail.fields import StreamField
+from wagtail.images.blocks import ImageChooserBlock
+from wagtail.images.models import Image
 from wagtail.models import Orderable
 from wagtail_color_panel.edit_handlers import NativeColorPanel
 from wagtail_color_panel.fields import ColorField
@@ -20,7 +22,7 @@ from wagtail_modeladmin.helpers import AdminURLHelper
 
 from geomanager.blocks import (
     FileLayerPointAnalysisBlock,
-    FileLayerAreaAnalysisBlock
+    FileLayerAreaAnalysisBlock, InlineLegendBlock
 )
 from geomanager.forms import RasterStyleModelForm
 from geomanager.helpers import get_raster_layer_files_url
@@ -38,6 +40,11 @@ class RasterFileLayer(TimeStampedModel, BaseLayer):
                                    default="yyyy-MM-dd HH:mm",
                                    verbose_name=_("Display Format for DateTime Selector"))
     style = models.ForeignKey("RasterStyle", null=True, blank=True, on_delete=models.SET_NULL, verbose_name=_("style"))
+    use_custom_legend = models.BooleanField(default=False, verbose_name=_("Use custom legend"))
+    legend = StreamField([
+        ('legend', InlineLegendBlock(label=_("Custom Legend")),),
+        ('legend_image', ImageChooserBlock(label=_("Custom Image")),),
+    ], use_json_field=True, null=True, blank=True, max_num=1, verbose_name=_("Legend"), )
 
     auto_ingest_from_directory = models.BooleanField(default=False, verbose_name=_("Auto ingest from directory"))
     auto_ingest_nc_data_variable = models.CharField(max_length=100, blank=True, null=True,
@@ -54,6 +61,7 @@ class RasterFileLayer(TimeStampedModel, BaseLayer):
     class Meta:
         verbose_name = _("Raster File Layer")
         verbose_name_plural = _("Raster File Layers")
+        ordering = ['order']
 
     panels = [
         FieldPanel("dataset"),
@@ -61,6 +69,8 @@ class RasterFileLayer(TimeStampedModel, BaseLayer):
         FieldPanel("default"),
         FieldPanel("date_format"),
         FieldPanel("style"),
+        FieldPanel("use_custom_legend"),
+        FieldPanel("legend"),
         FieldPanel("auto_ingest_from_directory"),
         FieldPanel("auto_ingest_nc_data_variable"),
         FieldPanel("analysis"),
@@ -137,6 +147,11 @@ class RasterFileLayer(TimeStampedModel, BaseLayer):
 
     @property
     def param_selector_config(self):
+        if self.dataset.multi_layer:
+            default_layer = self.dataset.layers.filter(default=True).exclude(pk=self.pk).first()
+            if default_layer:
+                return default_layer.param_selector_config
+
         time_config = {
             "key": "time",
             "required": True,
@@ -161,11 +176,42 @@ class RasterFileLayer(TimeStampedModel, BaseLayer):
 
         return [time_config]
 
-    def get_legend_config(self):
+    def get_legend_config(self, request=None):
+        config = {
+            "type": "choropleth",
+            "items": []
+        }
+
         if self.style:
+            if self.use_custom_legend:
+                legend_block = self.legend
+
+                # only one legend block entry is expected
+                if legend_block:
+                    legend_block = legend_block[0]
+
+                if legend_block:
+                    if isinstance(legend_block.value, Image):
+                        image_url = legend_block.value.file.url
+                        image_url = get_full_url(request, image_url)
+                        config.update({"type": "image", "imageUrl": image_url})
+
+                        return config
+
+                    data = legend_block.block.get_api_representation(legend_block.value)
+
+                    config.update({"type": data.get("type")})
+
+                    for item in data.get("items"):
+                        config["items"].append({
+                            "name": item.get("value"),
+                            "color": item.get("color")
+                        })
+
+                    return config
+
             return self.style.get_legend_config()
 
-        config = {}
         return config
 
     def get_analysis_config(self):
@@ -446,6 +492,7 @@ class RasterStyle(TimeStampedModel, ClusterableModel):
         if self.use_custom_colors:
             values = self.get_custom_color_values()
             count = len(values)
+
             if count > 1:
                 for value in values:
                     item = {

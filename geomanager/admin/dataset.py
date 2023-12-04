@@ -120,6 +120,8 @@ class DatasetModelAdmin(BaseModelAdmin, ModelAdminCanHide):
     create_view_class = DatasetCreateView
     edit_view_class = DatasetEditView
 
+    form_view_extra_js = ["geomanager/js/dataset-form-conditional.js"]
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.list_display = (list(self.list_display) or []) + ['view_layers', 'mapviewer_map_url']

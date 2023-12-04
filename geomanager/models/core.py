@@ -15,6 +15,7 @@ from wagtail.admin.panels import (
     ObjectList,
     InlinePanel
 )
+from wagtail.api.v2.utils import get_full_url
 from wagtail.contrib.settings.models import BaseSiteSetting
 from wagtail.contrib.settings.registry import register_setting
 from wagtail.fields import StreamField, RichTextField
@@ -155,7 +156,10 @@ class Dataset(TimeStampedModel):
 
     multi_layer = models.BooleanField(default=False, verbose_name=_("Multi-layer"),
                                       help_text=_("The dataset has more than one layer, to be displayed together"), )
-
+    enable_all_multi_layers_on_add = models.BooleanField(default=True,
+                                                         verbose_name=_("Enable all Multi-Layers when adding to map"),
+                                                         help_text=_("Enable all Multi-Layers at once when adding "
+                                                                     "the dataset to the map"), )
     near_realtime = models.BooleanField(default=False, verbose_name=_("Near realtime"),
                                         help_text=_(
                                             "Is the layer near realtime?, for example updates every 10 minutes"))
@@ -191,6 +195,7 @@ class Dataset(TimeStampedModel):
         FieldPanel("initial_visible"),
         FieldPanel("multi_temporal"),
         FieldPanel("multi_layer"),
+        FieldPanel("enable_all_multi_layers_on_add"),
         FieldPanel("near_realtime"),
         FieldPanel("current_time_method"),
         FieldPanel("auto_update_interval"),
@@ -418,10 +423,18 @@ def get_styles():
     return [(style.id, style.name) for style in MBTSource.objects.all()]
 
 
-class BaseLayer(models.Model):
+class BaseLayer(AdminSortable, models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=255, verbose_name=_("title"), help_text=_("Layer title"))
     default = models.BooleanField(default=False, verbose_name=_("default"), help_text=_("Is Default Layer"))
+
+    @property
+    def linked_layers(self):
+        is_multi_layer = self.dataset.multi_layer
+
+        if is_multi_layer:
+            return [str(layer.pk) for layer in self.dataset.layers.exclude(pk=self.pk)]
+        return []
 
     @property
     def edit_url(self):
@@ -463,6 +476,17 @@ class BaseLayer(models.Model):
 
     class Meta:
         abstract = True
+
+    def save(self, *args, **kwargs):
+        if self.dataset.multi_layer:
+            if self.default:
+                self.dataset.layers.filter(default=True).exclude(pk=self.pk).update(default=False)
+            else:
+                if not self.dataset.layers.filter(default=True).exclude(pk=self.pk).exists():
+                    self.default = True
+                    self.dataset.layers.filter(default=True).exclude(pk=self.pk).update(default=False)
+
+        super().save(*args, **kwargs)
 
 
 @register_setting
@@ -564,3 +588,13 @@ class GeomanagerSettings(BaseSiteSetting):
     @property
     def max_upload_size_bytes(self):
         return self.max_upload_size_mb * 1024 * 1024
+
+    @property
+    def logo_link(self):
+        if self.logo_page:
+            return get_full_url(None, self.logo_page.url)
+
+        if self.logo_external_link:
+            return self.logo_external_link
+
+        return "/"

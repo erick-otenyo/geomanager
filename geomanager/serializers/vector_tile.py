@@ -20,13 +20,25 @@ class VectorTileLayerSerializer(serializers.ModelSerializer):
     tileJsonUrl = serializers.SerializerMethodField()
     timestampsResponseObjectKey = serializers.SerializerMethodField()
     interactionConfig = serializers.SerializerMethodField()
+    isDefault = serializers.SerializerMethodField()
+    linkedLayers = serializers.SerializerMethodField()
+    showAllMultiLayer = serializers.SerializerMethodField()
 
     class Meta:
         model = VectorTileLayer
-        fields = ["id", "dataset", "name", "isMultiLayer", "nestedLegend", "layerType", "layerConfig", "params",
-                  "paramsSelectorConfig", "paramsSelectorColumnView", "legendConfig", "multiTemporal",
+        fields = ["id", "dataset", "isDefault", "name", "isMultiLayer", "nestedLegend", "layerType", "layerConfig",
+                  "params", "paramsSelectorConfig", "paramsSelectorColumnView", "legendConfig", "multiTemporal",
                   "currentTimeMethod", "autoUpdateInterval", "moreInfo", "tileJsonUrl", "timestampsResponseObjectKey",
-                  "interactionConfig"]
+                  "interactionConfig", "linkedLayers", "showAllMultiLayer"]
+
+    def get_showAllMultiLayer(self, obj):
+        return obj.dataset.enable_all_multi_layers_on_add
+
+    def get_linkedLayers(self, obj):
+        return obj.linked_layers
+
+    def get_isDefault(self, obj):
+        return obj.default
 
     def get_interactionConfig(self, obj):
         return obj.interaction_config

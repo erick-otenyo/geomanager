@@ -43,12 +43,24 @@ class VectorFileLayerSerializer(serializers.ModelSerializer):
     nestedLegend = serializers.SerializerMethodField()
     interactionConfig = serializers.SerializerMethodField()
     canClip = serializers.SerializerMethodField()
+    isDefault = serializers.SerializerMethodField()
+    linkedLayers = serializers.SerializerMethodField()
+    showAllMultiLayer = serializers.SerializerMethodField()
 
     class Meta:
         model = VectorFileLayer
-        fields = ["id", "dataset", "name", "layerType", "multiTemporal", "isMultiLayer", "legendConfig", "nestedLegend",
-                  "layerConfig", "params", "paramsSelectorConfig", "currentTimeMethod", "autoUpdateInterval",
-                  "interactionConfig", "canClip"]
+        fields = ["id", "dataset", "isDefault", "name", "layerType", "multiTemporal", "isMultiLayer", "legendConfig",
+                  "nestedLegend", "layerConfig", "params", "paramsSelectorConfig", "currentTimeMethod",
+                  "autoUpdateInterval", "interactionConfig", "canClip", "linkedLayers", "showAllMultiLayer"]
+
+    def get_showAllMultiLayer(self, obj):
+        return obj.dataset.enable_all_multi_layers_on_add
+
+    def get_linkedLayers(self, obj):
+        return obj.linked_layers
+
+    def get_isDefault(self, obj):
+        return obj.default
 
     def get_isMultiLayer(self, obj):
         return obj.dataset.multi_layer

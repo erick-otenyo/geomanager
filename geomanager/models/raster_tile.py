@@ -13,6 +13,7 @@ class RasterTileLayer(BaseTileLayer):
     class Meta:
         verbose_name = _("Raster Tile Layer")
         verbose_name_plural = _("Raster Tile Layers")
+        ordering = ['order']
 
     panels = [
         FieldPanel("dataset"),
