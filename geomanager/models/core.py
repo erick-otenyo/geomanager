@@ -15,6 +15,7 @@ from wagtail.admin.panels import (
     ObjectList,
     InlinePanel
 )
+from wagtail.api.v2.utils import get_full_url
 from wagtail.contrib.settings.models import BaseSiteSetting
 from wagtail.contrib.settings.registry import register_setting
 from wagtail.fields import StreamField, RichTextField
@@ -587,3 +588,13 @@ class GeomanagerSettings(BaseSiteSetting):
     @property
     def max_upload_size_bytes(self):
         return self.max_upload_size_mb * 1024 * 1024
+
+    @property
+    def logo_link(self):
+        if self.logo_page:
+            return get_full_url(None, self.logo_page.url)
+
+        if self.logo_external_link:
+            return self.logo_external_link
+
+        return "/"
