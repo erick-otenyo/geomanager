@@ -3,6 +3,7 @@ import json
 import tempfile
 from typing import Optional, Any
 
+import pytz
 from adminboundarymanager.models import AdminBoundarySettings, AdminBoundary
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.core.files.base import File
@@ -315,7 +316,9 @@ def publish_raster(request, upload_id):
                     index = data_timestamps.index(time_str)
 
                     d_time = datetime.datetime.fromisoformat(time_str)
-                    d_time = timezone.make_aware(d_time, timezone.get_current_timezone())
+
+                    # Make the datetime object timezone aware. We assume the time is in standard UTC
+                    d_time = d_time.replace(tzinfo=pytz.UTC)
 
                     exists = LayerRasterFile.objects.filter(layer=db_layer, time=d_time).exists()
 
