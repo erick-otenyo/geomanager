@@ -112,7 +112,7 @@ class SubCategory(Orderable):
         return self.title
 
 
-class Dataset(TimeStampedModel):
+class Dataset(TimeStampedModel, AdminSortable):
     DATASET_TYPE_CHOICES = (
         ("raster_file", _("Raster File - NetCDF/GeoTiff")),
         ("vector_file", _("Vector File - Shapefile, Geojson")),
@@ -179,7 +179,7 @@ class Dataset(TimeStampedModel):
                                    help_text=_("Check to enable clipping by boundary or drawn shapes, "
                                                "for raster and vector datasets. Not implemented for WMS types"))
 
-    class Meta:
+    class Meta(AdminSortable.Meta):
         verbose_name = _("Dataset")
         verbose_name_plural = _("Datasets")
 

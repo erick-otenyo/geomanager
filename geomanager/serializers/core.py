@@ -77,7 +77,10 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'icon', 'active', 'public', 'sub_categories']
 
     def get_icon(self, obj):
-        return f"icon-{obj.icon}"
+        icon_name = obj.icon
+        if not icon_name:
+            icon_name = "layer-group"
+        return f"icon-{icon_name}"
 
 
 class MetadataSerialiazer(serializers.ModelSerializer):
