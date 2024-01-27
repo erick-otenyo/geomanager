@@ -1,6 +1,8 @@
 from django import forms
+from django.core.exceptions import ValidationError
+from django.db.models import Min
 from django.forms import ModelForm
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _, gettext_lazy
 from wagtail.admin.forms import WagtailAdminModelForm
 
 from geomanager.models.aoi import AreaOfInterest
@@ -138,3 +140,107 @@ class AoiForm(ModelForm):
 
 class VectorTableForm(forms.Form):
     columns = forms.JSONField(required=False, widget=forms.HiddenInput)
+
+
+class SelectWithDisabledOptions(forms.Select):
+    """
+    Subclass of Django's select widget that allows disabling options.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.disabled_values = ()
+
+    def create_option(self, name, value, *args, **kwargs):
+        option_dict = super().create_option(name, value, *args, **kwargs)
+        if value in self.disabled_values:
+            option_dict["attrs"]["disabled"] = "disabled"
+        return option_dict
+
+
+class CategoryChoiceField(forms.ModelChoiceField):
+    widget = SelectWithDisabledOptions
+
+    def __init__(self, *args, disabled_queryset=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._indentation_start_depth = 2
+        self.disabled_queryset = disabled_queryset
+
+    def _get_disabled_queryset(self):
+        return self._disabled_queryset
+
+    def _set_disabled_queryset(self, queryset):
+        self._disabled_queryset = queryset
+        if queryset is None:
+            self.widget.disabled_values = ()
+        else:
+            self.widget.disabled_values = queryset.values_list(
+                self.to_field_name or "pk", flat=True
+            )
+
+    disabled_queryset = property(_get_disabled_queryset, _set_disabled_queryset)
+
+    def _set_queryset(self, queryset):
+        min_depth = self.queryset.aggregate(Min("depth"))["depth__min"]
+        if min_depth is None:
+            self._indentation_start_depth = 2
+        else:
+            self._indentation_start_depth = min_depth + 1
+
+    def label_from_instance(self, obj):
+        return obj.get_indented_name(self._indentation_start_depth, html=True)
+
+
+class CategoryForm(WagtailAdminModelForm):
+    parent = forms.ModelChoiceField(
+        label=gettext_lazy("Parent"),
+        queryset=None,
+        required=False,
+        help_text=gettext_lazy(
+            "Select hierarchical position. Note: a collection cannot become a child of itself or one of its "
+            "descendants."
+        ),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        from geomanager.models import Category
+
+        self.fields["parent"] = CategoryChoiceField(
+            label=gettext_lazy("Parent"),
+            queryset=Category.objects.all(),
+            required=True,
+            help_text=gettext_lazy(
+                "Select hierarchical position. Note: a collection cannot become a child of itself or one of its "
+                "descendants."
+            ),
+        )
+
+    def clean_parent(self):
+        """
+        Our rules about where a user may add or move a category are as follows:
+            1. The user must have 'add' permission on the parent category (or its ancestors)
+            2. We are not moving a category used to assign permissions for this user
+            3. We are not trying to move a category to be parented by one of their descendants
+
+        The first 2 items are taken care in the Create and Edit views by deleting the 'parent' field
+        from the edit form if the user cannot move the category. This causes Django's form
+        machinery to ignore the parent field for parent regardless of what the user submits.
+        This methods enforces rule #3 when we are editing an existing category.
+        """
+        parent = self.cleaned_data["parent"]
+
+        if not self.instance._state.adding and not parent.pk == self.initial.get(
+                "parent"
+        ):
+            old_descendants = list(
+                self.instance.get_descendants(inclusive=True).values_list(
+                    "pk", flat=True
+                )
+            )
+
+            if parent.pk in old_descendants:
+                raise ValidationError(gettext_lazy("Please select another parent"))
+
+        return parent

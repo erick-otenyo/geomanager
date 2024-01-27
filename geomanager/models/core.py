@@ -4,23 +4,25 @@ import uuid
 
 from django.db import models
 from django.urls.base import reverse
+from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django_extensions.db.models import TimeStampedModel
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
+from treebeard.mp_tree import MP_Node
 from wagtail import blocks
 from wagtail.admin.panels import (
     FieldPanel,
     TabbedInterface,
-    ObjectList,
-    InlinePanel
+    ObjectList
 )
 from wagtail.api.v2.utils import get_full_url
 from wagtail.contrib.settings.models import BaseSiteSetting
 from wagtail.contrib.settings.registry import register_setting
 from wagtail.fields import StreamField, RichTextField
 from wagtail.images.blocks import ImageChooserBlock
-from wagtail.models import Orderable, Page
+from wagtail.models import Orderable, Page, CollectionManager
 from wagtail_adminsortable.models import AdminSortable
 from wagtail_modeladmin.helpers import AdminURLHelper
 from wagtailiconchooser.widgets import IconChooserWidget
@@ -32,20 +34,28 @@ from geomanager.helpers import (
 )
 from .tile_gl import MBTSource
 from ..blocks import NavigationItemsBlock
+from ..forms import CategoryForm
 from ..utils import UUIDEncoder
 
 DEFAULT_RASTER_MAX_UPLOAD_SIZE_MB = 100
 
 
-class Category(TimeStampedModel, AdminSortable, ClusterableModel):
+class Category(TimeStampedModel, AdminSortable, ClusterableModel, MP_Node):
+    base_form_class = CategoryForm
+
     title = models.CharField(max_length=16, verbose_name=_("title"), help_text=_("Title of the category"))
     icon = models.CharField(max_length=255, verbose_name=_("icon"), blank=True, null=True)
     active = models.BooleanField(default=True, verbose_name=_("active"), help_text=_("Is the category active ?"))
     public = models.BooleanField(default=True, verbose_name=_("public"), help_text=_("Is the category public ?"))
 
+    objects = CollectionManager()
+    # Tell treebeard to order Collections' paths such that they are ordered by name at each level.
+    node_order_by = ["order"]
+
     class Meta(AdminSortable.Meta):
         verbose_name = _("Category")
         verbose_name_plural = _("Categories")
+        ordering = ["path", "order"]
 
     def __str__(self):
         return self.title
@@ -55,9 +65,76 @@ class Category(TimeStampedModel, AdminSortable, ClusterableModel):
         FieldPanel("icon", widget=IconChooserWidget),
         FieldPanel("active"),
         FieldPanel("public"),
+        FieldPanel("parent"),
 
-        InlinePanel("sub_categories", heading=_("Sub Categories"), label=_("Sub Category")),
+        # InlinePanel("sub_categories", heading=_("Sub Categories"), label=_("Sub Category")),
     ]
+
+    def get_ancestors(self, inclusive=False):
+        return Category.objects.ancestor_of(self, inclusive)
+
+    def get_descendants(self, inclusive=False):
+        return Category.objects.descendant_of(self, inclusive)
+
+    def get_siblings(self, inclusive=True):
+        return Category.objects.sibling_of(self, inclusive)
+
+    def get_next_siblings(self, inclusive=False):
+        return self.get_siblings(inclusive).filter(path__gte=self.path).order_by("path")
+
+    def get_prev_siblings(self, inclusive=False):
+        return (
+            self.get_siblings(inclusive).filter(path__lte=self.path).order_by("-path")
+        )
+
+    def get_indented_name(self, indentation_start_depth=2, html=True):
+        """
+        Renders this Category's title as a formatted string that displays its hierarchical depth via indentation.
+        If indentation_start_depth is supplied, the Category's depth is rendered relative to that depth.
+        indentation_start_depth defaults to 2, the depth of the first non-Root Category.
+        Pass html=False to get a plain-text, instead of the default HTML.
+
+        Example text output: "    ↳ Rainfall"
+        Example HTML output: "&nbsp;&nbsp;&nbsp;&nbsp;&#x21b3 Pies"
+        """
+        display_depth = self.depth - indentation_start_depth
+
+        icon = self.icon or "layer-group"
+
+        # A Category with a display depth of 0 or less (Root's can be -1), should have no indent.
+        if display_depth <= 0:
+            if html:
+                return format_html(
+                    "{svg_icon} {name}",
+                    svg_icon=mark_safe(f""" 
+                            <span class="icon-wrapper">
+                                <svg class="icon icon-{icon} icon" aria-hidden="true" style="height:20px;width:20px">
+                                    <use href="#icon-{icon}"></use>
+                                </svg>
+                            </span>"""),
+                    name=self.title,
+                )
+
+            return self.title
+
+        # Indent each level of depth by 4 spaces (the width of the ↳ character in our admin font), then add ↳
+        # before adding the name.
+        if html:
+            # NOTE: &#x21b3 is the hex HTML entity for ↳.
+            return format_html(
+                "{indent}{icon} {svg_icon} {name}",
+                indent=mark_safe("&nbsp;" * 4 * display_depth),
+                icon=mark_safe("&#x21b3"),
+                svg_icon=mark_safe(f""" 
+                        <span class="icon-wrapper">
+                            <svg class="icon icon-{icon} icon" aria-hidden="true" style="height:20px;width:20px">
+                                <use href="#icon-{icon}"></use>
+                            </svg>
+                        </span>"""),
+                name=self.title,
+            )
+        # Output unicode plain-text version
+        return "{}↳ {}".format(" " * 4 * display_depth, self.title)
 
     def datasets_list_url(self):
         dataset_admin_helper = AdminURLHelper(Dataset)
@@ -107,6 +184,9 @@ class SubCategory(Orderable):
         FieldPanel("active"),
         FieldPanel("public"),
     ]
+
+    def __str__(self):
+        return self.title
 
     def __str__(self):
         return self.title
