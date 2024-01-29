@@ -1,13 +1,15 @@
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
+from wagtail_adminsortable.admin import SortableAdminMixin
+from wagtail_adminsortable.views import SortableIndexView
 from wagtail_modeladmin.helpers import AdminURLHelper, ButtonHelper
-from wagtail_modeladmin.views import IndexView, CreateView, EditView
+from wagtail_modeladmin.views import CreateView, EditView
 
 from geomanager.admin.base import BaseModelAdmin, ModelAdminCanHide
 from geomanager.models import Category, Dataset, SubCategory
 
 
-class DatasetIndexView(IndexView):
+class DatasetIndexView(SortableIndexView):
     def get_context_data(self, **kwargs):
         context_data = super(DatasetIndexView, self).get_context_data(**kwargs)
 
@@ -106,14 +108,15 @@ class DatasetButtonHelper(ButtonHelper):
         return buttons
 
 
-class DatasetModelAdmin(BaseModelAdmin, ModelAdminCanHide):
+class DatasetModelAdmin(SortableAdminMixin, BaseModelAdmin, ModelAdminCanHide):
     hidden = True
     model = Dataset
     exclude_from_explorer = True
     button_helper_class = DatasetButtonHelper
     list_display = ("__str__", "layer_type",)
     list_filter = ("category",)
-    index_template_name = "geomanager/modeladmin/index_without_custom_create.html"
+    # index_template_name = "geomanager/modeladmin/index_without_custom_create.html"
+    # index_template_name = 'adminsortable/index.html'
     menu_icon = "database"
 
     index_view_class = DatasetIndexView

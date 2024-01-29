@@ -30,6 +30,7 @@ from geomanager.models.core import Dataset, BaseLayer
 from geomanager.settings import geomanager_settings
 from geomanager.storage import OverwriteStorage
 from geomanager.utils import DATE_FORMAT_CHOICES
+from geomanager.validators import validate_directory_name
 from geomanager.widgets import RasterStyleWidget
 
 
@@ -47,6 +48,11 @@ class RasterFileLayer(TimeStampedModel, BaseLayer):
     ], use_json_field=True, null=True, blank=True, max_num=1, verbose_name=_("Legend"), )
 
     auto_ingest_from_directory = models.BooleanField(default=False, verbose_name=_("Auto ingest from directory"))
+    auto_ingest_use_custom_directory_name = models.BooleanField(default=False,
+                                                                verbose_name=_("Use custom directory name"))
+    auto_ingest_custom_directory_name = models.CharField(max_length=255, blank=True, null=True, unique=True,
+                                                         validators=[validate_directory_name],
+                                                         verbose_name=_("Custom directory name"))
     auto_ingest_nc_data_variable = models.CharField(max_length=100, blank=True, null=True,
                                                     verbose_name=_("Data variable for netCDF data auto ingest"),
                                                     help_text=_("The name of the data variable to use, "
@@ -72,7 +78,13 @@ class RasterFileLayer(TimeStampedModel, BaseLayer):
         FieldPanel("use_custom_legend"),
         FieldPanel("legend"),
         FieldPanel("auto_ingest_from_directory"),
-        FieldPanel("auto_ingest_nc_data_variable"),
+
+        MultiFieldPanel([
+            FieldPanel("auto_ingest_use_custom_directory_name"),
+            FieldPanel("auto_ingest_custom_directory_name", classname="show-if-custom-dir-name"),
+            FieldPanel("auto_ingest_nc_data_variable"),
+        ], heading=_("Auto ingest settings")),
+
         FieldPanel("analysis"),
     ]
 
@@ -282,6 +294,28 @@ class RasterFileLayer(TimeStampedModel, BaseLayer):
                 raise ValidationError(_("Can not add layer because the dataset is not marked as Multi Layer. "
                                         "To add multiple layers to a dataset, please mark the dataset as "
                                         "Multi Layer and try again"))
+
+
+@receiver(post_save, sender=RasterFileLayer)
+def create_auto_ingest_directory(sender, instance, created, **kwargs):
+    if instance.auto_ingest_from_directory:
+        auto_ingest_raster_data_dir = geomanager_settings.get("auto_ingest_raster_data_dir")
+
+        dir_name = str(instance.pk)
+
+        if auto_ingest_raster_data_dir and os.path.isabs(auto_ingest_raster_data_dir):
+
+            if instance.auto_ingest_use_custom_directory_name and instance.auto_ingest_custom_directory_name:
+                dir_name = instance.auto_ingest_custom_directory_name
+
+            if not os.path.exists(auto_ingest_raster_data_dir):
+                os.makedirs(auto_ingest_raster_data_dir)
+
+            directory_path = os.path.join(auto_ingest_raster_data_dir, dir_name)
+
+            # Create the directory if it doesn't exist
+            if not os.path.exists(directory_path):
+                os.makedirs(directory_path)
 
 
 def layer_raster_file_dir_path(instance, filename):
@@ -530,20 +564,3 @@ class ColorValue(TimeStampedModel, Orderable):
             "color": self.color,
             "label": self.label
         }
-
-
-@receiver(post_save, sender=RasterFileLayer)
-def create_auto_ingest_directory(sender, instance, created, **kwargs):
-    if instance.auto_ingest_from_directory:
-        auto_ingest_raster_data_dir = geomanager_settings.get("auto_ingest_raster_data_dir")
-
-        if auto_ingest_raster_data_dir and os.path.isabs(auto_ingest_raster_data_dir):
-            if not os.path.exists(auto_ingest_raster_data_dir):
-                os.makedirs(auto_ingest_raster_data_dir)
-
-            dir_name = str(instance.pk)
-            directory_path = os.path.join(auto_ingest_raster_data_dir, dir_name)
-
-            # Create the directory if it doesn't exist
-            if not os.path.exists(directory_path):
-                os.makedirs(directory_path)

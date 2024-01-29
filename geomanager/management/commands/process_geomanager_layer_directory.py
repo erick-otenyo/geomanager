@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 ALLOWED_FILE_EVENTS = ["created", "moved"]
 
-RASTER_FILE_EXTENSIONS = ['.nc', '.tif']
+RASTER_FILE_EXTENSIONS = ['.tif', '.nc', ]
 
 
 class Command(BaseCommand):
@@ -33,10 +33,6 @@ class Command(BaseCommand):
             logger.error("[GEOMANAGER_AUTO_INGEST]: Auto ingest raster data directory not configured.")
             return
 
-        if not is_valid_uuid(layer_id):
-            logger.error(f"[GEOMANAGER_AUTO_INGEST]: Layer ID: {layer_id} is not a valid UUID.")
-            return
-
         logger.debug('[GEOMANAGER_AUTO_INGEST]: Starting directory processing...')
 
         directory = os.path.join(auto_ingest_raster_data_dir, layer_id)
@@ -49,9 +45,8 @@ class Command(BaseCommand):
             files = glob.glob(directory + f"/*{ext}")
 
             if not files:
-                logger.error(
+                logger.warning(
                     f"[GEOMANAGER_AUTO_INGEST]: No files found in directory: {directory} with extension: {ext}")
-                return
 
             for file in files:
                 logger.info(f'[GEOMANAGER_AUTO_INGEST]: Processing file: {file}')

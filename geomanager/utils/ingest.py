@@ -6,6 +6,8 @@ import uuid
 from datetime import datetime
 from os.path import splitext, isfile
 
+from geomanager.settings import geomanager_settings
+
 import pytz
 from adminboundarymanager.models import AdminBoundarySettings, AdminBoundary
 from dateutil.parser import isoparse
@@ -220,13 +222,37 @@ def ingest_raster_file(src_path, overwrite=False, clip_to_boundary=False):
 
     # check if the directory name is an uuid
     layer_uuid = os.path.basename(os.path.normpath(directory))
-    if not is_valid_uuid(layer_uuid):
-        raise IngestException(f'Directory name: {directory} is not a valid uuid.')
 
-    # check if layer exists
-    raster_file_layer = RasterFileLayer.objects.filter(pk=layer_uuid).first()
-    if not raster_file_layer:
-        raise IngestException(f'RasterFileLayer with UUID: {layer_uuid} does not exist.')
+    if is_valid_uuid(layer_uuid):
+        # check if layer exists
+        raster_file_layer = RasterFileLayer.objects.filter(pk=layer_uuid).first()
+
+        if not raster_file_layer:
+            raise IngestException(f'Raster file layer with uuid: {layer_uuid} does not exist.')
+    else:
+        auto_ingest_raster_data_dir = geomanager_settings.get("auto_ingest_raster_data_dir")
+
+        if not auto_ingest_raster_data_dir:
+            raise IngestException(f'Auto ingest raster data directory not set. Cannot ingest file: {src_path}')
+
+        if not os.path.isabs(auto_ingest_raster_data_dir):
+            raise IngestException(
+                f'Auto ingest raster data directory is not an absolute path. Cannot ingest file: {src_path}')
+
+        layer_dir_parts = directory.split(auto_ingest_raster_data_dir)
+
+        if len(layer_dir_parts) != 2:
+            raise IngestException(f'File path: {src_path} is not inside auto ingest raster data directory.')
+
+        layer_dir = layer_dir_parts[1].lstrip(os.path.sep)
+
+        raster_file_layer = RasterFileLayer.objects.filter(directory=layer_dir).first()
+
+        if not raster_file_layer:
+            raise IngestException(f'RasterFileLayer with directory: {layer_dir} does not exist.')
+
+        if not raster_file_layer.auto_ingest_from_directory:
+            raise IngestException(f'RasterFileLayer with directory: {layer_dir} is not set for auto ingest.')
 
     if file_extension == '.tif':
         # check if file name ends with iso format date, return the parsed date if it does
