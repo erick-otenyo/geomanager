@@ -246,7 +246,7 @@ def ingest_raster_file(src_path, overwrite=False, clip_to_boundary=False):
 
         layer_dir = layer_dir_parts[1].lstrip(os.path.sep)
 
-        raster_file_layer = RasterFileLayer.objects.filter(directory=layer_dir).first()
+        raster_file_layer = RasterFileLayer.objects.filter(auto_ingest_custom_directory_name=layer_dir).first()
 
         if not raster_file_layer:
             raise IngestException(f'RasterFileLayer with directory: {layer_dir} does not exist.')
