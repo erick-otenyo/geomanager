@@ -21,7 +21,7 @@ class DatasetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dataset
         fields = ["id", "dataset", "name", "capabilities", "summary", "layer", "isMultiLayer", "category",
-                  "sub_category", "metadata", "layers", "initialVisible", "public"]
+                  "sub_category", "metadata", "layers", "initialVisible", "public", "layer_type"]
 
     def get_initialVisible(self, obj):
         return obj.initial_visible
