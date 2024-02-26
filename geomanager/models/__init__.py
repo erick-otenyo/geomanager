@@ -4,6 +4,7 @@ from wagtailcache.cache import clear_cache
 
 from .aoi import *
 from .core import *
+from .geomanager_settings import *
 from .geostore import *
 from .profile import *
 from .raster_file import *

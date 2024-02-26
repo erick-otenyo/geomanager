@@ -5,8 +5,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from wagtail.api.v2.utils import get_full_url
 
-from geomanager.models import Category, VectorLayerIcon, VectorTileLayerIcon
-from geomanager.models.core import GeomanagerSettings
+from geomanager.models import Category, VectorLayerIcon, VectorTileLayerIcon, GeomanagerSettings
 from geomanager.serializers import CategorySerializer
 
 

@@ -22,10 +22,16 @@ from wagtailcache.cache import cache_page, clear_cache
 
 from geomanager.decorators import revalidate_cache
 from geomanager.forms import VectorLayerFileForm, VectorTableForm
-from geomanager.models import Dataset
-from geomanager.models.core import GeomanagerSettings, Category
-from geomanager.models.geostore import Geostore
-from geomanager.models.vector_file import VectorUpload, PgVectorTable, VectorFileLayer, VectorLayerIcon
+from geomanager.models import (
+    Dataset,
+    GeomanagerSettings,
+    Category,
+    VectorUpload,
+    PgVectorTable,
+    VectorFileLayer,
+    VectorLayerIcon,
+    Geostore
+)
 from geomanager.serializers.vector_file import VectorFileLayerSerializer
 from geomanager.settings import geomanager_settings
 from geomanager.utils import UUIDEncoder
