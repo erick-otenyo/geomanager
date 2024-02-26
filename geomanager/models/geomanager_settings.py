@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from modelcluster.models import ClusterableModel
 from wagtail import blocks
 from wagtail.admin.panels import (
     FieldPanel,
@@ -15,12 +16,13 @@ from wagtail.models import Page
 
 from geomanager.blocks import NavigationItemsBlock
 from .tile_gl import MBTSource
+from ..fields import ListField
 
 DEFAULT_RASTER_MAX_UPLOAD_SIZE_MB = 100
 
 
 @register_setting
-class GeomanagerSettings(BaseSiteSetting):
+class GeomanagerSettings(BaseSiteSetting, ClusterableModel):
     max_upload_size_mb = models.IntegerField(default=DEFAULT_RASTER_MAX_UPLOAD_SIZE_MB,
                                              verbose_name=_("Maximum upload size in MegaBytes"),
                                              help_text=_(
@@ -128,3 +130,19 @@ class GeomanagerSettings(BaseSiteSetting):
             return self.logo_external_link
 
         return "/"
+
+
+class AdditionalMapBoundaryData(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    table_name = models.CharField(max_length=256, unique=True)
+
+    properties = models.JSONField()
+    geometry_type = models.CharField(max_length=100)
+    bounds = ListField(max_length=256)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = _("Extra Map Boundary Layer")
+        verbose_name_plural = _("Extra Map Boundary Layers")
