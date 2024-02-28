@@ -130,19 +130,3 @@ class GeomanagerSettings(BaseSiteSetting, ClusterableModel):
             return self.logo_external_link
 
         return "/"
-
-
-class AdditionalMapBoundaryData(models.Model):
-    name = models.CharField(max_length=255, unique=True)
-    table_name = models.CharField(max_length=256, unique=True)
-
-    properties = models.JSONField()
-    geometry_type = models.CharField(max_length=100)
-    bounds = ListField(max_length=256)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = _("Extra Map Boundary Layer")
-        verbose_name_plural = _("Extra Map Boundary Layers")

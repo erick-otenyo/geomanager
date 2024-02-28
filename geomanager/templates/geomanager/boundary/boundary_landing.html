@@ -1,0 +1,42 @@
+{% extends "wagtailadmin/base.html" %}
+{% load i18n %}
+{% load l10n %}
+{% load wagtailadmin_tags wagtailimages_tags static geomanager_tags %}
+{% block titletag %}
+    {% blocktranslate trimmed with title=page.get_admin_display_title %}
+        Map Boundaries {{ title }}
+    {% endblocktranslate %}
+{% endblock %}
+
+{% block content %}
+    {% if navigation_items %}
+        {% breadcrumbs_component navigation_items %}
+    {% endif %}
+
+    {% trans "Map Boundaries" as preview_str %}
+
+    {% include "wagtailadmin/shared/header.html" with title=preview_str subtitle=page.get_admin_display_title icon="view" %}
+
+    <div class="nice-padding">
+        <section class="w-summary" aria-labelledby="header-title">
+            <ul class="w-summary__list">
+                {% for link in links %}
+                    <li>
+                        <a href="{{ link.url }}">
+                            <svg class="icon icon-{{ link.icon }} icon" aria-hidden="true">
+                                <use href="#icon-{{ link.icon }}"></use>
+                            </svg>
+                            <div style="margin-top: 20px">
+                                {{ link.title }}
+                            </div>
+
+                        </a>
+                    </li>
+                {% endfor %}
+
+            </ul>
+        </section>
+    </div>
+
+{% endblock %}
+

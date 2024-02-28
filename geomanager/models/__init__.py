@@ -3,6 +3,7 @@ import logging
 from wagtailcache.cache import clear_cache
 
 from .aoi import *
+from .boundary import *
 from .core import *
 from .geomanager_settings import *
 from .geostore import *
@@ -30,6 +31,7 @@ logger = logging.getLogger(__name__)
 @receiver(post_save, sender=MBTSource)
 @receiver(post_save, sender=VectorFileLayer)
 @receiver(post_save, sender=PgVectorTable)
+@receiver(post_save, sender=AdditionalMapBoundaryData)
 def handle_clear_wagtail_cache(sender, **kwargs):
     logging.info("[WAGTAIL_CACHE]: Clearing cache")
     clear_cache()

@@ -14,7 +14,7 @@ from .views import (
     tile_json_gl,
     style_json_gl,
     get_mapviewer_config,
-    GeoJSONPgTableView
+    GeoJSONPgTableView, AdditionalBoundaryVectorTileView
 )
 from .views.auth import (
     EmailTokenObtainPairView,
@@ -107,6 +107,9 @@ urlpatterns = [
                   path(r'api/raster-tiles/<uuid:layer_id>/<int:z>/<int:x>/<int:y>', RasterTileView.as_view(),
                        name="raster_tiles"),
                   path(r'api/vector-tiles/<int:z>/<int:x>/<int:y>', VectorTileView.as_view(), name="vector_tiles"),
+                  path(r'api/map-boundary-tiles/<str:table_name>/<int:z>/<int:x>/<int:y>',
+                       AdditionalBoundaryVectorTileView.as_view(),
+                       name="map_boundary_tiles"),
 
                   # Thumbnail
                   path(r'api/raster-file-thumbnail/<int:file_id>.png', RasterThumbnailView.as_view(),

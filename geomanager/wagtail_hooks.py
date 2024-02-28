@@ -4,6 +4,7 @@ from wagtail.api.v2.utils import get_full_url
 from wagtail_modeladmin.options import modeladmin_register
 
 from .admin import GeoManagerAdminGroup, urls as geomanager_urls
+from .models import AdditionalMapBoundaryData
 from .utils.boundary import create_boundary_dataset
 
 
@@ -45,5 +46,11 @@ def register_geomanager_datasets(request):
     boundary_dataset = create_boundary_dataset(boundary_tiles_url)
 
     datasets.append(boundary_dataset)
+
+    extra_boundary_datasets = AdditionalMapBoundaryData.objects.filter(active=True)
+
+    for extra_boundary in extra_boundary_datasets:
+        dataset_config = extra_boundary.get_dataset_config(request)
+        datasets.append(dataset_config)
 
     return datasets
