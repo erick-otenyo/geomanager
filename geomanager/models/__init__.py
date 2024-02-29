@@ -14,6 +14,7 @@ from .tile_gl import *
 from .vector_file import *
 from .vector_tile import *
 from .wms import *
+from .raster_style import *
 
 logger = logging.getLogger(__name__)
 
