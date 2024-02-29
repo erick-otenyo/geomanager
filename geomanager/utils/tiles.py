@@ -69,4 +69,4 @@ def get_vector_render_layers(render_layers_stream_field, tiled=False):
 
         render_layers.append(data)
 
-        return render_layers
+    return render_layers

@@ -14,7 +14,7 @@ from .views import (
     tile_json_gl,
     style_json_gl,
     get_mapviewer_config,
-    GeoJSONPgTableView
+    GeoJSONPgTableView, AdditionalBoundaryVectorTileView, get_boundary_data_feature_by_id
 )
 from .views.auth import (
     EmailTokenObtainPairView,
@@ -99,6 +99,10 @@ urlpatterns = [
                        GeostoreViewSet.as_view({"get": "get_by_admin"}),
                        name="get_by_gid2"),
 
+                  # Boundary feature by id
+                  path(r'api/map-boundary-data/<str:table_name>/<int:gid>',
+                       get_boundary_data_feature_by_id, name="boundary_data_feature_by_id"),
+
                   # Tile JSON
                   path(r'api/raster/<uuid:layer_id>/tiles.json', raster_file_as_tile_json,
                        name="raster_file_tile_json"),
@@ -107,6 +111,9 @@ urlpatterns = [
                   path(r'api/raster-tiles/<uuid:layer_id>/<int:z>/<int:x>/<int:y>', RasterTileView.as_view(),
                        name="raster_tiles"),
                   path(r'api/vector-tiles/<int:z>/<int:x>/<int:y>', VectorTileView.as_view(), name="vector_tiles"),
+                  path(r'api/map-boundary-tiles/<str:table_name>/<int:z>/<int:x>/<int:y>',
+                       AdditionalBoundaryVectorTileView.as_view(),
+                       name="map_boundary_tiles"),
 
                   # Thumbnail
                   path(r'api/raster-file-thumbnail/<int:file_id>.png', RasterThumbnailView.as_view(),

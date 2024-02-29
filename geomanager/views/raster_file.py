@@ -12,7 +12,6 @@ from django.shortcuts import get_object_or_404, render
 from django.template.defaultfilters import filesizeformat
 from django.template.loader import render_to_string
 from django.urls import reverse
-from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
 from django_large_image import tilesource
@@ -37,12 +36,14 @@ from geomanager.decorators import revalidate_cache
 from geomanager.errors import RasterFileNotFound, QueryParamRequired, GeostoreNotFound
 from geomanager.forms import LayerRasterFileForm
 from geomanager.models import (
+    Category,
     Dataset,
     RasterUpload,
     RasterFileLayer,
-    LayerRasterFile, Geostore
+    LayerRasterFile,
+    Geostore,
+    GeomanagerSettings,
 )
-from geomanager.models.core import GeomanagerSettings, Category
 from geomanager.serializers import RasterFileLayerSerializer
 from geomanager.utils import UUIDEncoder
 from geomanager.utils.raster_utils import (

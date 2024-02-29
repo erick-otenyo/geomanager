@@ -21,3 +21,4 @@ from .vector_file import (
     GeoJSONPgTableView
 )
 from .wms import preview_wms_layers
+from .boundary import *

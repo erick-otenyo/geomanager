@@ -1,10 +1,10 @@
-from adminboundarymanager.models import AdminBoundarySettings
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from wagtail.admin.menu import MenuItem, Menu
 from wagtail_modeladmin.menus import GroupMenuItem
 from wagtail_modeladmin.options import ModelAdminGroup
 
+from geomanager.admin.boundary import urls as boundary_urls
 from geomanager.admin.category import CategoryModelAdmin
 from geomanager.admin.dataset import DatasetModelAdmin
 from geomanager.admin.mbt_source import MBTSourceModelAdmin
@@ -17,7 +17,12 @@ from geomanager.admin.vector_tile import VectorTileLayerModelAdmin, urls as vect
 from geomanager.admin.wms import WmsLayerModelAdmin, urls as wms_urls
 from geomanager.models import GeomanagerSettings
 
-urls = raster_file_urls + raster_tile_urls + vector_file_urls + vector_tile_urls + wms_urls
+urls = raster_file_urls \
+       + raster_tile_urls \
+       + vector_file_urls \
+       + vector_tile_urls \
+       + wms_urls \
+       + boundary_urls
 
 
 class ModelAdminGroupWithHiddenItems(ModelAdminGroup):
@@ -58,18 +63,7 @@ class GeoManagerAdminGroup(ModelAdminGroupWithHiddenItems):
     def get_submenu_items(self):
         menu_items = super().get_submenu_items()
 
-        try:
-            settings_url = reverse(
-                "wagtailsettings:edit",
-                args=[AdminBoundarySettings._meta.app_label, AdminBoundarySettings._meta.model_name, ],
-            )
-            abm_settings_menu = MenuItem(label=_("Boundary Settings"), url=settings_url, icon_name="cog")
-            menu_items.append(abm_settings_menu)
-        except Exception:
-            pass
-
-        boundary_loader = MenuItem(label=_("Boundary Data"), url=reverse("adminboundarymanager_preview_boundary"),
-                                   icon_name="map")
+        boundary_loader = MenuItem(label=_("Map Boundaries"), url=reverse("boundary_landing"), icon_name="map")
         menu_items.append(boundary_loader)
 
         try:
