@@ -14,7 +14,7 @@ from .views import (
     tile_json_gl,
     style_json_gl,
     get_mapviewer_config,
-    GeoJSONPgTableView, AdditionalBoundaryVectorTileView
+    GeoJSONPgTableView, AdditionalBoundaryVectorTileView, get_boundary_data_feature_by_id
 )
 from .views.auth import (
     EmailTokenObtainPairView,
@@ -98,6 +98,10 @@ urlpatterns = [
                   path(r'api/geostore/admin/<str:gid_0>/<str:gid_1>/<str:gid_2>',
                        GeostoreViewSet.as_view({"get": "get_by_admin"}),
                        name="get_by_gid2"),
+
+                  # Boundary feature by id
+                  path(r'api/map-boundary-data/<str:table_name>/<int:gid>',
+                       get_boundary_data_feature_by_id, name="boundary_data_feature_by_id"),
 
                   # Tile JSON
                   path(r'api/raster/<uuid:layer_id>/tiles.json', raster_file_as_tile_json,

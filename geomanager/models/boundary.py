@@ -82,6 +82,15 @@ class AdditionalMapBoundaryData(models.Model):
                             "layers": render_layers
                         }
                     },
+                    "interactionConfig": {
+                        "output": [
+                            {
+                                "column": "gid",
+                                "property": "ID",
+                                'type': "string",
+                            },
+                        ]
+                    }
                 }
             ]
         }
