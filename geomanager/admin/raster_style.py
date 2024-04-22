@@ -1,4 +1,5 @@
 from django import forms
+from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from wagtail_modeladmin.views import CreateView
@@ -54,16 +55,30 @@ class RasterStyleModelAdmin(BaseModelAdmin, ModelAdminCanHide):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.list_display = (list(self.list_display) or []) + ["preview"]
-        self.preview.__func__.short_description = _("Color Preview")
+        self.preview.__func__.short_description = _("Legend Preview")
+
+    def get_index_view_extra_js(self):
+        js = [
+            "geomanager/js/vendor/d3.min.js",
+            "geomanager/js/raster_style_index_extra.js",
+        ]
+
+        return js
 
     def preview(self, obj):
-        if obj.use_custom_colors:
-            return None
-        color_list = [f"<li style='background-color:{color};height:20px;flex:1;'><li/>" for color in
-                      obj.palette.split(",")]
-        html = f"""
-            <ul style='display:flex;width:200px;box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.12);'>
-                {''.join(color_list)}
-            </ul>
-        """
+        legend_config = obj.get_legend_config()
+
+        item_width = 100 / len(legend_config.get("items"))
+        items_height = 24 / len(legend_config.get("items"))
+        colors_str = ",".join([item.get("color") for item in legend_config.get("items")])
+
+        html = render_to_string("geomanager/modeladmin/raster_style_legend_preview.html",
+                                {
+                                    "legend_config": legend_config,
+                                    "item_width": item_width,
+                                    "raster_style": obj,
+                                    "colors_str": colors_str,
+                                    "items_height": items_height
+                                })
+
         return mark_safe(html)

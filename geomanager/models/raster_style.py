@@ -10,14 +10,17 @@ from wagtail_color_panel.edit_handlers import NativeColorPanel
 from wagtail_color_panel.fields import ColorField
 
 from geomanager.forms import RasterStyleModelForm
+from geomanager.utils import significant_digits, round_to_precision
 from geomanager.widgets import RasterStyleWidget
 
 
 class RasterStyle(TimeStampedModel, ClusterableModel):
     LEGEND_TYPE_CHOICES = (
         ("basic", _("Basic")),
-        ("choropleth", _("Choropleth")),
-        ("gradient", _("Gradient")),
+        ("choropleth", _("Choropleth Horizontal")),
+        ("choropleth_vertical", _("Choropleth Vertical")),
+        ("gradient", _("Gradient Horizontal")),
+        ("gradient_vertical", _("Gradient Vertical")),
     )
 
     base_form_class = RasterStyleModelForm
@@ -33,7 +36,7 @@ class RasterStyle(TimeStampedModel, ClusterableModel):
     use_custom_colors = models.BooleanField(default=False, verbose_name=_("Use Custom Colors"))
     palette = models.TextField(blank=True, null=True, verbose_name=_("Color Palette"))
     interpolate = models.BooleanField(default=False, verbose_name=_("interpolate"), help_text="Interpolate colorscale")
-    legend_type = models.CharField(max_length=100, choices=LEGEND_TYPE_CHOICES, default="choropleth",
+    legend_type = models.CharField(max_length=100, choices=LEGEND_TYPE_CHOICES, default="choropleth_vertical",
                                    verbose_name=_("Legend Type"))
     custom_color_for_rest = ColorField(blank=True, null=True, default="#ff0000",
                                        verbose_name=_("Color for the rest of values"),
@@ -96,6 +99,51 @@ class RasterStyle(TimeStampedModel, ClusterableModel):
     @property
     def clip_value(self):
         return self.max_value + self.offset_value
+
+    @property
+    def get_palette_legend_values(self):
+        if self.use_custom_colors:
+            return None
+
+        colors = self.get_palette_list()
+        step = (self.max - self.min) / (len(colors) - (2 if self.min > 0 else 1))
+        precision = significant_digits(step, self.max)
+        value_format = round_to_precision(precision)
+
+        val_from = self.min
+        val_to = value_format(self.min + step)
+
+        items = []
+
+        for i, color in enumerate(colors):
+            item = {"color": color}
+
+            if i == 0 and self.min > 0:
+                item.update({
+                    "from": 0,
+                    "to": self.min,
+                    "name": "< {}".format(self.min)
+                })
+                val_to = self.min
+
+            elif val_from < self.max:
+                item.update({
+                    "from": round(val_from, 1),
+                    "to": round(val_to, 1),
+                    "name": "{} - {}".format(val_from, val_to)
+                })
+            else:
+                item.update({
+                    "from": val_from,
+                    "name": "> {}".format(val_from)
+                })
+
+            val_from = val_to
+            val_to = value_format(self.min + step * (i + (1 if self.min > 0 else 2)))
+
+            items.append(item)
+
+        return items
 
     def get_custom_color_values(self):
         values = []
@@ -189,8 +237,10 @@ class RasterStyle(TimeStampedModel, ClusterableModel):
                     items.append(item)
                 rest_item = {"name": "", "color": self.custom_color_for_rest}
                 items.append(rest_item)
+        else:
+            items = self.get_palette_legend_values
 
-        return {"type": self.legend_type, "items": items}
+        return {"type": self.legend_type, "items": items, "units": self.unit}
 
 
 class ColorValue(TimeStampedModel, Orderable):

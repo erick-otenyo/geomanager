@@ -1,0 +1,73 @@
+<div style="width: 250px" id="legend-container-{{ raster_style.pk }}">
+    {% if legend_config.type == "basic" %}
+        {% if legend_config.units %}
+            <span style="font-size: 12px;font-weight: 700">{{ legend_config.units }}</span>
+        {% endif %}
+        <ul style='display:flex;flex-direction:column'>
+            {% for item in legend_config.items %}
+                <li style='display:flex;align-items: center'>
+                    <div style='width:20px;height:20px;background-color:{{ item.color }};border-radius: 50%'></div>
+                    <span style="margin-left: 8px">{{ item.name }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+    {% elif legend_config.type == "choropleth" %}
+        <script>
+            var containerId = 'legend-container-{{ raster_style.pk }}';
+            var config = {{ legend_config | safe }};
+
+            if (config) {
+                const legend = createLegend(config);
+                document.getElementById(containerId).appendChild(legend);
+            }
+        </script>
+    {% elif legend_config.type == "choropleth_vertical" %}
+        {% if legend_config.units %}
+            <span style="font-size: 12px;font-weight: 700">{{ legend_config.units }}</span>
+        {% endif %}
+        <div style="display: flex;align-items: center">
+            <ul style='display:flex;flex-direction:column;box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.12);'>
+                {% for item in legend_config.items %}
+                    <li style='display:flex;align-items:center;background-color:{{ item.color }};width: 12px;height: 24px'>
+                    </li>
+                {% endfor %}
+            </ul>
+            <ul>
+                {% for item in legend_config.items %}
+                    <li style='display:flex;align-items:baseline; height: 24px'>
+                        <span style="margin-left: 8px;">{{ item.name }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% elif legend_config.type == "gradient" %}
+        {% if legend_config.units %}
+            <span style="font-size: 12px;font-weight: 700">{{ legend_config.units }}</span>
+        {% endif %}
+
+        <div style="background-image:linear-gradient(to right, {{ colors_str }});width: 100%;height: 10px">
+        </div>
+        <ul style="display: flex;">
+            {% for item in legend_config.items %}
+                <li style='padding: 0; margin: 0;flex: 1 1 auto;'>
+                    <span style="text-align: left;display: block">{{ item.name }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+    {% elif legend_config.type == "gradient_vertical" %}
+        {% if legend_config.units %}
+            <span style="font-size: 12px;font-weight: 700">{{ legend_config.units }}</span>
+        {% endif %}
+        <div style="display: flex">
+            <div style="background-image:linear-gradient(to bottom, {{ colors_str }});width: 12px;height: calc({{ legend_config.items|length }}px * 24)">
+            </div>
+            <ul style="display: flex;flex-direction: column">
+                {% for item in legend_config.items %}
+                    <li style='padding: 0; margin: 0;flex: 1 1 auto;'>
+                        <span style="margin-left: 8px; text-align: left;display: block">{{ item.name }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+</div>
