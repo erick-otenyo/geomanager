@@ -69,7 +69,6 @@ class RasterStyleModelAdmin(BaseModelAdmin, ModelAdminCanHide):
         legend_config = obj.get_legend_config()
 
         item_width = 100 / len(legend_config.get("items"))
-        items_height = 24 / len(legend_config.get("items"))
         colors_str = ",".join([item.get("color") for item in legend_config.get("items")])
 
         html = render_to_string("geomanager/modeladmin/raster_style_legend_preview.html",
@@ -78,7 +77,6 @@ class RasterStyleModelAdmin(BaseModelAdmin, ModelAdminCanHide):
                                     "item_width": item_width,
                                     "raster_style": obj,
                                     "colors_str": colors_str,
-                                    "items_height": items_height
                                 })
 
         return mark_safe(html)
