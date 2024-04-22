@@ -312,6 +312,21 @@ class Dataset(TimeStampedModel, AdminSortable):
 
         return False
 
+    @property
+    def requires_file_upload(self):
+        return self.layer_type in ["raster_file", "vector_file"]
+
+    @property
+    def has_files(self):
+        if self.requires_file_upload:
+            if self.layer_type == "raster_file":
+                return self.has_raster_files()
+
+            if self.layer_type == "vector_file":
+                return self.has_vector_tables()
+
+        return False
+
     def can_preview(self):
         layers_check = [
             self.has_raster_files(),

@@ -37,7 +37,11 @@ class DatasetViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.
         # get only datasets with layers defined
         for dataset in queryset:
             if dataset.has_layers():
+                # if dataset requires file upload, but has no files, skip
+                if dataset.requires_file_upload and not dataset.has_files:
+                    continue
                 dataset_with_layers.append(dataset)
+
         serializer = self.get_serializer(dataset_with_layers, many=True)
         geomanager_datasets = serializer.data
 
