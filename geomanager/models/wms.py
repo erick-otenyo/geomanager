@@ -256,6 +256,10 @@ class WmsLayer(TimeStampedModel, ClusterableModel, BaseLayer):
                     time_config.update({
                         "dateFormat": {"currentTime": "MMM yyyy", "asPeriod": "pentadal"},
                     })
+                elif self.date_format == "dekadal":
+                    time_config.update({
+                        "dateFormat": {"currentTime": "MMM yyyy", "asPeriod": "dekadal"},
+                    })
                 else:
                     time_config.update({
                         "dateFormat": {"currentTime": self.date_format},

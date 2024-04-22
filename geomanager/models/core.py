@@ -100,7 +100,7 @@ class SubCategory(Orderable):
     ]
 
     def __str__(self):
-        return self.title
+        return f"{self.title} - {self.category.title}"
 
 
 class Dataset(TimeStampedModel, AdminSortable):
@@ -478,5 +478,3 @@ class BaseLayer(AdminSortable, models.Model):
                     self.dataset.layers.filter(default=True).exclude(pk=self.pk).update(default=False)
 
         super().save(*args, **kwargs)
-
-

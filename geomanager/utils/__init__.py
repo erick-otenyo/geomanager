@@ -16,6 +16,7 @@ DATE_FORMAT_CHOICES = (
     ("yyyy-MM-dd HH:mm", _("Hour minute:second - (E.g 2023-01-01 00:00)")),
     ("yyyy-MM-dd", _("Day - (E.g 2023-01-01)")),
     ("pentadal", _("Pentadal - (E.g Jan 2023 - P1 1-5th)")),
+    ("dekadal", _("Dekadal - (E.g Jan 2023 - D1 1-10th)")),
     ("yyyy-MM", _("Month number - (E.g 2023-01)")),
     ("MMMM yyyy", _("Month name - (E.g January 2023)")),
     ("yyyy", _("Year - (E.g 2023)")),
