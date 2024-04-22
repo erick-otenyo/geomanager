@@ -25,20 +25,24 @@ class DatasetViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.
         queryset = self.get_queryset()
         dataset_with_layers = []
 
-        # get only datasets with layers defined
-        for dataset in queryset:
-            if dataset.has_layers():
-                dataset_with_layers.append(dataset)
-
-        serializer = self.get_serializer(dataset_with_layers, many=True)
-
-        datasets = serializer.data
+        datasets = []
 
         # get datasets from registered hooks
         for fn in hooks.get_hooks(geomanager_register_datasets_hook_name):
             hook_datasets = fn(request)
-            for dataset in hook_datasets:
-                datasets.append(dataset)
+            if isinstance(hook_datasets, list):
+                for dataset in hook_datasets:
+                    datasets.append(dataset)
+
+        # get only datasets with layers defined
+        for dataset in queryset:
+            if dataset.has_layers():
+                dataset_with_layers.append(dataset)
+        serializer = self.get_serializer(dataset_with_layers, many=True)
+        geomanager_datasets = serializer.data
+
+        if geomanager_datasets:
+            datasets.extend(geomanager_datasets)
 
         return Response(datasets)
 
