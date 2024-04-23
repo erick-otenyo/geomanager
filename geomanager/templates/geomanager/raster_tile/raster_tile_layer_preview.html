@@ -25,7 +25,7 @@
 
     {% trans "Preview" as preview_str %}
 
-    {% include "wagtailadmin/shared/header.html" with title=preview_str|add:" - "|add:dataset.title subtitle=page.get_admin_display_title icon="view" %}
+    {% include "wagtailadmin/shared/header.html" with title=preview_str|add:" - "|add:selected_layer.title subtitle=page.get_admin_display_title icon="view" %}
 
     <div class="nice-padding">
         <div class="w-field__input" data-field-input="" style="display: none">
