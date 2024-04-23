@@ -170,6 +170,10 @@ class RasterFileLayer(TimeStampedModel, BaseLayer):
                 time_config.update({
                     "dateFormat": {"currentTime": "MMM yyyy", "asPeriod": "pentadal"},
                 })
+            elif self.date_format == "dekadal":
+                time_config.update({
+                    "dateFormat": {"currentTime": "MMM yyyy", "asPeriod": "dekadal"},
+                })
             else:
                 time_config.update({
                     "dateFormat": {"currentTime": self.date_format},
@@ -365,5 +369,3 @@ class RasterUpload(TimeStampedModel):
 
     def __str__(self):
         return f"{self.dataset} - {self.created}"
-
-

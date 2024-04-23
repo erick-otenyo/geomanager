@@ -19,17 +19,40 @@ def get_mapviewer_config(request):
     categories_data = CategorySerializer(categories, many=True).data
     response = {
         "categories": categories_data,
+        "enableMyAccount": False,
+        "allowSignups": False,
     }
+
+    if gm_settings.enable_my_account:
+        response.update({
+            "enableMyAccount": True,
+        })
+
+    if gm_settings.allow_signups:
+        response.update({
+            "allowSignups": True,
+        })
+
+    if gm_settings.map_disclaimer_text:
+        response.update({"disclaimerText": gm_settings.map_disclaimer_text})
 
     links = {
         "mapViewerBaseUrl": get_full_url(request, (reverse("mapview"))),
     }
 
     if gm_settings.terms_of_service_page:
-        links.update({"termsOfServicePageUrl": get_full_url(request, gm_settings.terms_of_service_page.url)})
+        links.update(
+            {"termsOfServicePageUrl": get_full_url(request, gm_settings.terms_of_service_page.get_full_url(request))})
 
     if gm_settings.privacy_policy_page:
-        links.update({"privacyPolicyPageUrl": get_full_url(request, gm_settings.privacy_policy_page.url)})
+        links.update(
+            {"privacyPolicyPageUrl": get_full_url(request, gm_settings.privacy_policy_page.get_full_url(request))})
+
+    if gm_settings.map_disclaimer_page:
+        links.update({"disclaimerPageUrl": gm_settings.map_disclaimer_page.get_full_url(request)})
+
+    if gm_settings.contact_us_page:
+        links.update({"contactUsPageUrl": gm_settings.contact_us_page.get_full_url(request)})
 
     response.update({"links": links})
 

@@ -113,8 +113,8 @@ class RasterFileLayerModelAdmin(BaseModelAdmin, SortableAdminMixin, ModelAdminCa
     menu_label = _("File Layers")
     button_helper_class = RasterFileLayerButtonHelper
     list_display = ("title",)
-    list_filter = ("dataset",)
-    index_template_name = 'adminsortable/index.html'
+    list_filter = ("dataset__category",)
+    index_template_name = 'adminsortable/index_without_create_button.html'
     list_display_add_buttons = "title"
 
     create_view_class = RasterFileLayerCreateView

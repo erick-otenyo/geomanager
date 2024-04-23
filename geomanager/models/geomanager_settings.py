@@ -1,3 +1,4 @@
+from django import forms
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from modelcluster.models import ClusterableModel
@@ -5,7 +6,7 @@ from wagtail import blocks
 from wagtail.admin.panels import (
     FieldPanel,
     TabbedInterface,
-    ObjectList
+    ObjectList, MultiFieldPanel
 )
 from wagtail.api.v2.utils import get_full_url
 from wagtail.contrib.settings.models import BaseSiteSetting
@@ -75,12 +76,42 @@ class GeomanagerSettings(BaseSiteSetting, ClusterableModel):
         verbose_name=_("Privacy Policy Page"),
         help_text=_("MapViewer Privacy Policy Page")
     )
+    contact_us_page = models.ForeignKey(
+        Page,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        verbose_name=_("Contact Us Page")
+    )
 
     navigation = StreamField([
         ('menu_items', blocks.ListBlock(NavigationItemsBlock(max_num=8))),
     ], block_counts={
         'menu_items': {'max_num': 1},
     }, use_json_field=True, null=True, blank=True)
+
+    map_disclaimer_text = models.CharField(max_length=350, blank=True, null=True,
+                                           default="The boundaries and names shown and the designations used on this "
+                                                   "map do not imply the expression of any opinion whatsoever "
+                                                   "concerning the legal status of any country, territory, city or "
+                                                   "area or of its authorities, or concerning the delimitation of its "
+                                                   "frontiers or boundaries",
+                                           verbose_name=_("Map Disclaimer Text"),
+                                           help_text=_("MapViewer Map disclaimer text. Maximum of 350 characters. "
+                                                       "Add more details in the Map Disclaimer Page and link it below"))
+    map_disclaimer_page = models.ForeignKey(
+        Page,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        verbose_name=_("Map Disclaimer Page"),
+        help_text=_("MapViewer Map disclaimer page for more details")
+    )
+
+    enable_my_account = models.BooleanField(default=False, verbose_name=_("Enable My Account"))
+    allow_signups = models.BooleanField(default=False, verbose_name=_("Allow user signups"))
 
     base_maps = StreamField([
         ('basemap', blocks.StructBlock([
@@ -113,8 +144,19 @@ class GeomanagerSettings(BaseSiteSetting, ClusterableModel):
             FieldPanel("logo_external_link"),
             FieldPanel("terms_of_service_page"),
             FieldPanel("privacy_policy_page"),
+            FieldPanel("contact_us_page"),
             FieldPanel("navigation"),
+
+            MultiFieldPanel([
+                FieldPanel("map_disclaimer_text", widget=forms.Textarea(attrs={'rows': 3})),
+                FieldPanel("map_disclaimer_page")
+            ], heading=_("Map Disclaimer Settings")),
+
         ], heading=_("Navigation Settings")),
+        ObjectList([
+            FieldPanel("enable_my_account"),
+            FieldPanel("allow_signups"),
+        ], heading=_("My Account Settings")),
     ])
 
     @property

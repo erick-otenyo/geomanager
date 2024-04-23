@@ -62,9 +62,8 @@ class GeostoreViewSet(viewsets.ViewSet):
 
     @action(detail=True, methods=['post'])
     def post(self, request):
-        # parse the GeoJSON from the POST data
-        payload = json.loads(request.body.decode('utf-8'))
 
+        payload = request.data
         geojson = payload.get("geojson")
 
         # extract the MultiPolygon geometry from the GeoJSON
