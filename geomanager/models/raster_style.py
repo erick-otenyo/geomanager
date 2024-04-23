@@ -101,7 +101,7 @@ class RasterStyle(TimeStampedModel, ClusterableModel):
         return self.max_value + self.offset_value
 
     @property
-    def get_palette_legend_values(self):
+    def palette_legend_values(self):
         if self.use_custom_colors:
             return None
 
@@ -158,6 +158,7 @@ class RasterStyle(TimeStampedModel, ClusterableModel):
                 value["min_value"] = color_values[i - 1].threshold
             value["max_value"] = value["threshold"]
             values.append(value)
+
         return values
 
     def get_custom_palette(self):
@@ -219,11 +220,12 @@ class RasterStyle(TimeStampedModel, ClusterableModel):
 
     def get_legend_config(self):
         items = []
+        legend_type = self.legend_type
         if self.use_custom_colors:
             values = self.get_custom_color_values()
             count = len(values)
 
-            if count > 1:
+            if count > 0:
                 for value in values:
                     item = {
                         "name": "",
@@ -233,14 +235,23 @@ class RasterStyle(TimeStampedModel, ClusterableModel):
                         item.update({
                             "name": value['label'] if value.get('label') else value['threshold'],
                         })
-
                     items.append(item)
-                rest_item = {"name": "", "color": self.custom_color_for_rest}
-                items.append(rest_item)
-        else:
-            items = self.get_palette_legend_values
 
-        return {"type": self.legend_type, "items": items, "units": self.unit}
+                # if only one item and it is the custom color for rest, then show it as basic legend
+                # no matter what the legend type was set
+                if count == 1 and items[0].get("color") == self.custom_color_for_rest:
+                    legend_type = "basic"
+                else:
+                    rest_item = {"name": "", "color": self.custom_color_for_rest}
+                    items.append(rest_item)
+        else:
+            items = self.palette_legend_values
+
+        config = {"type": legend_type, "items": items, }
+
+        if self.unit:
+            config["units"] = self.unit
+        return config
 
 
 class ColorValue(TimeStampedModel, Orderable):
