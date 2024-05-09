@@ -6,18 +6,17 @@ Wagtail based Geospatial Data Manager and backend CMS for [geomapviewer](https:/
 
 # Background
 
-National Meteorological and Hydrological Services (NMHSs) and other national/regional institutions working in
-weather/climate sectors usually use, produce or disseminate data and information that is Geo-referenced. This can range
-from forecast model outputs, earth observation data, stations observation, periodic bulletins and advisories and so on.
-Usually these are shared on their websites and social media pages in static formats, mostly PNGs.
+Most national/regional institutions working in weather/climate/DRM sectors regularly produce and disseminate data and
+information that is Geo-referenced. This can range from forecast model outputs, earth observation data, stations
+observation, periodic bulletins and advisories and so on. Usually these are shared on their websites and social media
+pages in static formats, mostly as PNGs or PDFS.
 
-This project is an initiative by the [WMO RAF](https://github.com/wmo-raf), as part of the Digital Transformation
-Package for the NMHSs in Africa, to provide an interactive system for managing and publishing Geo-referenced (GIS)
-datasets. As the NMHSs produce and share their products in static formats, they can also use packages like this, to make
-their data interactive.
+This is an effort to develop an interactive system for managing and publishing Geo-referenced (GIS)
+datasets. As the institutions produce and share their products in static formats, they can also use packages like this,
+to make their data interactive.
 
-The package is developed primarily for the NMHSs at national levels, but can be adapted in other institutions or places
-that need to visualize their geospatial data.
+The package is developed primarily for use by NMHSs at national levels, but can be adapted in other institutions or
+places that need to visualize their geospatial data.
 
 # Features
 
