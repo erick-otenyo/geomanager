@@ -46,6 +46,7 @@ from geomanager.models import (
 )
 from geomanager.serializers import RasterFileLayerSerializer
 from geomanager.utils import UUIDEncoder
+from geomanager.utils.magics import get_magics_png_tile
 from geomanager.utils.raster_utils import (
     get_tile_source,
     read_raster_info,
@@ -533,14 +534,12 @@ class RasterTileView(RasterDataMixin, APIView):
         style = self.get_query_param(request, "style")
         geostore_id = self.get_query_param(request, "geostore_id")
 
+        layer_style = None
+
         if style:
             # explict request to use layer defined style. Mostly used for admin previews
             if style == "layer-style":
                 layer_style = raster_file.layer.style
-                if layer_style:
-                    style = layer_style.get_style_as_json()
-                else:
-                    style = None
             else:
                 # try validating style
                 # TODO: do more thorough validation
@@ -550,8 +549,9 @@ class RasterTileView(RasterDataMixin, APIView):
                     style = None
         else:
             layer_style = raster_file.layer.style
-            if layer_style:
-                style = layer_style.get_style_as_json()
+
+        if layer_style:
+            style = layer_style.get_style_as_json()
 
         encoding = tilesource.format_to_encoding(fmt, pil_safe=True)
 
@@ -563,13 +563,19 @@ class RasterTileView(RasterDataMixin, APIView):
         }
 
         source = get_tile_source(path=raster_file.file, options=options)
-
-        try:
-            tile_binary = source.getTile(int(x), int(y), int(z))
-        except TileSourceXYZRangeError as e:
-            raise ValidationError(e)
-
         mime_type = source.getTileMimeType()
+
+        if layer_style and layer_style.rendering_engine == "magics" and layer_style.magics_contour_params:
+            try:
+                tile_binary = get_magics_png_tile(source, int(x), int(y), int(z),
+                                                  contour_params=layer_style.magics_contour_params)
+            except Exception as e:
+                return HttpResponse(status=404)
+        else:
+            try:
+                tile_binary = source.getTile(int(x), int(y), int(z))
+            except TileSourceXYZRangeError as e:
+                raise ValidationError(e)
 
         return HttpResponse(tile_binary, content_type=mime_type)
 
