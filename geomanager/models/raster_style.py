@@ -23,6 +23,11 @@ class RasterStyle(TimeStampedModel, ClusterableModel):
         ("gradient_vertical", _("Gradient Vertical")),
     )
 
+    RENDERING_ENGINE_CHOICES = (
+        ("large_image", _("Default")),
+        ("magics", _("ECMWF Magics")),
+    )
+
     base_form_class = RasterStyleModelForm
 
     name = models.CharField(max_length=256, verbose_name=_("name"),
@@ -43,6 +48,9 @@ class RasterStyle(TimeStampedModel, ClusterableModel):
                                        help_text=_(
                                            "Color for values greater than the values defined above, "
                                            "as well as values greater than the maximum defined value"))
+
+    rendering_engine = models.CharField(max_length=100, choices=RENDERING_ENGINE_CHOICES, default="large_image",
+                                        verbose_name=_("Rendering Engine"))
 
     class Meta:
         verbose_name = _("Raster Style")
@@ -69,7 +77,7 @@ class RasterStyle(TimeStampedModel, ClusterableModel):
             NativeColorPanel("custom_color_for_rest"),
         ], _("Custom Color Values")),
 
-        # FieldPanel("interpolate")
+        FieldPanel("rendering_engine")
     ]
 
     def get_palette_list(self):
@@ -252,6 +260,33 @@ class RasterStyle(TimeStampedModel, ClusterableModel):
         if self.unit:
             config["units"] = self.unit
         return config
+
+    @property
+    def magics_contour_params(self):
+        if not self.use_custom_colors:
+            return None
+
+        color_values = self.color_values.order_by('threshold')
+        contour_level_list = [value.threshold for value in color_values]
+        contour_shade_colour_list = [value.color for value in color_values]
+        contour_shade_colour_list.append(self.custom_color_for_rest)
+
+        contour_params = {
+            "contour": "off",
+            "contour_shade": "on",
+            "contour_shade_method": "area_fill",
+            "contour_label": "off",
+            "contour_level_selection_type": "level_list",
+            "contour_level_list": contour_level_list,
+            "contour_shade_min_level": self.min,
+            "contour_shade_max_level": self.max,
+            "contour_min_level": self.min,
+            "contour_max_level": self.max,
+            "contour_shade_colour_method": "list",
+            'contour_shade_colour_list': contour_shade_colour_list
+        }
+
+        return contour_params
 
 
 class ColorValue(TimeStampedModel, Orderable):
