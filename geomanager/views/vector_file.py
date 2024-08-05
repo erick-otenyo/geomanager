@@ -290,6 +290,7 @@ def preview_vector_layers(request, dataset_id, layer_id=None):
 
     context = {
         "dataset": dataset,
+        "layer": dataset.vector_file_layers.get(id=layer_id),
         "dataset_layers": json.dumps(dataset_layers, cls=UUIDEncoder),
         "selected_layer": layer_id,
         "datasets_index_url": dataset_list_url,
