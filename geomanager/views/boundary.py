@@ -3,7 +3,7 @@ import json
 from adminboundarymanager.models import AdminBoundarySettings
 from django.contrib.gis.geos import GEOSGeometry, MultiPolygon
 from django.core.exceptions import ObjectDoesNotExist
-from django.db import connection, close_old_connections
+from django.db import connection
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
@@ -110,7 +110,6 @@ class AdditionalBoundaryVectorTileView(View):
                     SELECT ST_AsMVT(mvtgeom, 'default') FROM mvtgeom;
                     """
 
-        close_old_connections()
         with connection.cursor() as cursor:
             try:
                 cursor.execute(sql, (z, x, y))
@@ -135,7 +134,6 @@ def get_boundary_data_feature_by_id(request, table_name, gid):
         res_data = GeostoreSerializer(geostore).data
         return JsonResponse(res_data)
 
-    close_old_connections()
     with connection.cursor() as cursor:
         query = f"""
             SELECT json_build_object(
