@@ -26,34 +26,35 @@ from shapely import wkb, Polygon
 
 from geomanager.errors import UnsupportedRasterFormat
 from geomanager.models import LayerRasterFile, Geostore
+from geomanager.settings import geomanager_settings
 
 
 def get_tile_source(path, options=None):
     if options is None:
         options = {}
-
+    
     encoding = options.get("encoding")
     style = options.get("style")
     projection = options.get("projection")
     geostore_id = options.get("geostore_id")
-
+    
     kwargs = {}
-
+    
     if encoding:
         kwargs["encoding"] = encoding
     if style:
         kwargs["style"] = style
     if projection:
         kwargs["projection"] = projection
-
+    
     geostore = None
-
+    
     if geostore_id:
         try:
             geostore = Geostore.objects.get(pk=geostore_id)
         except Exception:
             pass
-
+    
     if geostore:
         file_path = field_file_to_local_path_for_geostore(path, geostore)
     else:
@@ -67,31 +68,31 @@ def get_tile_source(path, options=None):
 
 def get_raster_pixel_data(file: FileField, x_coord: float, y_coord: float):
     source = get_tile_source(path=file)
-
+    
     # get raster affine transform
     metadata = source.getInternalMetadata()
     affine = metadata.get("Affine")
-
+    
     # get corresponding row col
     row_col = rio.transform.rowcol(affine, xs=x_coord, ys=y_coord)
     pixel_data = source.getPixel(region={'left': abs(row_col[1]), 'top': abs(row_col[0])})
-
+    
     if pixel_data:
         return pixel_data.get("bands", {}).get(1)
-
+    
     return None
 
 
 def get_geostore_data(file: FileField, geostore, value_type=None):
     data = {}
-
+    
     try:
         file_path = field_file_to_local_path_for_geostore(file, geostore)
-
+        
         with rio.open(str(file_path), 'r') as src:
             band_array = src.read(1)
             values = band_array[band_array != src.nodata]
-
+        
         if value_type:
             if value_type == "mean":
                 data.update({"mean": values.mean()})
@@ -114,7 +115,7 @@ def get_geostore_data(file: FileField, geostore, value_type=None):
             data.update({"mean": values.mean()})
     except Exception:
         pass
-
+    
     return data
 
 
@@ -128,10 +129,10 @@ def get_no_data_val(val):
 
 def read_raster_info(file_path):
     raster = rio.open(file_path)
-
+    
     no_data_vals = raster.nodatavals
     no_data_vals = [get_no_data_val(val) for val in no_data_vals]
-
+    
     # get basic raster info using rasterio
     raster_info = {
         "crs": raster.crs.to_dict() if raster.crs else None,
@@ -142,101 +143,111 @@ def read_raster_info(file_path):
         "driver": raster.driver,
         "nodatavals": tuple(no_data_vals)
     }
-
+    
     # close raster
     raster.close()
-
+    
     # get netcdf info
     if raster_info["driver"] == "netCDF":
-
+        
         ds = xr.open_dataset(file_path, decode_times=True)
-
+        
         if isinstance(ds, xr.DataArray):
             ds = ds.to_dataset()
-
+        
         skip_vars = ["nbnds", "time_bnds", "spatial_ref"]
         data_vars = list(ds.data_vars.keys())
         data_vars = [var for var in data_vars if var not in skip_vars]
-
+        
         raster_info.update({"data_variables": data_vars})
         raster_info.update({"dimensions": list(ds.dims)})
-
+        
+        time_dim_name = None
+        for nc_time_dim_name in geomanager_settings.get("nc_time_dimension_names"):
+            if nc_time_dim_name in ds.dims:
+                time_dim_name = nc_time_dim_name
+                break
+        
         # get timestamps
-        if "time" in ds.dims:
-            timestamps = [pd.to_datetime(ts).isoformat() for ts in ds.time.data]
-
-            raster_info.update({"timestamps": timestamps})
-
+        if time_dim_name:
+            time_data = ds[time_dim_name].data
+            timestamps = [pd.to_datetime(ts).isoformat() for ts in time_data]
+            raster_info.update({
+                "time_dimension_name": time_dim_name,
+                "timestamps": timestamps
+            })
+        
         # close dataset
         ds.close()
-
+    
     return raster_info
 
 
 def convert_upload_to_geotiff(upload, out_file_path, band_index=None, data_variable=None):
     metadata = upload.raster_metadata
-
+    
     driver = metadata.get("driver")
-
+    
     crs = metadata.get("crs")
     timestamps = metadata.get("timestamps", None)
-
+    time_dimension_name = metadata.get("time_dimension_name", "time")
+    
     # handle netcdf
     if driver == "netCDF":
         rds = xr.open_dataset(upload.file.path, engine="rasterio")
-
+        
         try:  # index must start from 0
             if data_variable:
                 rds = rds[data_variable]
-
+            
             if timestamps and band_index is not None:
-                rds = rds.isel(time=int(band_index))
-
+                rds = rds.isel(**{time_dimension_name: int(band_index)})
+            
             # write crs if not available
             if not rds.rio.crs:
                 epsg = "epsg:4326"
                 if crs and isinstance(crs, dict) and crs.get("init"):
                     epsg = crs.get("init")
                 rds = rds.rio.write_crs(epsg)
-
+            
             # drop grid_mapping attr. somehow it causes errors when saving
             if rds.rio.crs and rds.attrs.get("grid_mapping"):
                 rds.attrs.pop("grid_mapping")
-
+            
             # make sure no data value is not nan
             nodata_value = rds.encoding.get('nodata', rds.encoding.get('_FillValue'))
             if not nodata_value or np.isnan(nodata_value):
                 rds = rds.rio.write_nodata(-9999, encoded=True)
-
+            
             netcdf_attrs = []
             for key in rds.attrs.keys():
                 if key.startswith("NETCDF_"):
                     netcdf_attrs.append(key)
-
+                
                 # assign only one unit
                 if key == "units" and isinstance(rds.attrs["units"], list):
                     rds.attrs["units"] = rds.attrs["units"][0]
-
+            
             # delete 'NETCDF_*' attributes
             for nc_attr in netcdf_attrs:
                 rds.attrs.pop(nc_attr)
-
+            
             rds.rio.to_raster(out_file_path, driver="COG", compress="DEFLATE")
         except Exception as e:
             raise e
         finally:
             rds.close()
-
+        
         return True
-
+    
     # handle geotiff
     if driver == "GTiff":
         output_profile = cog_profiles.get("deflate")
-
+        
         # write crs if not available
         if not crs:
             output_profile["crs"] = "epsg:4326"
-
+        
         # save as COG
         cog_translate(
             upload.file.path,
@@ -245,9 +256,9 @@ def convert_upload_to_geotiff(upload, out_file_path, band_index=None, data_varia
             indexes=band_index,
             in_memory=False
         )
-
+        
         return True
-
+    
     raise UnsupportedRasterFormat
 
 
@@ -261,7 +272,7 @@ def create_layer_raster_file(layer, upload, time, band_index=None, data_variable
             if data_variable:
                 file_name = f"{data_variable}_{file_name}"
             raster.file.save(file_name, file_content)
-
+            
             try:
                 source = get_tile_source(raster.file)
                 metadata = source.getMetadata()
@@ -269,7 +280,7 @@ def create_layer_raster_file(layer, upload, time, band_index=None, data_variable
                     raster.raster_metadata = metadata
             except Exception:
                 pass
-
+            
             raster.save()
 
 
@@ -284,27 +295,27 @@ def clip_geotiff(geotiff_path, geom, out_file):
         "transform": out_transform,
         "crs": CRS().from_epsg(code=4326),
     })
-
+    
     with rio.open(out_file, "w", **out_meta) as dest:
         dest.write(out_img)
-
+    
     return out_file
 
 
 def clip_netcdf(nc_path, geom, out_file):
     rds = xr.open_dataset(nc_path, engine="rasterio")
-
+    
     # write crs
     rds.rio.write_crs("epsg:4326", inplace=True)
-
+    
     # clip
     rds = rds.rio.clip([geom], "epsg:4326", drop=True)
-
+    
     # write clipped data to file
     rds.to_netcdf(out_file)
-
+    
     rds.close()
-
+    
     return out_file
 
 
@@ -314,14 +325,14 @@ def field_file_to_local_path_for_geostore(path, geostore):
     dest_path = directory / f"{geostore.pk.hex}-{field_file_basename}"
     lock = get_file_lock(dest_path)
     safe = get_file_safe_path(dest_path)
-
+    
     with lock.acquire():
         if not safe.exists():
             dest_path.parent.mkdir(parents=True, exist_ok=True)
             # convert OGRGeometry to Shapely geometry for consistency in clipping
             shapely_geom = wkb.loads(geostore.geom.hex)
             clip_geotiff(path.file.name, shapely_geom, dest_path)
-
+    
     return dest_path
 
 
@@ -333,8 +344,8 @@ def bounds_to_polygon(bounds):
 def check_raster_bounds_with_boundary(raster_bounds, boundary_bounds):
     boundary_poly = bounds_to_polygon(boundary_bounds)
     raster_poly = bounds_to_polygon(raster_bounds)
-
+    
     intersects = boundary_poly.intersects(raster_poly)
     contains = boundary_poly.contains(raster_poly)
-
+    
     return intersects, contains
