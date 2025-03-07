@@ -69,38 +69,12 @@ You can install the package using pip:
 pip install geomanager
 ```
 
-The following packages will be automatically installed when installing `geomanager`, if not already installed.
+Install this version of [wagtail-admin-sortable](https://github.com/wmo-raf/wagtail-admin-sortable) from Github. This
+has some updates to the original packages.
 
-- wagtail>=4.2.2
-- wagtail-modeladmin>=1.0.0
-- adm-boundary-manager>=0.0.1
-- django_extensions>=3.2.1
-- wagtail_color_panel>=1.4.1
-- wagtailfontawesomesvg>=0.0.3,
-- django_json_widget>=1.1.1
-- django_nextjs>= 2.2.2
-- django-allauth>=0.54.0
-- django-large-image>=0.9.0
-- large-image-source-gdal>=1.20.6
-- large-image-source-pil>=1.20.6
-- large-image-source-tiff>=1.20.6
-- django-filter>=22.1
-- cftime>=1.6.2
-- netCDF4>=1.6.3
-- rasterio>=1.3.6
-- rio-cogeo>=3.5.1
-- xarray>=2023.3.0
-- rioxarray>=0.14.0
-- shapely>=2.0.1
-- djangorestframework-simplejwt>=5.2.2
-- wagtail-humanitarian-icons>=1.0.3
-- wagtail-icon-chooser>=0.0.1
-- matplotlib>=3.7.1
-- django-tables2>=2.6.0
-- django-tables2-bulma-template>=0.2.0
-- CairoSVG>=2.7.0
-- wagtail-cache>=2.3.0
-- wagtail_adminsortable=0.1
+```shell
+pip install https://github.com/wmo-raf/wagtail-admin-sortable/archive/33bf22f290e7a4210b44667e9ff56e4b35ad309e.zip
+````
 
 # Usage
 
@@ -109,7 +83,7 @@ Make sure the following are all added to your `INSTALLED_APPS` in your Wagtail `
 ````python
 INSTALLED_APPS = [
     ...
-
+    
     "geomanager",
     "adminboundarymanager",
     "django_large_image",
@@ -126,11 +100,11 @@ INSTALLED_APPS = [
     "allauth.account",
     "wagtailcache",
     "wagtail_modeladmin"
-
+    
     "wagtail.contrib.settings",
     "rest_framework",
     "django.contrib.gis",
-
+    
     ...
 ]
 
