@@ -12,7 +12,8 @@ from geomanager.blocks import (
     InlineLegendBlock,
     LayerMoreInfoBlock,
     QueryParamSelectableBlock,
-    QueryParamStaticBlock, InlineIconLegendBlock
+    QueryParamStaticBlock,
+    InlineIconLegendBlock,
 )
 from geomanager.models.core import BaseLayer
 from geomanager.utils import DATE_FORMAT_CHOICES
@@ -22,58 +23,122 @@ class BaseTileLayer(TimeStampedModel, ClusterableModel, BaseLayer):
     class Meta:
         abstract = True
 
-    base_url = models.CharField(max_length=500, verbose_name=_("Base Tile url"), )
+    base_url = models.CharField(
+        max_length=500,
+        verbose_name=_("Base Tile url"),
+    )
 
-    query_params_static = StreamField([
-        ('param', QueryParamStaticBlock(label=_("Query Parameter")))
-    ], use_json_field=True, null=True, blank=True, verbose_name=_("Static Query Params"),
-        help_text=_("Static query params to be added to the url"))
+    query_params_static = StreamField(
+        [("param", QueryParamStaticBlock(label=_("Query Parameter")))],
+        use_json_field=True,
+        null=True,
+        blank=True,
+        verbose_name=_("Static Query Params"),
+        help_text=_("Static query params to be added to the url"),
+    )
 
-    query_params_selectable = StreamField([
-        ('param', QueryParamSelectableBlock(label=_("Selectable Query Parameter")))
-    ], use_json_field=True, null=True, blank=True, verbose_name=_("Query Params With selectable Options"),
-        help_text=_("This should provide a list of options that users "
-                    "can choose to change the query parameter of the url"))
+    query_params_selectable = StreamField(
+        [("param", QueryParamSelectableBlock(label=_("Selectable Query Parameter")))],
+        use_json_field=True,
+        null=True,
+        blank=True,
+        verbose_name=_("Query Params With selectable Options"),
+        help_text=_(
+            "This should provide a list of options that users "
+            "can choose to change the query parameter of the url"
+        ),
+    )
 
-    params_selectors_side_by_side = models.BooleanField(default=False,
-                                                        verbose_name=_("Arrange Param Selectors side by side"))
+    params_selectors_side_by_side = models.BooleanField(
+        default=False, verbose_name=_("Arrange Param Selectors side by side")
+    )
 
-    legend = StreamField([
-        ('legend', InlineLegendBlock(label=_("Custom Legend")),),
-        ('legend_image', ImageChooserBlock(label=_("Custom Image")),),
-        ('legend_icon', InlineIconLegendBlock(label=_("Legend Icon")),),
-    ], use_json_field=True, null=True, blank=True, max_num=1, verbose_name=_("Legend"), )
+    legend = StreamField(
+        [
+            (
+                "legend",
+                InlineLegendBlock(label=_("Custom Legend")),
+            ),
+            (
+                "legend_image",
+                ImageChooserBlock(label=_("Custom Image")),
+            ),
+            (
+                "legend_icon",
+                InlineIconLegendBlock(label=_("Legend Icon")),
+            ),
+        ],
+        use_json_field=True,
+        null=True,
+        blank=True,
+        max_num=1,
+        verbose_name=_("Legend"),
+    )
 
-    more_info = StreamField([
-        ('more_info', LayerMoreInfoBlock(label=_("Info link")),),
-    ], block_counts={
-        'more_info': {'max_num': 1},
-    }, use_json_field=True, null=True, blank=True, max_num=1, verbose_name=_("More Info"), )
+    more_info = StreamField(
+        [
+            (
+                "more_info",
+                LayerMoreInfoBlock(label=_("Info link")),
+            ),
+        ],
+        block_counts={
+            "more_info": {"max_num": 1},
+        },
+        use_json_field=True,
+        null=True,
+        blank=True,
+        max_num=1,
+        verbose_name=_("More Info"),
+    )
 
-    get_time_from_tile_json = models.BooleanField(default=False, verbose_name=_("Get time from tile json url"))
-    tile_json_url = models.URLField(max_length=500, blank=True, null=True, verbose_name=_("Tile JSON url"))
-    timestamps_response_object_key = models.CharField(max_length=100, blank=True, null=True, default="timestamps",
-                                                      verbose_name=_("Timestamps response object key"),
-                                                      help_text=_("Key for timestamps values in response object"))
-    date_format = models.CharField(max_length=100, choices=DATE_FORMAT_CHOICES, blank=True, null=True,
-                                   verbose_name=_("Display Format for DateTime Selector"))
-    time_parameter_name = models.CharField(max_length=100, blank=True, null=True, default="time",
-                                           verbose_name=_("Time Parameter Name"),
-                                           help_text=_("Name of the time parameter in the url"))
+    get_time_from_tile_json = models.BooleanField(
+        default=False, verbose_name=_("Get time from tile json url")
+    )
+    tile_json_url = models.URLField(
+        max_length=500, blank=True, null=True, verbose_name=_("Tile JSON url")
+    )
+    timestamps_response_object_key = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        default="timestamps",
+        verbose_name=_("Timestamps response object key"),
+        help_text=_("Key for timestamps values in response object"),
+    )
+    date_format = models.CharField(
+        max_length=100,
+        choices=DATE_FORMAT_CHOICES,
+        blank=True,
+        null=True,
+        verbose_name=_("Display Format for DateTime Selector"),
+    )
+    time_parameter_name = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        default="time",
+        verbose_name=_("Time Parameter Name"),
+        help_text=_("Name of the time parameter in the url"),
+    )
 
     panels = [
         FieldPanel("title"),
         FieldPanel("default"),
         FieldPanel("base_url"),
-
-        MultiFieldPanel([
-            FieldPanel("get_time_from_tile_json"),
-            FieldPanel("tile_json_url", classname="show_if_get_time_checked"),
-            FieldPanel("timestamps_response_object_key", classname="show_if_get_time_checked"),
-            FieldPanel("time_parameter_name", classname="show_if_get_time_checked"),
-            FieldPanel("date_format", classname="show_if_get_time_checked"),
-        ], heading=_("Time Settings")),
-
+        MultiFieldPanel(
+            [
+                FieldPanel("get_time_from_tile_json"),
+                FieldPanel("tile_json_url", classname="show_if_get_time_checked"),
+                FieldPanel(
+                    "timestamps_response_object_key",
+                    classname="show_if_get_time_checked",
+                ),
+                FieldPanel("time_parameter_name", classname="show_if_get_time_checked"),
+                FieldPanel("date_format", classname="show_if_get_time_checked"),
+            ],
+            heading=_("Time Settings"),
+        ),
         FieldPanel("query_params_static"),
         FieldPanel("query_params_selectable"),
         FieldPanel("params_selectors_side_by_side"),
@@ -89,15 +154,13 @@ class BaseTileLayer(TimeStampedModel, ClusterableModel, BaseLayer):
 
         if self.has_time:
             time_param_name = self.time_parameter_name or "time"
-            query_params.update({
-                time_param_name: "{{time}}"
-            })
+            query_params.update({time_param_name: "{{time}}"})
 
         static_params = self.get_static_params()
         if static_params:
             query_params.update(static_params)
 
-        query_str = '&'.join([f"{key}={value}" for key, value in query_params.items()])
+        query_str = "&".join([f"{key}={value}" for key, value in query_params.items()])
 
         if query_str:
             tile_url = f"{tile_url}?{query_str}"
@@ -119,7 +182,7 @@ class BaseTileLayer(TimeStampedModel, ClusterableModel, BaseLayer):
             for query_param in self.query_params_static:
                 data = query_param.block.get_api_representation(query_param.value)
                 val = f"{data.get('key')}"
-                params.update({val: data.get('value')})
+                params.update({val: data.get("value")})
         return params
 
     def get_selectable_params_config(self):
@@ -141,7 +204,11 @@ class BaseTileLayer(TimeStampedModel, ClusterableModel, BaseLayer):
 
     @property
     def has_time(self):
-        return bool(self.dataset.multi_temporal and self.get_time_from_tile_json and self.tile_json_url)
+        return bool(
+            self.dataset.multi_temporal
+            and self.get_time_from_tile_json
+            and self.tile_json_url
+        )
 
     @property
     def params(self):
@@ -180,21 +247,35 @@ class BaseTileLayer(TimeStampedModel, ClusterableModel, BaseLayer):
 
             if self.date_format:
                 if self.date_format == "pentadal":
-                    time_config.update({
-                        "dateFormat": {"currentTime": "MMM yyyy", "asPeriod": "pentadal"},
-                    })
+                    time_config.update(
+                        {
+                            "dateFormat": {
+                                "currentTime": "MMM yyyy",
+                                "asPeriod": "pentadal",
+                            },
+                        }
+                    )
                 elif self.date_format == "dekadal":
-                    time_config.update({
-                        "dateFormat": {"currentTime": "MMM yyyy", "asPeriod": "dekadal"},
-                    })
+                    time_config.update(
+                        {
+                            "dateFormat": {
+                                "currentTime": "MMM yyyy",
+                                "asPeriod": "dekadal",
+                            },
+                        }
+                    )
                 else:
-                    time_config.update({
-                        "dateFormat": {"currentTime": self.date_format},
-                    })
+                    time_config.update(
+                        {
+                            "dateFormat": {"currentTime": self.date_format},
+                        }
+                    )
             else:
-                time_config.update({
-                    "dateFormat": {"currentTime": "yyyy-MM-dd HH:mm"},
-                })
+                time_config.update(
+                    {
+                        "dateFormat": {"currentTime": "yyyy-MM-dd HH:mm"},
+                    }
+                )
 
         return time_config
 
@@ -214,10 +295,7 @@ class BaseTileLayer(TimeStampedModel, ClusterableModel, BaseLayer):
     def get_legend_config(self, request):
 
         # default config
-        config = {
-            "type": "basic",
-            "items": []
-        }
+        config = {"type": "basic", "items": []}
 
         legend_block = self.legend
 
@@ -237,20 +315,21 @@ class BaseTileLayer(TimeStampedModel, ClusterableModel, BaseLayer):
 
             if legend_block.block_type == "legend_icon":
                 for item in data.get("items", []):
-                    config["items"].append({
-                        "icon": item.get("icon_image"),
-                        "name": item.get("icon_label"),
-                        "color": item.get("icon_color"),
-                        "iconSource": "sprite",
-                    })
+                    config["items"].append(
+                        {
+                            "icon": item.get("icon_image"),
+                            "name": item.get("icon_label"),
+                            "color": item.get("icon_color"),
+                            "iconSource": "sprite",
+                        }
+                    )
                 return config
 
             config.update({"type": data.get("type")})
 
             for item in data.get("items"):
-                config["items"].append({
-                    "name": item.get("value"),
-                    "color": item.get("color")
-                })
+                config["items"].append(
+                    {"name": item.get("value"), "color": item.get("color")}
+                )
 
         return config

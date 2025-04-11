@@ -1,6 +1,7 @@
 from rest_framework import mixins, viewsets
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
+
 from wagtail import hooks
 
 from geomanager import serializers
@@ -50,7 +51,21 @@ class DatasetViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.
 
         return Response(datasets)
 
+class DatasetSlugViewSet(mixins.UpdateModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = Dataset.objects.exclude(dataset_slug=None)
+    serializer_class = serializers.DatasetSerializer
+    lookup_field = "dataset_slug"
+    renderer_classes = [JSONRenderer]
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({'request': self.request})
+        return context
+    
+    def update(self, request, *args, **kwargs):
+        kwargs['partial'] = True
+        return super().update(request, *args, **kwargs)
+    
 class MetadataViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Metadata.objects.all()
     serializer_class = serializers.MetadataSerialiazer

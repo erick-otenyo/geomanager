@@ -8,31 +8,32 @@ from django.utils.translation import gettext_lazy as _
 from django_extensions.db.models import TimeStampedModel
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
-from wagtail.admin.panels import (
-    FieldPanel,
-    InlinePanel
-)
+from wagtail.admin.panels import FieldPanel, InlinePanel
 from wagtail.fields import RichTextField
 from wagtail.models import Orderable
 from wagtail_adminsortable.models import AdminSortable
 from wagtail_modeladmin.helpers import AdminURLHelper
 from wagtailiconchooser.widgets import IconChooserWidget
 
-from geomanager.helpers import (
-    get_layer_action_url,
-    get_preview_url,
-    get_upload_url
-)
+from geomanager.helpers import get_layer_action_url, get_preview_url, get_upload_url
 from ..utils import UUIDEncoder
 
 DEFAULT_RASTER_MAX_UPLOAD_SIZE_MB = 100
 
 
 class Category(TimeStampedModel, AdminSortable, ClusterableModel):
-    title = models.CharField(max_length=16, verbose_name=_("title"), help_text=_("Title of the category"))
-    icon = models.CharField(max_length=255, verbose_name=_("icon"), blank=True, null=True)
-    active = models.BooleanField(default=True, verbose_name=_("active"), help_text=_("Is the category active ?"))
-    public = models.BooleanField(default=True, verbose_name=_("public"), help_text=_("Is the category public ?"))
+    title = models.CharField(
+        max_length=16, verbose_name=_("title"), help_text=_("Title of the category")
+    )
+    icon = models.CharField(
+        max_length=255, verbose_name=_("icon"), blank=True, null=True
+    )
+    active = models.BooleanField(
+        default=True, verbose_name=_("active"), help_text=_("Is the category active ?")
+    )
+    public = models.BooleanField(
+        default=True, verbose_name=_("public"), help_text=_("Is the category public ?")
+    )
 
     class Meta(AdminSortable.Meta):
         verbose_name = _("Category")
@@ -46,8 +47,9 @@ class Category(TimeStampedModel, AdminSortable, ClusterableModel):
         FieldPanel("icon", widget=IconChooserWidget),
         FieldPanel("active"),
         FieldPanel("public"),
-
-        InlinePanel("sub_categories", heading=_("Sub Categories"), label=_("Sub Category")),
+        InlinePanel(
+            "sub_categories", heading=_("Sub Categories"), label=_("Sub Category")
+        ),
     ]
 
     def datasets_list_url(self):
@@ -65,17 +67,23 @@ class Category(TimeStampedModel, AdminSortable, ClusterableModel):
         base_mapviewer_url = reverse("mapview")
 
         map_config = {
-            "datasets": [{"dataset": "political-boundaries", "layers": ["political-boundaries"], "visibility": True}]
+            "datasets": [
+                {
+                    "dataset": "political-boundaries",
+                    "layers": ["political-boundaries"],
+                    "visibility": True,
+                }
+            ]
         }
 
-        map_str = json.dumps(map_config, separators=(',', ':'))
+        map_str = json.dumps(map_config, separators=(",", ":"))
 
         map_bytes = map_str.encode()
         map_base64_bytes = base64.b64encode(map_bytes)
         map_byte_str = map_base64_bytes.decode()
 
         menu_config = {"menuSection": "datasets", "datasetCategory": self.title}
-        menu_str = json.dumps(menu_config, separators=(',', ':'))
+        menu_str = json.dumps(menu_config, separators=(",", ":"))
         menu_bytes = menu_str.encode()
         menu_base64_bytes = base64.b64encode(menu_bytes)
         menu_byte_str = menu_base64_bytes.decode()
@@ -84,7 +92,9 @@ class Category(TimeStampedModel, AdminSortable, ClusterableModel):
 
 
 class SubCategory(Orderable):
-    category = ParentalKey(Category, on_delete=models.CASCADE, related_name="sub_categories")
+    category = ParentalKey(
+        Category, on_delete=models.CASCADE, related_name="sub_categories"
+    )
     title = models.CharField(max_length=256, verbose_name=_("title"))
     active = models.BooleanField(default=True, verbose_name=_("active"))
     public = models.BooleanField(default=True, verbose_name=_("public"))
@@ -117,58 +127,139 @@ class Dataset(TimeStampedModel, AdminSortable):
         ("earliest_from_source", _("Earliest available date from source")),
         ("previous_to_now", _("Date previous to current date time")),
         ("next_to_now", _("Date next to current date time")),
+        ("from_dataset_props", _("Dataset model property set by data ingestion job")),
     )
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    title = models.CharField(max_length=255, verbose_name=_("title"),
-                             help_text=_("The Dataset title as will appear to the public"))
-    category = models.ForeignKey(Category, verbose_name=_("category"), on_delete=models.PROTECT,
-                                 related_name="datasets")
-    sub_category = models.ForeignKey(SubCategory, verbose_name=_("Subcategory"), on_delete=models.PROTECT)
-    summary = models.CharField(max_length=100, null=True, blank=True,
-                               verbose_name=_("summary"),
-                               help_text=_("Short summary of less than 100 characters"))
-    metadata = models.ForeignKey("Metadata", verbose_name=_("metadata"), null=True, blank=True,
-                                 on_delete=models.SET_NULL)
-    layer_type = models.CharField(max_length=100, choices=DATASET_TYPE_CHOICES, default="raster_file",
-                                  verbose_name=_("Layer type"))
-    published = models.BooleanField(default=True, verbose_name=_("published"),
-                                    help_text=_("Should the dataset be available for visualization ?"
-                                                " If unchecked, the dataset is assumed to be in draft mode "
-                                                "and thus not ready"))
-    public = models.BooleanField(default=True, verbose_name=_("public"),
-                                 help_text=_("Should the dataset be visible to everyone ?"
-                                             " If unchecked, only authorized users can view"))
-    initial_visible = models.BooleanField(default=False, verbose_name=_("Initially visible on Map by default"),
-                                          help_text=_("Make the dataset visible on the map by default"))
+    title = models.CharField(
+        max_length=255,
+        verbose_name=_("title"),
+        help_text=_("The Dataset title as will appear to the public"),
+    )
+    category = models.ForeignKey(
+        Category,
+        verbose_name=_("category"),
+        on_delete=models.PROTECT,
+        related_name="datasets",
+    )
+    sub_category = models.ForeignKey(
+        SubCategory, verbose_name=_("Subcategory"), on_delete=models.PROTECT
+    )
+    summary = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True,
+        verbose_name=_("summary"),
+        help_text=_("Short dataset summary of less than 100 characters"),
+    )
+    metadata = models.ForeignKey(
+        "Metadata",
+        verbose_name=_("metadata"),
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
+    layer_type = models.CharField(
+        max_length=100,
+        choices=DATASET_TYPE_CHOICES,
+        default="raster_file",
+        verbose_name=_("Layer type"),
+    )
+    dataset_slug = models.CharField(
+        max_length=200,
+        null=True,
+        blank=True,
+        verbose_name=_("human-readable dataset unique identifier text"),
+        help_text=_(
+            "A human-readable hypen separated text to uniquely identify the dataset "
+            "for the purpose of updating from data ingestion jobs and visualization using mapserver/mapcache"
+        ),
+    )
+    latest_date = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name=_("latest data date set by data ingestion job"),
+        help_text=_(
+            "Last day date of the pentad/week/dekad/month/season as extracted from dataset, depending on dataset periodicity"
+        ),
+    )
+    published = models.BooleanField(
+        default=True,
+        verbose_name=_("published"),
+        help_text=_(
+            "Should the dataset be available for visualization ?"
+            " If unchecked, the dataset is assumed to be in draft mode "
+            "and thus not ready"
+        ),
+    )
+    public = models.BooleanField(
+        default=True,
+        verbose_name=_("public"),
+        help_text=_(
+            "Should the dataset be visible to everyone ?"
+            " If unchecked, only authorized users can view"
+        ),
+    )
+    initial_visible = models.BooleanField(
+        default=False,
+        verbose_name=_("Initially visible on Map by default"),
+        help_text=_("Make the dataset visible on the map by default"),
+    )
 
-    multi_temporal = models.BooleanField(default=True, verbose_name=_("Multi-temporal"),
-                                         help_text=_("The dataset is multi-temporal"), )
+    multi_temporal = models.BooleanField(
+        default=True,
+        verbose_name=_("Multi-temporal"),
+        help_text=_("The dataset is multi-temporal"),
+    )
 
-    multi_layer = models.BooleanField(default=False, verbose_name=_("Multi-layer"),
-                                      help_text=_("The dataset has more than one layer, to be displayed together"), )
-    enable_all_multi_layers_on_add = models.BooleanField(default=True,
-                                                         verbose_name=_("Enable all Multi-Layers when adding to map"),
-                                                         help_text=_("Enable all Multi-Layers at once when adding "
-                                                                     "the dataset to the map"), )
-    near_realtime = models.BooleanField(default=False, verbose_name=_("Near realtime"),
-                                        help_text=_(
-                                            "Is the layer near realtime?, for example updates every 10 minutes"))
+    multi_layer = models.BooleanField(
+        default=False,
+        verbose_name=_("Multi-layer"),
+        help_text=_("The dataset has more than one layer, to be displayed together"),
+    )
+    enable_all_multi_layers_on_add = models.BooleanField(
+        default=True,
+        verbose_name=_("Enable all Multi-Layers when adding to map"),
+        help_text=_(
+            "Enable all Multi-Layers at once when adding " "the dataset to the map"
+        ),
+    )
+    near_realtime = models.BooleanField(
+        default=False,
+        verbose_name=_("Near realtime"),
+        help_text=_(
+            "Is the layer near realtime?, for example updates every 10 minutes"
+        ),
+    )
 
-    current_time_method = models.CharField(max_length=100, choices=CURRENT_TIME_METHOD_CHOICES,
-                                           default="latest_from_source",
-                                           verbose_name=_("current time method"),
-                                           help_text=_(
-                                               "How to pick default time and for updates, for Multi-Temporal data"))
-    auto_update_interval = models.IntegerField(blank=True, null=True, verbose_name=_("Auto Update interval in minutes"),
-                                               help_text=_(
-                                                   "After how many minutes should the layer auto update on the map to "
-                                                   "show current data, if multi-temporal. Leave empty to"
-                                                   " disable auto updating"))
+    current_time_method = models.CharField(
+        max_length=100,
+        choices=CURRENT_TIME_METHOD_CHOICES,
+        default="latest_from_source",
+        verbose_name=_("current time method"),
+        help_text=_(
+            "How to pick default time and for updates, for Multi-Temporal data"
+        ),
+    )
+    auto_update_interval = models.IntegerField(
+        blank=True,
+        null=True,
+        verbose_name=_("Auto Update interval in minutes"),
+        help_text=_(
+            "After how many minutes should the layer auto update on the map to "
+            "show current data, if multi-temporal. Leave empty to"
+            " disable auto updating"
+        ),
+    )
 
-    can_clip = models.BooleanField(default=True, verbose_name=_("Enable Clipping by shape"),
-                                   help_text=_("Check to enable clipping by boundary or drawn shapes, "
-                                               "for raster and vector datasets. Not implemented for WMS types"))
+    can_clip = models.BooleanField(
+        default=True,
+        verbose_name=_("Enable Clipping by shape"),
+        help_text=_(
+            "Check to enable clipping by boundary or drawn shapes, "
+            "for raster and vector datasets. Not implemented for WMS types"
+        ),
+    )
 
     class Meta(AdminSortable.Meta):
         verbose_name = _("Dataset")
@@ -210,17 +301,25 @@ class Dataset(TimeStampedModel, AdminSortable):
         map_config = {
             "datasets": [
                 {"dataset": self.pk, "visibility": True, "layers": layers},
-                {"dataset": "political-boundaries", "layers": ["political-boundaries"], "visibility": True}]
+                {
+                    "dataset": "political-boundaries",
+                    "layers": ["political-boundaries"],
+                    "visibility": True,
+                },
+            ]
         }
 
-        map_str = json.dumps(map_config, cls=UUIDEncoder, separators=(',', ':'))
+        map_str = json.dumps(map_config, cls=UUIDEncoder, separators=(",", ":"))
 
         map_bytes = map_str.encode()
         map_base64_bytes = base64.b64encode(map_bytes)
         map_byte_str = map_base64_bytes.decode()
 
-        menu_config = {"menuSection": "datasets", "datasetCategory": self.category.title}
-        menu_str = json.dumps(menu_config, separators=(',', ':'))
+        menu_config = {
+            "menuSection": "datasets",
+            "datasetCategory": self.category.title,
+        }
+        menu_str = json.dumps(menu_config, separators=(",", ":"))
         menu_bytes = menu_str.encode()
         menu_base64_bytes = base64.b64encode(menu_bytes)
         menu_byte_str = menu_base64_bytes.decode()
@@ -271,7 +370,9 @@ class Dataset(TimeStampedModel, AdminSortable):
     def category_url(self):
         if self.category:
             category_admin_helper = AdminURLHelper(Category)
-            category_edit_url = category_admin_helper.get_action_url("edit", self.category.pk)
+            category_edit_url = category_admin_helper.get_action_url(
+                "edit", self.category.pk
+            )
             return category_edit_url
         return None
 
@@ -333,7 +434,7 @@ class Dataset(TimeStampedModel, AdminSortable):
             self.has_vector_tables(),
             self.has_wms_layers(),
             self.has_raster_tile_layers(),
-            self.has_vector_tile_layers()
+            self.has_vector_tile_layers(),
         ]
 
         return any(layers_check)
@@ -385,36 +486,106 @@ class Dataset(TimeStampedModel, AdminSortable):
 
 class Metadata(TimeStampedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    title = models.CharField(max_length=255, verbose_name=_("title"), help_text=_("Title of the dataset"))
-    subtitle = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("subtitle"),
-                                help_text=_("Subtitle if any"))
-    function = models.TextField(max_length=255, blank=True, null=True, verbose_name=_("Dataset summary"),
-                                help_text=_("Short summary of what the dataset shows. Keep it short."))
-    resolution = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("resolution"),
-                                  help_text=_("The Spatial resolution of the dataset, for example 10km by 10 km"))
-    geographic_coverage = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("Geographic coverage"),
-                                           help_text=_("The geographic coverage of the dataset. For example East Africa"
-                                                       " or specific country name like Ethiopia, or Africa"))
-    source = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("source"),
-                              help_text=_("The source of the data where was it generated or produced"))
-    license = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("license"),
-                               help_text=_("Any licensing information for the dataset"))
-    frequency_of_update = models.CharField(max_length=255, blank=True, null=True,
-                                           verbose_name=_("Frequency of updates"),
-                                           help_text=_("How frequent is the dataset updated. "
-                                                       "For example daily, weekly, monthly etc"))
-    overview = RichTextField(blank=True, null=True, verbose_name=_("detail"),
-                             help_text=_("Detail description of the dataset, including the methodology, "
-                                         "references or any other relevant information"))
-    cautions = RichTextField(blank=True, null=True, verbose_name=_("cautions"),
-                             help_text=_("What things should users be aware as they use and interpret this dataset"))
-    citation = RichTextField(blank=True, null=True, verbose_name=_("citation"),
-                             help_text=_("Scientific citation for this dataset if any. "
-                                         "For example the citation for a scientific paper for the dataset"))
-    download_data = models.URLField(blank=True, null=True, verbose_name=_("Data download link"),
-                                    help_text=_("External link to where the source data can be found and downloaded"))
-    learn_more = models.URLField(blank=True, null=True, verbose_name=_("Learn more link"),
-                                 help_text=_("External link to where more detail about the dataset can be found"))
+    title = models.CharField(
+        max_length=255, verbose_name=_("title"), help_text=_("Title of the dataset")
+    )
+    subtitle = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name=_("subtitle"),
+        help_text=_("Subtitle if any"),
+    )
+    function = models.TextField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name=_("Dataset summary"),
+        help_text=_("Short summary of what the dataset shows. Keep it short."),
+    )
+    resolution = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name=_("resolution"),
+        help_text=_("The Spatial resolution of the dataset, for example 10km by 10 km"),
+    )
+    geographic_coverage = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name=_("Geographic coverage"),
+        help_text=_(
+            "The geographic coverage of the dataset. For example East Africa"
+            " or specific country name like Ethiopia, or Africa"
+        ),
+    )
+    source = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name=_("source"),
+        help_text=_("The source of the data where was it generated or produced"),
+    )
+    license = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name=_("license"),
+        help_text=_("Any licensing information for the dataset"),
+    )
+    frequency_of_update = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name=_("Frequency of updates"),
+        help_text=_(
+            "How frequent is the dataset updated. "
+            "For example daily, weekly, monthly etc"
+        ),
+    )
+    overview = RichTextField(
+        blank=True,
+        null=True,
+        verbose_name=_("detail"),
+        help_text=_(
+            "Detail description of the dataset, including the methodology, "
+            "references or any other relevant information"
+        ),
+    )
+    cautions = RichTextField(
+        blank=True,
+        null=True,
+        verbose_name=_("cautions"),
+        help_text=_(
+            "What things should users be aware as they use and interpret this dataset"
+        ),
+    )
+    citation = RichTextField(
+        blank=True,
+        null=True,
+        verbose_name=_("citation"),
+        help_text=_(
+            "Scientific citation for this dataset if any. "
+            "For example the citation for a scientific paper for the dataset"
+        ),
+    )
+    download_data = models.URLField(
+        blank=True,
+        null=True,
+        verbose_name=_("Data download link"),
+        help_text=_(
+            "External link to where the source data can be found and downloaded"
+        ),
+    )
+    learn_more = models.URLField(
+        blank=True,
+        null=True,
+        verbose_name=_("Learn more link"),
+        help_text=_(
+            "External link to where more detail about the dataset can be found"
+        ),
+    )
 
     class Meta:
         verbose_name = _("Metadata")
@@ -426,13 +597,18 @@ class Metadata(TimeStampedModel):
 
 def get_styles():
     from geomanager.models import MBTSource
+
     return [(style.id, style.name) for style in MBTSource.objects.all()]
 
 
 class BaseLayer(AdminSortable, models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    title = models.CharField(max_length=255, verbose_name=_("title"), help_text=_("Layer title"))
-    default = models.BooleanField(default=False, verbose_name=_("default"), help_text=_("Is Default Layer"))
+    title = models.CharField(
+        max_length=255, verbose_name=_("title"), help_text=_("Layer title")
+    )
+    default = models.BooleanField(
+        default=False, verbose_name=_("default"), help_text=_("Is Default Layer")
+    )
 
     @property
     def linked_layers(self):
@@ -444,16 +620,26 @@ class BaseLayer(AdminSortable, models.Model):
 
     @property
     def edit_url(self):
-        edit_url = get_layer_action_url(layer_type=self.dataset.layer_type, action="edit", action_args=self.pk)
+        edit_url = get_layer_action_url(
+            layer_type=self.dataset.layer_type, action="edit", action_args=self.pk
+        )
         return edit_url
 
     @property
     def upload_url(self):
-        return get_upload_url(layer_type=self.dataset.layer_type, dataset_id=self.dataset.pk, layer_id=self.pk)
+        return get_upload_url(
+            layer_type=self.dataset.layer_type,
+            dataset_id=self.dataset.pk,
+            layer_id=self.pk,
+        )
 
     @property
     def preview_url(self):
-        return get_preview_url(layer_type=self.dataset.layer_type, dataset_id=self.dataset.pk, layer_id=self.pk)
+        return get_preview_url(
+            layer_type=self.dataset.layer_type,
+            dataset_id=self.dataset.pk,
+            layer_id=self.pk,
+        )
 
     @property
     def mapviewer_map_url(self):
@@ -462,18 +648,25 @@ class BaseLayer(AdminSortable, models.Model):
         map_config = {
             "datasets": [
                 {"dataset": self.dataset.pk, "visibility": True, "layers": [self.pk]},
-                {"dataset": "political-boundaries", "layers": ["political-boundaries"], "visibility": True}
+                {
+                    "dataset": "political-boundaries",
+                    "layers": ["political-boundaries"],
+                    "visibility": True,
+                },
             ]
         }
 
-        map_str = json.dumps(map_config, cls=UUIDEncoder, separators=(',', ':'))
+        map_str = json.dumps(map_config, cls=UUIDEncoder, separators=(",", ":"))
 
         map_bytes = map_str.encode()
         map_base64_bytes = base64.b64encode(map_bytes)
         map_byte_str = map_base64_bytes.decode()
 
-        menu_config = {"menuSection": "datasets", "datasetCategory": self.dataset.category.title}
-        menu_str = json.dumps(menu_config, separators=(',', ':'))
+        menu_config = {
+            "menuSection": "datasets",
+            "datasetCategory": self.dataset.category.title,
+        }
+        menu_str = json.dumps(menu_config, separators=(",", ":"))
         menu_bytes = menu_str.encode()
         menu_base64_bytes = base64.b64encode(menu_bytes)
         menu_byte_str = menu_base64_bytes.decode()
@@ -486,10 +679,18 @@ class BaseLayer(AdminSortable, models.Model):
     def save(self, *args, **kwargs):
         if self.dataset.multi_layer:
             if self.default:
-                self.dataset.layers.filter(default=True).exclude(pk=self.pk).update(default=False)
+                self.dataset.layers.filter(default=True).exclude(pk=self.pk).update(
+                    default=False
+                )
             else:
-                if not self.dataset.layers.filter(default=True).exclude(pk=self.pk).exists():
+                if (
+                    not self.dataset.layers.filter(default=True)
+                    .exclude(pk=self.pk)
+                    .exists()
+                ):
                     self.default = True
-                    self.dataset.layers.filter(default=True).exclude(pk=self.pk).update(default=False)
+                    self.dataset.layers.filter(default=True).exclude(pk=self.pk).update(
+                        default=False
+                    )
 
         super().save(*args, **kwargs)

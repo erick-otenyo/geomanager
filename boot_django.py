@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     "geomanager",
 
     "wagtail",
+    "wagtail.images",
     "taggit",
 
     "django.contrib.auth",

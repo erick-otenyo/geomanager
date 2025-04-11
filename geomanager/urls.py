@@ -34,6 +34,7 @@ from .viewsets import (
     RasterLayerRasterFileDetailViewSet,
     VectorTableFileDetailViewSet,
     DatasetViewSet,
+    DatasetSlugViewSet,
     GeostoreViewSet,
     AdminBoundaryViewSet,
     MetadataViewSet
@@ -42,6 +43,7 @@ from .viewsets import (
 router = SimpleRouter(trailing_slash=True)
 
 router.register(r'api/datasets', DatasetViewSet, basename="datasets")
+router.register(r'api/dataset-slug', DatasetSlugViewSet, basename="dataset-slug")
 router.register(r'api/metadata', MetadataViewSet, basename="metadata")
 
 router.register(r'api/file-raster', RasterLayerRasterFileDetailViewSet, basename="file-raster")

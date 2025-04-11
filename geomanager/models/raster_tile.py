@@ -7,13 +7,17 @@ from geomanager.models.tile_base import BaseTileLayer
 
 
 class RasterTileLayer(BaseTileLayer):
-    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE, related_name="raster_tile_layers",
-                                verbose_name=_("dataset"))
+    dataset = models.ForeignKey(
+        Dataset,
+        on_delete=models.CASCADE,
+        related_name="raster_tile_layers",
+        verbose_name=_("dataset"),
+    )
 
     class Meta:
         verbose_name = _("Raster Tile Layer")
         verbose_name_plural = _("Raster Tile Layers")
-        ordering = ['order']
+        ordering = ["order"]
 
     panels = [
         FieldPanel("dataset"),
@@ -29,10 +33,7 @@ class RasterTileLayer(BaseTileLayer):
 
         layer_config = {
             "type": "raster",
-            "source": {
-                "type": "raster",
-                "tiles": [tile_url]
-            }
+            "source": {"type": "raster", "tiles": [tile_url]},
         }
 
         return layer_config

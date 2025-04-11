@@ -20,8 +20,24 @@ class DatasetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Dataset
-        fields = ["id", "dataset", "name", "capabilities", "summary", "layer", "isMultiLayer", "category",
-                  "sub_category", "metadata", "layers", "initialVisible", "public", "layer_type"]
+        fields = [
+            "id",
+            "dataset",
+            "name",
+            "capabilities",
+            "summary",
+            "layer",
+            "dataset_slug",
+            "latest_date",
+            "isMultiLayer",
+            "category",
+            "sub_category",
+            "metadata",
+            "layers",
+            "initialVisible",
+            "public",
+            "layer_type",
+        ]
 
     def get_initialVisible(self, obj):
         return obj.initial_visible
@@ -33,22 +49,32 @@ class DatasetSerializer(serializers.ModelSerializer):
         return obj.capabilities
 
     def get_layers(self, obj):
-        request = self.context.get('request')
+        request = self.context.get("request")
 
         if obj.layer_type == "raster_file":
-            return RasterFileLayerSerializer(obj.raster_file_layers, many=True, context={"request": request}).data
+            return RasterFileLayerSerializer(
+                obj.raster_file_layers, many=True, context={"request": request}
+            ).data
 
         if obj.layer_type == "vector_file":
-            return VectorFileLayerSerializer(obj.vector_file_layers, many=True, context={"request": request}).data
+            return VectorFileLayerSerializer(
+                obj.vector_file_layers, many=True, context={"request": request}
+            ).data
 
         if obj.layer_type == "wms":
-            return WmsLayerSerializer(obj.wms_layers, many=True, context={"request": request}).data
+            return WmsLayerSerializer(
+                obj.wms_layers, many=True, context={"request": request}
+            ).data
 
         if obj.layer_type == "raster_tile":
-            return RasterTileLayerSerializer(obj.raster_tile_layers, many=True, context={"request": request}).data
+            return RasterTileLayerSerializer(
+                obj.raster_tile_layers, many=True, context={"request": request}
+            ).data
 
         if obj.layer_type == "vector_tile":
-            return VectorTileLayerSerializer(obj.vector_tile_layers, many=True, context={"request": request}).data
+            return VectorTileLayerSerializer(
+                obj.vector_tile_layers, many=True, context={"request": request}
+            ).data
 
         return None
 
@@ -74,7 +100,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ['id', 'title', 'icon', 'active', 'public', 'sub_categories']
+        fields = ["id", "title", "icon", "active", "public", "sub_categories"]
 
     def get_icon(self, obj):
         icon_name = obj.icon
