@@ -12,7 +12,7 @@ geomanager_register_datasets_hook_name = "register_geomanager_datasets"
 
 
 class DatasetViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    queryset = Dataset.objects.filter(published=True)
+    queryset = Dataset.objects.filter(published=True).order_by('title')
     serializer_class = serializers.DatasetSerializer
 
     renderer_classes = [JSONRenderer]
