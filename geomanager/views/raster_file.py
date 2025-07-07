@@ -392,11 +392,11 @@ def preview_raster_layers(request, dataset_id, layer_id=None):
     categories_url = category_admin_helper.get_action_url("index")
     
     dataset_admin_helper = AdminURLHelper(Dataset)
-    dataset_list_url = dataset_admin_helper.get_action_url("index") + f"?id={dataset_id}"
+    dataset_list_url = dataset_admin_helper.get_action_url("index") + f"?id={str(dataset_id)}"
     
     raster_file_layer_admin_helper = AdminURLHelper(RasterFileLayer)
     raster_file_layer_list_url = raster_file_layer_admin_helper.get_action_url("index")
-    raster_file_layer_list_url = raster_file_layer_list_url + f"?dataset__id__exact={dataset_id}"
+    raster_file_layer_list_url = raster_file_layer_list_url + f"?dataset__id__exact={str(dataset_id)}"
     
     dataset_layers = RasterFileLayerSerializer(dataset.raster_file_layers, many=True, context={"request": request}).data
     
