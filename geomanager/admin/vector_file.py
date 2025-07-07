@@ -2,7 +2,7 @@ from django.urls import path
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from wagtail_modeladmin.helpers import AdminURLHelper
-from wagtail_modeladmin.views import CreateView, EditView, IndexView
+from wagtail_modeladmin.views import CreateView, EditView
 
 from geomanager.admin.base import ModelAdminCanHide, BaseModelAdmin, LayerIndexView, LayerFileDeleteView
 from geomanager.models import Dataset, VectorFileLayer, PgVectorTable, Category
@@ -12,39 +12,40 @@ from geomanager.views import (
     delete_vector_upload,
     preview_vector_layers
 )
+from geomanager.views.modeladmin import PatchedIndexView
 
 
 class VectorFileLayerCreateView(CreateView):
     def get_form(self):
         form = super().get_form()
         form.fields["dataset"].queryset = Dataset.objects.filter(layer_type="vector_file")
-
+        
         dataset_id = self.request.GET.get("dataset_id")
         if dataset_id:
             initial = {**form.initial}
             initial.update({"dataset": dataset_id})
             form.initial = initial
         return form
-
+    
     def get_context_data(self, **kwargs):
         context_data = super(VectorFileLayerCreateView, self).get_context_data(**kwargs)
-
+        
         category_admin_helper = AdminURLHelper(Category)
         category_index_url = category_admin_helper.get_action_url("index")
-
+        
         datasets_admin_helper = AdminURLHelper(Dataset)
         datasets_index_url = datasets_admin_helper.get_action_url("index")
-
+        
         navigation_items = [
             {"url": category_index_url, "label": Category._meta.verbose_name_plural},
             {"url": datasets_index_url, "label": Dataset._meta.verbose_name_plural},
             {"url": "#", "label": _("New") + f" {VectorFileLayer._meta.verbose_name}"},
         ]
-
+        
         context_data.update({
             "navigation_items": navigation_items,
         })
-
+        
         return context_data
 
 
@@ -53,30 +54,30 @@ class VectorFileLayerEditView(EditView):
         form = super().get_form()
         form.fields["dataset"].queryset = Dataset.objects.filter(layer_type="vector_file")
         return form
-
+    
     def get_context_data(self, **kwargs):
         context_data = super(VectorFileLayerEditView, self).get_context_data(**kwargs)
-
+        
         category_admin_helper = AdminURLHelper(Category)
         category_index_url = category_admin_helper.get_action_url("index")
-
+        
         datasets_admin_helper = AdminURLHelper(Dataset)
         datasets_index_url = datasets_admin_helper.get_action_url("index")
-
+        
         layer_admin_helper = AdminURLHelper(VectorFileLayer)
         layer_index_url = layer_admin_helper.get_action_url("index")
-
+        
         navigation_items = [
             {"url": category_index_url, "label": Category._meta.verbose_name_plural},
             {"url": datasets_index_url, "label": Dataset._meta.verbose_name_plural},
             {"url": layer_index_url, "label": VectorFileLayer._meta.verbose_name_plural},
             {"url": "#", "label": self.instance.title},
         ]
-
+        
         context_data.update({
             "navigation_items": navigation_items,
         })
-
+        
         return context_data
 
 
@@ -91,7 +92,7 @@ class VectorFileLayerModelAdmin(BaseModelAdmin, ModelAdminCanHide):
     list_display = ("title",)
     list_filter = ("dataset",)
     index_template_name = "geomanager/modeladmin/index_without_custom_create.html"
-
+    
     def __init__(self, parent=None):
         super().__init__(parent)
         self.list_display = (list(self.list_display) or []) + ['dataset_link', "uploaded_files", "upload_files",
@@ -101,7 +102,7 @@ class VectorFileLayerModelAdmin(BaseModelAdmin, ModelAdminCanHide):
         self.upload_files.__func__.short_description = _('Upload Vector Files')
         self.preview_layer.__func__.short_description = _('Preview on Map')
         self.mapviewer_map_url.__func__.short_description = _("View on MapViewer")
-
+    
     def mapviewer_map_url(self, obj):
         label = _("MapViewer")
         button_html = f"""
@@ -115,7 +116,7 @@ class VectorFileLayerModelAdmin(BaseModelAdmin, ModelAdminCanHide):
                         </a>
                     """
         return mark_safe(button_html)
-
+    
     def dataset_link(self, obj):
         button_html = f"""
             <a href="{obj.dataset.dataset_url()}">
@@ -123,10 +124,10 @@ class VectorFileLayerModelAdmin(BaseModelAdmin, ModelAdminCanHide):
             </a>
         """
         return mark_safe(button_html)
-
+    
     def upload_files(self, obj):
         disabled = "" if not obj.has_data_table else "disabled"
-
+        
         label = _("Upload Files")
         button_html = f"""
             <a href="{obj.upload_url}" class="button button-small bicolor button--icon" {disabled}>
@@ -139,7 +140,7 @@ class VectorFileLayerModelAdmin(BaseModelAdmin, ModelAdminCanHide):
             </a>
         """
         return mark_safe(button_html)
-
+    
     def preview_layer(self, obj):
         label = _("Preview Layer")
         button_html = f"""
@@ -153,7 +154,7 @@ class VectorFileLayerModelAdmin(BaseModelAdmin, ModelAdminCanHide):
             </a>
         """
         return mark_safe(button_html)
-
+    
     def uploaded_files(self, obj):
         label = _("Uploaded Files")
         button_html = f"""
@@ -169,32 +170,32 @@ class VectorFileLayerModelAdmin(BaseModelAdmin, ModelAdminCanHide):
         return mark_safe(button_html)
 
 
-class VectorFileIndexView(IndexView):
+class VectorFileIndexView(PatchedIndexView):
     def get_context_data(self, **kwargs):
         context_data = super(VectorFileIndexView, self).get_context_data(**kwargs)
-
+        
         model_verbose_name = self.model._meta.verbose_name_plural
-
+        
         category_admin_helper = AdminURLHelper(Category)
         categories_url = category_admin_helper.get_action_url("index")
-
+        
         dataset_admin_helper = AdminURLHelper(Dataset)
         datasets_url = dataset_admin_helper.get_action_url("index")
-
+        
         layer_admin_helper = AdminURLHelper(VectorFileLayer)
         layers_url = layer_admin_helper.get_action_url("index")
-
+        
         navigation_items = [
             {"url": categories_url, "label": Category._meta.verbose_name_plural},
             {"url": datasets_url, "label": Dataset._meta.verbose_name_plural},
             {"url": layers_url, "label": VectorFileLayer._meta.verbose_name_plural},
             {"url": "#", "label": model_verbose_name},
         ]
-
+        
         context_data.update({
             "navigation_items": navigation_items,
         })
-
+        
         return context_data
 
 
