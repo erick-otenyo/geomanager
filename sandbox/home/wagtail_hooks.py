@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from wagtail import hooks
 from wagtail.admin.menu import MenuItem
 
-from .models import StationSettings
+from .models import StationsSettings
 from .utils import create_stations_geomanager_dataset
 from .views import load_stations, preview_stations
 
@@ -25,7 +25,7 @@ def add_stations_to_geomanager():
 @hooks.register('register_geomanager_datasets')
 def add_geomanager_datasets(request):
     datasets = []
-    station_settings = StationSettings.for_request(request)
+    station_settings = StationsSettings.for_request(request)
     if station_settings.show_on_mapviewer and station_settings.geomanager_subcategory:
         dataset = create_stations_geomanager_dataset(station_settings, request)
         if dataset:

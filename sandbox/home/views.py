@@ -16,7 +16,7 @@ from wagtail.admin.auth import user_passes_test, user_has_any_page_permission
 from wagtailcache.cache import clear_cache, cache_page
 
 from .forms import StationsUploadForm, StationColumnsForm
-from .models import StationSettings
+from .models import StationsSettings
 
 
 @user_passes_test(user_has_any_page_permission)
@@ -24,7 +24,7 @@ def load_stations(request):
     template = "stations/stations_upload.html"
 
     context = {}
-    station_settings = StationSettings.for_request(request)
+    station_settings = StationsSettings.for_request(request)
 
     if request.POST:
         form = StationsUploadForm(request.POST, request.FILES)
@@ -97,7 +97,7 @@ def load_stations(request):
 def preview_stations(request):
     template = "stations/stations_preview.html"
 
-    stations_settings = StationSettings.for_request(request)
+    stations_settings = StationsSettings.for_request(request)
     stations_vector_tiles_url = get_full_url(request, stations_settings.stations_vector_tiles_url)
 
     context = {
@@ -147,7 +147,7 @@ def preview_stations(request):
 @method_decorator(cache_page, name='get')
 class StationsTileView(View):
     def get(self, request, z, x, y):
-        station_settings = StationSettings.for_request(request)
+        station_settings = StationsSettings.for_request(request)
 
         sql = f"""WITH
             bounds AS (

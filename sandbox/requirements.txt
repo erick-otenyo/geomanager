@@ -132,6 +132,7 @@ wagtail-color-panel==1.4.1
 wagtail-font-awesome-svg==0.0.3
 wagtail-humanitarian-icons==2.0.0
 wagtail-icon-chooser==0.0.4
+wagtail-modeladmin==2.2.0
 webencodings==0.5.1
 websockets==11.0.3
 Willow==1.5.1
