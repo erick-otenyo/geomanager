@@ -24,7 +24,7 @@ class HomePage(Page):
 
 
 @register_setting
-class StationSettings(BaseSiteSetting):
+class StationsSettings(BaseSiteSetting):
     stations_table_name = "home_station"
     db_schema = "public"
 
@@ -127,6 +127,9 @@ class StationSettings(BaseSiteSetting):
                 if name and popup:
                     popup_columns.append({"name": name, "label": label})
         return popup_columns
+    
+    class Meta:
+        verbose_name = "Home Station Settings"
 
 
 class StationsPage(RoutablePageMixin, Page):
@@ -140,7 +143,7 @@ class StationsPage(RoutablePageMixin, Page):
     @path('')
     def all_stations(self, request, *args, **kwargs):
         context = {}
-        station_settings = StationSettings.for_request(request)
+        station_settings = StationsSettings.for_request(request)
 
         stations_vector_tiles_url = get_full_url(request, station_settings.stations_vector_tiles_url)
 
@@ -194,7 +197,7 @@ class StationsPage(RoutablePageMixin, Page):
 
     @path('<int:station_pk>/')
     def station_detail(self, request, station_pk):
-        station_settings = StationSettings.for_request(request)
+        station_settings = StationsSettings.for_request(request)
 
         # get stations model
         station_model = station_settings.get_station_model()

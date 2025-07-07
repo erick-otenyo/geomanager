@@ -25,11 +25,11 @@ def preview_vector_tile_layers(request, dataset_id, layer_id=None):
     categories_url = category_admin_helper.get_action_url("index")
 
     dataset_admin_helper = AdminURLHelper(Dataset)
-    dataset_list_url = dataset_admin_helper.get_action_url("index") + f"?id={dataset_id}"
+    dataset_list_url = dataset_admin_helper.get_action_url("index") + f"?id={str(dataset_id)}"
 
     vector_tile_layer_admin_helper = AdminURLHelper(VectorTileLayer)
     vector_tile_layer_list_url = vector_tile_layer_admin_helper.get_action_url("index")
-    vector_tile_layer_list_url = vector_tile_layer_list_url + f"?dataset__id__exact={dataset_id}"
+    vector_tile_layer_list_url = vector_tile_layer_list_url + f"?dataset__id__exact={str(dataset_id)}"
 
     layer = None
     if layer_id:
