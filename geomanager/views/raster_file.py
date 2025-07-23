@@ -107,7 +107,7 @@ def upload_raster_file(request, dataset_id=None, layer_id=None):
     if layer_id:
         layer = get_object_or_404(RasterFileLayer, pk=layer_id)
         layer_admin_url_helper = AdminURLHelper(layer)
-        layer_list_url = layer_admin_url_helper.get_action_url("index") + f"?dataset__id__exact={dataset.pk}"
+        layer_list_url = layer_admin_url_helper.get_action_url("index") + f"?dataset__id__exact={str(dataset.pk)}"
         layer_preview_url = layer.preview_url
     
     navigation_items = [
