@@ -7,19 +7,19 @@ import wagtail.contrib.routable_page.models
 
 
 class Migration(migrations.Migration):
-
     initial = True
-
+    
     dependencies = [
         ('geomanager', '0011_vectorlayericon'),
-        ('wagtailcore', '0084_query_searchpromotion_querydailyhits'),
     ]
-
+    
     operations = [
         migrations.CreateModel(
             name='HomePage',
             fields=[
-                ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.page')),
+                ('page_ptr',
+                 models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True,
+                                      primary_key=True, serialize=False, to='wagtailcore.page')),
             ],
             options={
                 'abstract': False,
@@ -29,7 +29,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='StationsPage',
             fields=[
-                ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.page')),
+                ('page_ptr',
+                 models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True,
+                                      primary_key=True, serialize=False, to='wagtailcore.page')),
             ],
             options={
                 'abstract': False,
@@ -44,11 +46,19 @@ class Migration(migrations.Migration):
                 ('geom_type', models.CharField(blank=True, max_length=100, null=True)),
                 ('bounds', geomanager.fields.ListField(blank=True, max_length=256, null=True)),
                 ('name_column', models.CharField(blank=True, max_length=100, null=True)),
-                ('show_on_mapviewer', models.BooleanField(default=False, help_text='Check to show stations data on Mapviewer', verbose_name='Show on Mapviewer')),
-                ('layer_title', models.CharField(blank=True, default='Stations', max_length=100, null=True, verbose_name='Stations Layer Title')),
-                ('geomanager_layer_metadata', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='geomanager.metadata', verbose_name='Stations Layer Metadata')),
-                ('geomanager_subcategory', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='geomanager.subcategory', verbose_name='Stations Layer SubCategory')),
-                ('site', models.OneToOneField(editable=False, on_delete=django.db.models.deletion.CASCADE, to='wagtailcore.site')),
+                ('show_on_mapviewer',
+                 models.BooleanField(default=False, help_text='Check to show stations data on Mapviewer',
+                                     verbose_name='Show on Mapviewer')),
+                ('layer_title', models.CharField(blank=True, default='Stations', max_length=100, null=True,
+                                                 verbose_name='Stations Layer Title')),
+                ('geomanager_layer_metadata',
+                 models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL,
+                                   to='geomanager.metadata', verbose_name='Stations Layer Metadata')),
+                ('geomanager_subcategory',
+                 models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL,
+                                   to='geomanager.subcategory', verbose_name='Stations Layer SubCategory')),
+                ('site', models.OneToOneField(editable=False, on_delete=django.db.models.deletion.CASCADE,
+                                              to='wagtailcore.site')),
             ],
             options={
                 'verbose_name': 'Home Station Settings',
