@@ -53,12 +53,12 @@ class Category(TimeStampedModel, AdminSortable, ClusterableModel):
     def datasets_list_url(self):
         dataset_admin_helper = AdminURLHelper(Dataset)
         dataset_index_url = dataset_admin_helper.get_action_url("index")
-        return dataset_index_url + f"?category__id__exact={self.pk}"
+        return dataset_index_url + f"?category__id__exact={str(self.pk)}"
 
     def dataset_create_url(self):
         dataset_admin_helper = AdminURLHelper(Dataset)
         dataset_create_url = dataset_admin_helper.get_action_url("create")
-        return dataset_create_url + f"?category_id={self.pk}"
+        return dataset_create_url + f"?category_id={str(self.pk)}"
 
     @property
     def mapviewer_map_url(self):
@@ -245,7 +245,7 @@ class Dataset(TimeStampedModel, AdminSortable):
     def dataset_url(self):
         admin_helper = AdminURLHelper(self)
         admin_edit_url = admin_helper.get_action_url("index", self.pk)
-        return admin_edit_url + f"?id={self.pk}"
+        return admin_edit_url + f"?id={str(self.pk)}"
 
     def get_layers_rel(self):
         layer_type = self.layer_type
@@ -283,7 +283,7 @@ class Dataset(TimeStampedModel, AdminSortable):
         list_layer_url = get_layer_action_url(self.layer_type, "index")
 
         if list_layer_url:
-            list_layer_url = list_layer_url + f"?dataset__id__exact={self.pk}"
+            list_layer_url = list_layer_url + f"?dataset__id__exact={str(self.pk)}"
 
         return list_layer_url
 
@@ -293,7 +293,7 @@ class Dataset(TimeStampedModel, AdminSortable):
 
         create_layer_url = get_layer_action_url(self.layer_type, "create")
         if create_layer_url:
-            create_layer_url = create_layer_url + f"?dataset_id={self.pk}"
+            create_layer_url = create_layer_url + f"?dataset_id={str(self.pk)}"
 
         return create_layer_url
 

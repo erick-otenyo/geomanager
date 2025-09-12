@@ -102,7 +102,7 @@ class RasterFileLayer(TimeStampedModel, BaseLayer):
             })
         else:
             url.update({
-                "url": style_admin_helper.get_action_url("create") + f"?layer_id={self.pk}"
+                "url": style_admin_helper.get_action_url("create") + f"?layer_id={str(self.pk)}"
             })
         return url
 

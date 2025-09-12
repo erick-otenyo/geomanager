@@ -57,5 +57,4 @@ class LayerFileDeleteView(DeleteView):
         if self.instance:
             layer_id = str(self.instance.layer.pk)
             index_url += f"?layer__id={layer_id}"
-        
         return index_url
